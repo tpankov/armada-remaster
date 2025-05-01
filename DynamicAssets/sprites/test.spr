@@ -1,0 +1,19 @@
+
+# const
+@animation const
+draw 1 1.0 step
+@keyframes
+1.0	1
+
+# 8 frame animation for bormine2, borres
+@animation tex8x1b2
+offset 8 1.2 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+@tmaterial=additive
+@reference=512
+ftspark1	FTwaspr1	0	0	64	64	@anim=tex8x1b2
+
+@sprite_node ftwaspr1 ftspark1 const (7,7) (1,1,1) billboard

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML xmlns:xsi="[http://www.w3.org/2001/XMLSchema-instance](http://www.w3.org/2001/XMLSchema-instance)"
+             xmlns:engine="UnityEngine.UIElements"
+             xsi:noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd">
+
+    <engine:VisualElement name="context-menu-root" class="context-menu-container">
+
+        <engine:VisualElement name="command-button-container" class="command-button-container" />
+
+        <engine:VisualElement name="ship-icon-container" class="ship-icon-container" />
+
+        <engine:VisualElement name="center-focus" class="center-focus">
+
+            <engine:VisualElement name="top-status-bars" class="top-status-bars" />
+
+            <engine:VisualElement name="bottom-status-bars" class="bottom-status-bars" />
+
+            <engine:VisualElement name="left-system-icons" class="left-system-icons" />
+
+            <engine:VisualElement name="right-system-icons" class="right-system-icons" />
+
+        </engine:VisualElement> </engine:VisualElement> </engine:UXML>

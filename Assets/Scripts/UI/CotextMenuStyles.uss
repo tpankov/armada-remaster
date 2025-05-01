@@ -1,0 +1,191 @@
+/* ContextMenuStyles.uss */
+
+/* Root container for the entire menu - initially hidden */
+.context-menu-container {
+    /* Position will be set dynamically via C# */
+    position: absolute;
+    /* Set initial size or let content define it */
+    width: 250px;
+    height: 250px;
+    /* Center the pivot for positioning */
+    translate: -50% -50%;
+    /* Hide initially */
+    display: none;
+    /* Allow mouse events */
+    picking-mode: position;
+}
+
+/* Optional: Central area for status info (can be part of container) */
+.center-focus {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    align-items: center; /* Center children horizontally */
+    justify-content: center; /* Center children vertically */
+}
+
+/* Container for command buttons (top arc) */
+.command-button-container {
+    position: absolute;
+    width: 100%;
+    height: 50%; /* Top half */
+    top: 0;
+    left: 0;
+}
+
+/* Container for selected ship icons (bottom arc) */
+.ship-icon-container {
+    position: absolute;
+    width: 100%;
+    height: 50%; /* Bottom half */
+    bottom: 0;
+    left: 0;
+}
+
+/* Base style for all circular buttons */
+.circle-button {
+    position: absolute; /* Positioned via C# */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Makes it round */
+    background-color: rgba(30, 30, 30, 0.7); /* Semi-transparent dark */
+    border-width: 2px;
+    border-color: #888888; /* Default border */
+    /* Center content (like an icon) inside */
+    align-items: center;
+    justify-content: center;
+    /* Smooth transitions for hover effects */
+    transition-duration: 0.1s;
+    /* Prevent button content from capturing events unless needed */
+    /* picking-mode: position; /* Already default for Button */
+}
+
+/* Specific style for command buttons */
+.command-button {
+    /* Inherits from .circle-button */
+}
+
+/* Specific style for ship icons (might not be buttons) */
+.ship-icon {
+    /* Inherits from .circle-button */
+    /* Make non-interactive if just visual */
+    /* picking-mode: ignore; */
+}
+
+
+/* Style for the icon inside a button */
+.button-icon {
+    width: 70%;
+    height: 70%;
+    /* Ensure icon scales nicely */
+    -unity-background-scale-mode: scale-to-fit;
+    /* Tint color can be set via C# or USS */
+    /* tint-color: white; */
+    /* Don't let the icon itself block clicks on the button */
+    picking-mode: ignore;
+}
+
+/* Hover/Active states for buttons */
+.circle-button:hover {
+    background-color: rgba(60, 60, 60, 0.8);
+    border-color: #FFFFFF;
+    scale: 1.1 1.1; /* Slightly enlarge on hover */
+}
+
+.circle-button:active {
+    background-color: rgba(80, 80, 80, 0.9);
+    scale: 1.0 1.0; /* Return to normal size on click */
+}
+
+/* Border color variations */
+.border-red { border-color: #FF4444; }
+.border-green { border-color: #44FF44; }
+.border-blue { border-color: #44AAFF; }
+.border-yellow { border-color: #FFFF44; }
+/* Add more as needed */
+
+
+/* Status Bars Container (Example: Top) */
+.top-status-bars {
+    position: absolute;
+    width: 60%;
+    height: 20px;
+    top: 15%; /* Position near top inside center */
+    left: 20%; /* Center horizontally */
+    flex-direction: column; /* Stack bars vertically */
+    align-items: center;
+}
+/* Status Bars Container (Example: Bottom) */
+.bottom-status-bars {
+    position: absolute;
+    width: 60%;
+    height: 20px;
+    bottom: 15%; /* Position near bottom inside center */
+    left: 20%; /* Center horizontally */
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* Individual Status Bar (using ProgressBar or styled VisualElement) */
+.status-bar {
+    width: 100%;
+    height: 8px; /* Height of the bar */
+    margin-bottom: 2px; /* Space between bars */
+    background-color: rgba(10, 10, 10, 0.8); /* Dark background */
+    border-radius: 4px;
+    overflow: hidden; /* Clip the fill element */
+}
+
+/* Fill element of the status bar */
+.status-bar-fill {
+    height: 100%;
+    width: 50%; /* Controlled by C# via style.width (percentage) */
+    background-color: #44FF44; /* Default fill color (e.g., health) */
+    border-radius: 4px;
+    transition-duration: 0.2s; /* Smooth fill change */
+}
+
+/* Variations for different bars */
+.health-bar-fill { background-color: #44FF44; }
+.shield-bar-fill { background-color: #44AAFF; }
+.progress-bar-fill { background-color: #FFFF44; }
+
+
+/* System Status Icons Container (Example: Left) */
+.left-system-icons {
+    position: absolute;
+    width: 20%;
+    height: 60%;
+    left: 5%;
+    top: 20%;
+    flex-direction: column; /* Stack icons vertically */
+    justify-content: space-around; /* Distribute space */
+    align-items: center;
+}
+/* System Status Icons Container (Example: Right) */
+.right-system-icons {
+    position: absolute;
+    width: 20%;
+    height: 60%;
+    right: 5%;
+    top: 20%;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+/* Individual System Status Icon */
+.system-icon {
+    width: 20px;
+    height: 20px;
+    -unity-background-scale-mode: scale-to-fit;
+    /* Default state (e.g., offline) */
+    tint-color: #888888;
+}
+
+/* Variations for system status */
+.system-online { tint-color: #44FF44; }
+.system-damaged { tint-color: #FFFF44; }
+.system-offline { tint-color: #FF4444; }
+

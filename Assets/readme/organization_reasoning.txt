@@ -1,0 +1,193 @@
+Okay, let's break down a general approach to organizing scripts for an RTS game in Unity, incorporating your specific technology choices (ECS for movement, Photon Fusion 2, New Input System, external asset loading).
+
+The key principles are **Modularity**, **Separation of Concerns**, and **Scalability**.
+
+**I. Proposed Folder Structure (Example)**
+
+This is a suggestion; adjust it based on your project's complexity.
+
+```
+Assets/
+├── Scripts/
+│   ├── Core/             # Essential managers, game state, core systems
+│   │   ├── GameManager.cs
+│   │   ├── SceneLoader.cs
+│   │   ├── ServiceLocator.cs  # Optional: For dependency management
+│   │   └── ...
+│   │
+│   ├── Input/              # Handling player input
+│   │   ├── InputActions.inputactions # Generated Input Actions asset
+│   │   ├── InputManager.cs         # Reads input, triggers events/commands
+│   │   ├── CameraController.cs     # Handles RTS camera controls
+│   │   └── ...
+│   │
+│   ├── Networking/         # Network-specific logic, setup, Fusion integration
+│   │   ├── NetworkManager.cs     # Handles Fusion connection, spawning, callbacks
+│   │   ├── NetworkCallbacksHandler.cs # Processes specific Fusion callbacks
+│   │   ├── NetworkedPlayer.cs    # Represents a player connection/data
+│   │   └── ...
+│   │
+│   ├── Units/              # Unit logic, selection, commands (non-ECS parts)
+│   │   ├── UnitSelector.cs
+│   │   ├── UnitCommander.cs      # Translates player commands to unit actions
+│   │   ├── UnitData.cs           # Class/Struct definition for unit properties
+│   │   ├── UnitRegistry.cs       # Keeps track of spawned units (maybe)
+│   │   └── Components/         # MonoBehaviour components for high-level unit logic
+│   │       ├── UnitHealthMB.cs   # Example: MonoBehaviour interacting with ECS health
+│   │       ├── UnitVisionMB.cs
+│   │       └── ...
+│   │
+│   ├── ECS/                # All ECS-related code
+│   │   ├── Components/         # ECS ComponentData structs
+│   │   │   ├── Movement/
+│   │   │   │   ├── TargetPosition.cs
+│   │   │   │   ├── MoveSpeed.cs
+│   │   │   │   ├── PathFollowData.cs  # Includes spline info, progress
+│   │   │   │   └── ...
+│   │   │   ├── Combat/
+│   │   │   │   ├── AttackTarget.cs
+│   │   │   │   ├── AttackRange.cs
+│   │   │   │   └── ...
+│   │   │   └── UnitProperties/
+│   │   │       ├── Health.cs
+│   │   │       ├── TeamId.cs
+│   │   │       └── ...
+│   │   │
+│   │   ├── Systems/            # ECS Systems (logic processing components)
+│   │   │   ├── Movement/
+│   │   │   │   ├── UnitMovementSystem.cs # Core kinematic movement along splines
+│   │   │   │   ├── PathfindingRequestSystem.cs # If pathfinding generates splines
+│   │   │   │   └── ...
+│   │   │   ├── Combat/
+│   │   │   │   ├── TargetingSystem.cs
+│   │   │   │   ├── DamageSystem.cs
+│   │   │   │   └── ...
+│   │   │   └── Networking/         # Systems to sync ECS state over network
+│   │   │       ├── EcsNetworkSyncSystem.cs # Example name
+│   │   │       └── ...
+│   │   │
+│   │   └── Authoring/          # MonoBehaviour scripts to convert GameObjects to Entities
+│   │       ├── UnitAuthoring.cs
+│   │       ├── MovementAuthoring.cs
+│   │       └── ...
+│   │
+│   ├── AI/                 # Artificial intelligence for opponents/units
+│   │   ├── AIController.cs
+│   │   ├── DecisionMaking/
+│   │   └── Steering/           # (If not fully handled by ECS movement)
+│   │
+│   ├── UI/                 # User Interface logic
+│   │   ├── UIManager.cs
+│   │   ├── UnitInfoPanel.cs
+│   │   ├── ResourceDisplay.cs
+│   │   ├── MiniMapController.cs
+│   │   └── ...
+│   │
+│   ├── AssetsManagement/   # Loading and managing external assets/data
+│   │   ├── AssetLoader.cs        # Core loading functions (models, textures)
+│   │   ├── UnitDataLoader.cs     # Loads and parses unit stats (from text/JSON/etc.)
+│   │   ├── AssetCache.cs         # Optional: Caching loaded assets
+│   │   └── ...
+│   │
+│   ├── Utilities/          # Common helper functions, extensions
+│   │   └── ...
+│   │
+│   └── ScriptableObjects/  # Definitions stored as Unity assets (alternative to text files)
+│       ├── UnitDefinitions/
+│       └── WeaponDefinitions/
+│
+├── Prefabs/
+│   ├── Units/
+│   └── FX/
+│
+├── Settings/             # Input Actions, Physics, etc.
+│   └── InputActions.inputactions # Reference, actual asset likely in Scripts/Input
+│
+└── ... (Other folders like Materials, Scenes, Textures, Models)
+```
+
+**II. Purpose of Scripts in Key Areas (Integrating Your Technologies)**
+
+1.  **Core (`Scripts/Core`)**
+    * `GameManager.cs`: Manages the overall game loop, tracks game state (playing, paused, menu, game over), win/loss conditions, and potentially transitions between scenes. Crucial for coordinating other managers.
+    * `SceneLoader.cs`: Handles loading/unloading scenes asynchronously.
+
+2.  **Input (`Scripts/Input`)**
+    * `InputActions.inputactions`: The asset generated by the Unity Input System. Defines Action Maps (e.g., "Gameplay", "UI"), Actions (e.g., "Select", "Command", "CameraMove"), and Bindings (e.g., Left Mouse Button -> Select).
+    * `InputManager.cs`: A central script (often a Singleton or accessible via Service Locator) that initializes the Input System, registers callbacks for Actions (from `InputActions`), and translates raw input into game-specific events or commands. For example, it detects a left-click, performs a raycast, and raises an event like `OnUnitSelectionRequested(target)`. It detects a right-click and raises `OnCommandIssued(targetPosition/targetUnit)`.
+    * `CameraController.cs`: Subscribes to camera-related input actions (e.g., "CameraMove", "CameraZoom") from `InputManager` or directly from the `PlayerInput` component and updates the camera's transform.
+
+3.  **Networking (`Scripts/Networking`)**
+    * `NetworkManager.cs`: Your primary interface with Photon Fusion 2. Handles:
+        * Initializing Fusion (`NetworkRunner`).
+        * Connecting to the Photon Cloud / Starting a Host.
+        * Joining/Leaving Rooms.
+        * Spawning networked objects (units, projectiles) using `Runner.Spawn()`. Needs references to prefabs. Prefabs must have `NetworkObject` and relevant `NetworkBehaviour` components.
+        * Registering for and handling global Fusion callbacks (via `INetworkRunnerCallbacks`). Often delegates specific callbacks to other handlers like `NetworkCallbacksHandler.cs`.
+    * `NetworkedPlayer.cs`: Represents a player in the network session. Might store player name, team, color, etc. Often a `NetworkBehaviour`.
+    * **Integration Point:** Commands issued via the `InputManager` often need to be sent over the network. This usually involves calling an `[Rpc]` on a relevant `NetworkBehaviour` (like a `UnitCommander` or a player-specific command handler). The RPC then executes on the server/host and potentially relays to other clients.
+
+4.  **Units (`Scripts/Units`)**
+    * `UnitSelector.cs`: Handles logic for selecting units (box selection, single click), likely triggered by events from `InputManager`. Manages the list of currently selected units.
+    * `UnitCommander.cs`: Takes commands (e.g., move, attack) potentially received from `InputManager` or via Network RPCs, identifies the selected units (from `UnitSelector`), and translates these high-level commands into specific actions or data changes for the units (e.g., setting a target destination component in ECS).
+    * `UnitData.cs`: A plain C# class or struct defining the properties loaded from your text files (health, name, weapon IDs, model path, texture path, etc.).
+    * `UnitRegistry.cs`: (Optional but useful) A central place to track all active units, perhaps mapping Network IDs or Entity IDs to unit instances/data.
+
+5.  **ECS (`Scripts/ECS`)**
+    * **Components (`Scripts/ECS/Components`)**: Pure data structs (`IComponentData`).
+        * `Movement/`: `TargetPosition`, `MoveSpeed`, `PathFollowData` (current spline segment, progress along segment), `CurrentVelocity` (for kinematic updates).
+        * `UnitProperties/`: `Health`, `TeamId`, `UnitTypeId`.
+    * **Systems (`Scripts/ECS/Systems`)**: Logic processing entities with specific components.
+        * `Movement/UnitMovementSystem.cs`: This is core for your specified kinematic movement.
+            * It queries for entities with movement components (`PathFollowData`, `MoveSpeed`, `Transform` - via `LocalTransform` if using Unity Physics package transforms).
+            * In its `OnUpdate`, it iterates through these entities.
+            * For each entity, it reads the `PathFollowData` to determine the current spline segment and progress.
+            * It calculates the target position and orientation on the spline for the *next* frame based on `MoveSpeed` and `Time.deltaTime`.
+            * It updates the entity's `LocalTransform` (position and rotation) kinematically.
+            * It updates the `PathFollowData` (advances progress, switches to next segment if needed).
+            * **Networking Consideration:** This system likely runs *only* on the Server/Host in a Fusion setup. Client units would get their positions synced via Fusion's `NetworkTransform` or a custom ECS state synchronization system.
+        * `Networking/EcsNetworkSyncSystem.cs`: (If needed) A system responsible for reading relevant ECS component data (like position, health) on the server/host and writing it to corresponding `NetworkBehaviour` components (which have `[Networked]` properties) for Fusion to synchronize automatically. Alternatively, Fusion's `NetworkTransform` can sometimes sync the GameObject transform which ECS systems might write to (Hybrid ECS approach). Another approach is sending snapshots of ECS state manually via RPCs or `Networked` properties. This ECS/Networking bridge is crucial.
+    * **Authoring (`Scripts/ECS/Authoring`)**: `MonoBehaviour` scripts placed on your Unit prefabs.
+        * `UnitAuthoring.cs`: Uses the `Baker` API (in modern DOTS) to convert the GameObject prefab into an ECS Entity template. It reads data (potentially linked ScriptableObjects or values set in the inspector) and adds the necessary ECS components (`Health`, `TeamId`, `MoveSpeed`, etc.) to the entity. It would use data loaded via `AssetsManagement` to populate initial values.
+        * `MovementAuthoring.cs`: Adds movement-related components.
+
+6.  **Assets Management (`Scripts/AssetsManagement`)**
+    * `UnitDataLoader.cs`: Contains logic to:
+        * Find and read your text-based unit property files (e.g., JSON, CSV, custom format).
+        * Parse the text data into instances of your `UnitData` class/struct.
+        * Store these definitions, likely in a dictionary keyed by a unit ID or name, for easy lookup during spawning or authoring.
+    * `AssetLoader.cs`: Handles asynchronous loading of assets specified by paths (e.g., in `UnitData`).
+        * For 3D models and textures, it might use `Addressables` (recommended for flexibility) or `Resources.LoadAsync` (simpler but less flexible) or direct `AssetBundle` loading.
+        * It provides the loaded assets (e.g., `Mesh`, `Material`, `Texture2D`) to the code that needs them (e.g., the spawning logic or authoring component).
+
+**III. Workflow Example: Spawning a Unit**
+
+1.  **Data Loading:** At game start, `UnitDataLoader` loads all unit stats from text files into memory (e.g., a `Dictionary<string, UnitData>`). `AssetLoader` might pre-cache common assets or prepare `Addressables`.
+2.  **Spawn Request:** Player clicks UI button -> UI script calls `NetworkManager.RequestSpawnUnit("Grunt")`.
+3.  **Network Spawn (Host/Server):** `NetworkManager` receives the request (if client, via an RPC). On the Host/Server:
+    * Looks up the "Grunt" prefab.
+    * Calls `Runner.Spawn(gruntPrefab, position, rotation)`. This instantiates the prefab across the network. The prefab has a `NetworkObject` and necessary `Authoring` scripts.
+4.  **Entity Creation (Baking):** When the prefab is instantiated, Unity's ECS conversion process kicks in (if using SubScenes) or the Baker runs (if using `ConvertToEntity` component, though baking is preferred).
+5.  **Authoring Populates ECS:** The `UnitAuthoring` script on the prefab runs its `Bake` method.
+    * It might fetch the `UnitData` for "Grunt" from `UnitDataLoader`.
+    * It adds ECS components to the entity: `Health` (from `UnitData.Health`), `MoveSpeed` (from `UnitData.MoveSpeed`), `UnitTypeId`, etc.
+    * It potentially uses `AssetLoader` to get handles/references to the required models/materials if these are also managed via ECS rendering.
+6.  **Movement System Acts:** The `UnitMovementSystem` now sees this new entity with movement components and starts processing its movement along splines when a path is assigned (e.g., by `UnitCommander` setting a `TargetPosition` component, which triggers a pathfinding request, which results in `PathFollowData` being added).
+7.  **Network Sync:** Fusion's `NetworkTransform` (if used) or your custom `EcsNetworkSyncSystem` ensures the entity's position/rotation (and other critical states like Health) calculated on the Host/Server are synchronized to all clients. Clients typically *don't* run the authoritative `UnitMovementSystem` but just receive the state updates.
+
+**IV. Alternatives & Considerations**
+
+* **Networking:**
+    * **Unity Netcode for GameObjects (NGO):** Unity's own solution. Also uses a server-authoritative model. Integration with ECS is also possible but requires bridging.
+    * **Mirror:** A popular community-driven high-level networking library, often used without ECS.
+    * Fusion is generally well-regarded for performance and features like client-side prediction and lag compensation, which are valuable for RTS.
+* **ECS Movement vs. Alternatives:** Kinematic movement along splines in ECS is efficient. Alternatives include:
+    * **NavMesh Agent:** Unity's built-in solution, MonoBehaviour-based. Less direct control over kinematic movement but handles pathfinding well. Can be bridged to ECS.
+    * **Custom MonoBehaviour Movement:** Less performant for large unit counts compared to ECS.
+* **Data Storage:**
+    * **ScriptableObjects:** An alternative to text files. Integrates nicely with the Unity editor, type-safe. Can be harder to modify outside Unity or diff in version control compared to plain text.
+    * **JSON/YAML/CSV:** Good text-based choices. Require robust parsing logic.
+* **Assembly Definitions (.asmdef):** Use assembly definitions extensively within your `Scripts` folder (e.g., one for Core, one for Input, one for ECS.Components, one for ECS.Systems, one for Networking). This drastically improves compile times and enforces dependencies.
+* **Hybrid ECS:** You might find a mix works best. Use ECS for performance-critical parts (movement, maybe combat calculations) but keep higher-level logic, UI interaction, and sometimes even network representation as GameObjects/MonoBehaviours. This often involves systems that read/write data between the ECS world and the MonoBehaviour world.
+
+This structure provides a solid foundation. Remember to refactor and adapt it as your project grows and its specific needs become clearer. Good luck!

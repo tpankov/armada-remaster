@@ -1,0 +1,64 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainMenu.uss?fileID=7433441132597879392&amp;guid=7d1b5ec372e888444a4ce82f68908fcd&amp;type=3#MainMenu" />
+    <engine:VisualElement name="RootContainer" class="root-container">
+        <engine:VisualElement name="MainMenuPanel" class="panel main-menu-panel">
+            <engine:Label text="MAIN MENU" class="title-label" />
+            <engine:Button name="singleplayer-button" text="Single Player" class="menu-button pill-button" />
+            <engine:Button name="multiplayer-button" text="Multiplayer" class="menu-button pill-button" />
+            <engine:Button name="settings-button" text="Settings" class="menu-button pill-button" />
+            <engine:Button name="mapeditor-button" text="Map Editor" class="menu-button pill-button" />
+            <engine:Button name="quit-button" text="Quit" class="menu-button pill-button" />
+        </engine:VisualElement>
+        <engine:VisualElement name="SinglePlayerSetupPanel" class="panel hidden">
+            <engine:Label text="SINGLE PLAYER SETUP" class="title-label" />
+            <engine:DropdownField name="faction-dropdown-sp" label="Faction" class="settings-field" />
+            <engine:TextField name="resources-input-sp" label="Starting Resources" value="1000" class="settings-field" />
+            <engine:DropdownField name="map-dropdown-sp" label="Map" class="settings-field" />
+            <engine:DropdownField name="difficulty-dropdown-sp" label="AI Difficulty" class="settings-field" />
+            <engine:VisualElement class="button-row">
+                <engine:Button name="start-sp-button" text="Start Game" class="action-button pill-button" />
+                <engine:Button name="back-button-sp" text="Back" class="back-button pill-button" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="MultiplayerLobbyPanel" class="panel hidden">
+            <engine:Label text="MULTIPLAYER LOBBY" class="title-label" />
+            <engine:VisualElement class="button-row">
+                <engine:Button name="refresh-rooms-button" text="Refresh List" class="action-button pill-button" />
+                <engine:Button name="create-room-button" text="Create Room" class="action-button pill-button" />
+            </engine:VisualElement>
+            <engine:Label text="Available Rooms:" />
+            <engine:ScrollView name="room-list-scrollview" class="room-list" />
+            <engine:Button name="back-button-mplobby" text="Back" class="back-button pill-button" />
+        </engine:VisualElement>
+        <engine:VisualElement name="MultiplayerRoomConfigPanel" class="panel hidden">
+            <engine:Label text="CREATE MULTIPLAYER ROOM" class="title-label" />
+            <engine:TextField name="room-name-input" label="Room Name" value="My Fusion Game" class="settings-field" />
+            <engine:DropdownField name="faction-dropdown-mp" label="Your Faction" class="settings-field" />
+            <engine:TextField name="resources-input-mp" label="Starting Resources" value="1000" class="settings-field" />
+            <engine:DropdownField name="map-dropdown-mp" label="Map" class="settings-field" />
+            <engine:DropdownField name="max-players-dropdown-mp" label="Max Players" class="settings-field" />
+            <engine:VisualElement class="button-row">
+                <engine:Button name="confirm-create-room-button" text="Create &amp; Start" class="action-button pill-button" />
+                <engine:Button name="back-button-mpconfig" text="Back" class="back-button pill-button" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="SettingsPanel" class="panel hidden">
+            <engine:Label text="SETTINGS" class="title-label" />
+            <engine:DropdownField name="graphics-dropdown" label="Graphics Quality" class="settings-field" />
+            <engine:DropdownField name="resolution-dropdown" label="Resolution" class="settings-field" />
+            <engine:Toggle name="fullscreen-toggle" label="Fullscreen" value="true" class="settings-field" />
+            <engine:Slider name="master-volume-slider" label="Master Volume" low-value="0" high-value="1" value="0.8" class="settings-field" />
+            <engine:Slider name="music-volume-slider" label="Music Volume" low-value="0" high-value="1" value="0.7" class="settings-field" />
+            <engine:Slider name="sfx-volume-slider" label="SFX Volume" low-value="0" high-value="1" value="0.9" class="settings-field" />
+            <engine:VisualElement class="button-row">
+                <engine:Button name="apply-settings-button" text="Apply" class="action-button pill-button" />
+                <engine:Button name="back-button-settings" text="Back" class="back-button pill-button" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="MapEditorPanel" class="panel hidden">
+            <engine:Label text="MAP EDITOR" class="title-label" />
+            <engine:Label text="Loading Map Editor..." />
+            <engine:Button name="back-button-mapeditor" text="Back" class="back-button pill-button" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

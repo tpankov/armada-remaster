@@ -1,0 +1,9 @@
+className = Galaxy Class
+health = 1200
+speed = 100
+acceleration = 1
+turnSpeed = 5
+attackPower = 10
+range = 1000
+modelPath = DynamicAssets\sod\fedbat2.SOD
+legacyLightMaps = null

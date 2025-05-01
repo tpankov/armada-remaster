@@ -1,0 +1,476 @@
+sprite_table
+
+# -------- Sprite Animations --------
+
+# Riker Manouvre Special -- Explosion
+@animation riker2
+draw 3 7.5 step
+@keyframes
+0.0	0
+6.0	1
+7.49	0
+
+# Slow Flare
+@animation slflare
+colour 3 8 linear
+@keyframes
+0.0	(0,0,0)
+4.0	(1,1,1)
+7.99	(0,0,0)
+
+# Thruster Special
+@animation kthrust
+draw 5 8 step
+@keyframes
+0.0	0
+2.5	1
+4.5	0
+5.2	1
+7.0	0
+
+# Temporal Distortion Special -- Cloud
+@animation stime1
+colour 8 10 linear
+@keyframes
+0.0	(0.4,0.4,0.4)
+1.0	(0.8,0.7,0.8)
+2.0	(0.9,0.8,0.85)
+3.0	(1,1,0.85)
+5.0	(0.9,0.9,0.85)
+7.0	(0.7,0.7,0.9)
+8.0	(0.85,0.9,0.8)
+10.0	(0,0,0)
+
+@animation stime2
+colour 8 10 linear
+@keyframes
+0.0	(1,1,1)
+1.0	(0.9,0.8,0.7)
+2.0	(0.8,0.85,0.85)
+3.0	(0.75,0.95,0.85)
+5.0	(0.9,1,0.8)
+6.0	(0.85,0.8,0.95)
+8.0	(1,0.8,0.8)
+10.0	(0,0,0)
+
+# -------- Texture Animations --------
+
+# Custom Keyframes test
+#@reference=512
+#@animation textest
+#offset 5 5 linear
+#@keyframes
+#1	0	0
+#1.1	128	0
+#1.2	256	0
+#2	384	0
+#4	512	0
+
+# row sliding animation
+@animation texrows4
+offset 64 4 step
+@auto=row
+@keyframes
+
+# column sliding animation
+@animation texcols4
+offset 64 3 step
+@auto=column
+@keyframes
+
+# 42 frame special sernaix animation V2 -- texture sliding
+@animation tex24x1ser
+offset 42 2.6 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+# 49 frame texture 'flipbook' animation 
+@animation tex7x7xpl
+offset 49 1.3 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 64 frame texture 'flipbook' animation 
+@animation tex8x8fl
+offset 64 2.6 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 64 frame texture 'flipbook' animation 
+@animation tex8x8_3.5
+offset 64 3.5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 64 frame texture 'flipbook' animation 
+@animation tex8x8x8
+offset 64 8 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+@reference=512
+# Riker Manouvre Special -- Metreon Gas
+@animation riker1
+offset 16 8 step
+@keyframes
+0	170	340
+0.5	340	170
+1	0	170
+1.5	170	0
+2	0	1
+2.5	1	0
+3	0	1
+3.5	0	0
+4	170	0
+4.5	340	0
+5	0	170
+5.5	170	170
+6	340	170
+6.5	0	340
+7	170	340
+7.5	340	340
+
+# Sernaix Void Animation
+@animation texserv
+offset 16 3.5 step
+@keyframes
+00	0	0
+01	341	0
+02	682	341
+03	0	0
+04	682	0
+05	341	341
+06	0	341
+07	341	0
+08	682	682
+09	682	0
+10	0	682
+11	341	682
+12	0	0
+13	682	341
+14	682	0
+15	682	682
+
+# Sernaix Damage Animation
+@animation serd1
+offset 24 3 step
+@keyframes
+0	0	0
+1	1	0
+2	128	0
+3	256	0
+4	384	0
+5	384	128
+6	0	0
+7	1	0
+8	0	0
+9	1	0
+10	0	0
+11	1	0
+12	0	0
+13	1	0
+14	0	256
+15	128	256
+16	256	256
+17	384	256
+18	0	0
+19	1	0
+20	0	0
+21	128	128
+22	0	0
+23	1	0
+
+# Sernaix Damage Animation
+@animation serd2
+offset 24 3.5 step
+@keyframes
+0	0	0
+1	1	0
+2	0	0
+3	1	0
+4	0	0
+5	1	0
+6	0	256
+7	0	384
+8	128	384
+9	256	384
+10	384	384
+11	1	0
+12	0	0
+13	1	0
+14	0	0
+15	256	128
+16	0	0
+17	256	0
+18	0	0
+19	1	0
+20	0	128
+21	128	128
+22	256	128
+23	384	128
+
+# Sernaix Damage Animation
+@animation serd3
+offset 30 4 step
+@keyframes
+0	0	0
+1	1	0
+2	0	0
+3	128	0
+4	128	128
+5	128	256
+6	128	384
+7	384	384
+8	0	0
+9	1	0
+10	0	0
+11	256	256
+12	384	256
+13	1	0
+14	0	0
+15	256	384
+16	0	0
+17	1	0
+18	0	128
+19	128	128
+20	256	128
+21	384	128
+22	0	0
+23	1	0
+24	0	0
+25	256	128
+26	0	0
+27	128	0
+28	256	0
+29	1	0
+
+# -------- Textures  --------
+
+@reference=32
+@tmaterial=additive
+ftpfntn2	FTwfpfn2	0	0	32	32
+
+@reference=128
+bmineo		FTbmineb	0	21	32	32	@anim=cursor4x1
+bminet		FTbmineb	0	52	42	42
+shldhit01	FTxshld2	0	0	32	32	@anim=tex4x4
+
+@reference=256
+#ftsmine1	FTsmineb	64	0	32	32	
+ftsmine2	FTsmineb	64	32	32	32
+ftsflara	FTflarea	0	0	256	256
+ftsflarb	FTflareb	0	0	256	256
+
+@reference=512
+ftspark1	FTwaspr1	0	0	64	64	@anim=tex8x1b2
+ftspark2	FTwaspr1	0	64	64	64	@anim=tex8x1b2
+ftspark3	FTwaspr1	0	128	64	64	@anim=tex8x1b2
+ftspark4	FTwaspr1	0	192	64	64	@anim=tex8x1b2
+ftspark5	FTwaspr1	0	256	64	64	@anim=tex8x1b2
+ftspark6	FTwaspr1	64	0	64	64	@anim=tex8x1b2
+ftriker2	FTwfrkr2	0	0	85	85	@anim=tex6x6_1.5
+fttimes1	FTwfts1		0	0	256	256
+fttimes2	FTwfts1		256	0	256	256
+fttimes3	FTwfts1		0	256	256	256
+fttimes4	FTwfts1		256	256	256	256
+ftkthrt		FTkbase21c	0	0	64	64	@anim=tex8x8x8	
+
+@tmaterial=alpha
+ftriker1	FTwfrkr1	0	0	170	170	@anim=riker1
+#@tmaterial=default
+#team_ftbt1	blendtest1	0	0	512	512
+
+@reference=2048
+@tmaterial=additive
+ftsflarc	FTflared	0	0	256	256	@anim=tex8x8fl
+
+# -------- Sprite Nodes --------
+
+@sprite_node ftwaspr1 ftspark1 const (7,7) (1,1,1) billboard
+@sprite_node ftwaspr2 ftspark6 const (7,7) (1,1,1) billboard
+@sprite_node ftspark2 ftspark2 const (6,6) (1,1,1) billboard
+@sprite_node ftspark3 ftspark3 const (6,6) (1,1,1) billboard
+@sprite_node ftspark4 ftspark4 const (6,6) (1,1,1) billboard
+@sprite_node ftspark5 ftspark5 const (6,6) (1,1,1) billboard
+@sprite_node ftriker1 ftriker1 const (16,16) (1,1,1) billboard
+@sprite_node ftriker2 ftriker2 riker2 (40,40) (1,1,1) billboard
+@sprite_node fttimes1 fttimes1 stime1 (1,1) (1,1,1) billboard
+@sprite_node fttimes2 fttimes2 stime2 (1,1) (1,1,1) billboard
+@sprite_node fttimes3 fttimes3 stime1 (1,1) (1,1,1) billboard
+@sprite_node fttimes4 fttimes4 stime2 (1,1) (1,1,1) billboard
+@sprite_node ftsmine2 ftsmine2 redfade2 (2,2) (1,1,1) billboard
+@sprite_node bmineorigin bmineo const (4,4) (1.0,1.0,1.0) billboard
+@sprite_node bminetarget bminet const (8,8) (1.0,1.0,1.0) billboard
+@sprite_node ftpfntn2 ftpfntn2 fade5 (3,3) (1,1,1) billboard
+@sprite_node ftpfntn3 Sbluestar const (40,40) (1,1,1) billboard
+@sprite_node ftblkhlj ftpfntn2 fadeblue3 (2.0,2.0) (1,1,1) billboard
+@sprite_node ftsflara ftsflara const (40,40) (1,1,1) billboard
+@sprite_node ftsflarb ftsflarb slflare (40,40) (1,1,1) billboard
+@sprite_node ftsflarc ftsflarc const (100,100) (1,1,1) billboard
+@sprite_node ftkthrt ftkthrt kthrust (4.5,3.5) (1,1,1)
+@sprite_node ftkthrs softdot kredfast.3 (2.0,2.0) (1,0,0) billboard
+@sprite_node shldhit shldhit01 const (30,30) (1,1,1)
+
+# -------- Emitters --------
+
+# Antimatter Spread 
+# -----------------
+@emitter ftwsprk1
+type=spray
+pixel=(1,1,1)
+sprite=ftspark2
+expansion_rate=1.05
+firing_period=0.4
+lifespan=1.19
+velocity=30.0
+spread_angle=355
+@end_emitter
+
+@emitter ftwsprk2
+type=spray
+pixel=(1,1,1)
+sprite=ftspark3
+expansion_rate=1.05
+firing_period=0.45
+lifespan=1.19
+velocity=30.0
+spread_angle=355
+@end_emitter
+
+@emitter ftwsprk3
+type=spray
+pixel=(1,1,1)
+sprite=ftspark4
+expansion_rate=1.05
+firing_period=0.5
+lifespan=1.19
+velocity=30.0
+spread_angle=355
+@end_emitter
+
+@emitter ftwsprk4
+type=spray
+pixel=(1,1,1)
+sprite=ftspark5
+expansion_rate=1.05
+firing_period=0.55
+lifespan=1.19
+velocity=30.0
+spread_angle=355
+@end_emitter
+
+# Riker Manoeuvre Clouds
+# ----------------------
+#@emitter ftwrkr1
+#type=cloud
+#pixel=(1,1,1)
+#sprite=ftriker1
+#expansion_rate=-0.02
+#lifespan=7.99
+#velocity=0.004
+#particle_count=2
+#cloud_radius=30
+#@end_emitter
+
+# Temporal Distortion Clouds
+# ----------------------
+@emitter ftwtemp1
+type=spray
+pixel=(0.6,0.6,0.6)
+sprite=fttimes1
+expansion_rate=2.8
+firing_period=5
+lifespan=9.99
+velocity=3
+spread_angle=60
+@end_emitter
+
+@emitter ftwtemp2
+type=spray
+pixel=(0.6,0.6,0.6)
+sprite=fttimes2
+expansion_rate=2.8
+firing_period=3.5
+lifespan=9.99
+velocity=3
+spread_angle=60
+@end_emitter
+
+@emitter ftwtemp3
+type=spray
+pixel=(0.6,0.6,0.6)
+sprite=fttimes3
+expansion_rate=2.8
+firing_period=3
+lifespan=9.99
+velocity=3
+spread_angle=60
+@end_emitter
+
+@emitter ftwtemp4
+type=spray
+pixel=(0.6,0.6,0.6)
+sprite=fttimes4
+expansion_rate=2.8
+firing_period=6
+lifespan=9.99
+velocity=3
+spread_angle=60
+@end_emitter
+
+# Sernaix Harvester beam
+# ----------------------
+@emitter ftsmineb2
+type=cloud
+pixel=(1,1,1)
+sprite=ftsmine2
+expansion_rate=-0.15
+velocity=0.25
+lifespan=1.99
+particle_count=8
+cloud_radius=50
+@end_emitter
+
+# Particle Fountain
+# ----------------------
+@emitter ftpfntn
+type=spray
+pixel=(1.0,1.0,1.0)
+sprite=ftpfntn2
+expansion_rate=0.0
+firing_period=0.1
+lifespan=4.99
+velocity=30
+spread_angle=15.0
+@end_emitter
+
+# Black Hole Jet
+# ----------------------
+@emitter ftblkhl
+type=spray
+pixel=(1.0,1.0,1.0)
+sprite=ftblkhlj
+expansion_rate=-0.05
+firing_period=0.05
+lifespan=1.99
+velocity=40
+spread_angle=5.0
+@end_emitter
+
+# Thruster Jet
+# -----------------------
+@emitter ftkthre
+type=spray
+pixel=(1,1,1)
+sprite=ftkthrs
+expansion_rate=-1.15
+firing_period=0.005
+lifespan=0.295
+velocity=0
+spread_angle=2.0
+@end_emitter

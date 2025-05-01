@@ -1,0 +1,197 @@
+/* Main Container Styling */
+.root-container {
+    /* Make it fill the screen */
+    width: 100%;
+    height: 100%;
+    /* Keep flex properties for centering content */
+    display: flex; /* Ensures flex context for children */
+    flex-direction: column; /* Stack panels vertically if needed, though likely only one shown */
+    justify-content: center; /* Center panel vertically */
+    align-items: center; /* Center panel horizontally */
+    padding: 20px; /* Keep padding, maybe use % or vw/vh later if needed */
+
+    /* Star Trek inspired background... */
+    background-color: rgb(10, 10, 25);
+}
+
+/* Panel Styling (Common for all screens) */
+.panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* --- Responsiveness Changes --- */
+    /* Use percentage width relative to root-container */
+    width: 90%;
+    /* Prevent panel from becoming excessively wide on ultrawide monitors */
+    max-width: 700px; /* Adjust as needed */
+    /* Prevent panel from becoming too narrow */
+    min-width: 300px; /* Adjust as needed */
+    /* Height can often be determined by content, but set max if needed */
+    max-height: 95%; /* Max 95% of viewport height to prevent overflow */
+    /* Let content determine height, but allow scrolling if it overflows */
+    /* overflow: auto; /* Adds scrollbars ONLY if content exceeds bounds */
+
+    padding: 20px; /* Keep padding */
+    /* Optional subtle background... */
+}
+
+/* Class to hide panels initially or when switching */
+.hidden {
+    display: none;
+}
+
+/* Title Labels */
+.title-label {
+    /* --- Responsiveness Changes --- */
+    /* Use viewport width unit for font size, clamped for readability */
+    font-size: 30px; /* min, preferred (4% viewport width), max */
+    /* Example using vmin (smaller of width/height) */
+
+    color: rgb(255, 180, 0);
+    margin-bottom: 20px; /* Maybe use % or vh? e.g., margin-bottom: 3vh; */
+    -unity-font-style: bold;
+    -unity-font-definition: url("\\Assets\\Resources\\Fonts\\FinalFrontierOldStyle-8Pg.ttf");
+    -unity-text-align: middle-center; /* Ensure title is centered */
+    width: 100%; /* Make label take full width for centering */
+}
+
+/* General Button Styling */
+.menu-button, .action-button, .back-button, .join-button {
+    /* --- Responsiveness Changes --- */
+    /* Use percentage width relative to the panel */
+    width: 85%;
+    /* Prevent buttons becoming too wide */
+    max-width: 400px;
+    /* Prevent buttons becoming too small to tap/click */
+    min-width: 150px;
+    /* Height can stay fixed or use relative units like em/rem if font scales */
+    height: 45px; /* Or maybe height: 2.5em; if font scales */
+    /* Use clamp for font size */
+    font-size: 20px;
+    /*font*/
+    -unity-font-definition: url("\\Assets\\Resources\\Fonts\\FinalFrontierOldStyle-8Pg.ttf");
+
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background-color: rgb(0, 80, 160);
+    color: rgb(255, 180, 0);
+    border-width: 0;
+    transition: background-color 0.15s ease-out, scale 0.1s ease-out;
+    -unity-text-align: middle-center;
+}
+
+/* Pill Shape Styling */
+.pill-button {
+    /* Keep this relative to height if height is dynamic, otherwise fixed */
+    border-radius: 22px; /* Adjust if height changes */
+}
+
+/* Button Hover/Active States (No changes needed for responsiveness) */
+.menu-button:hover, .action-button:hover, .back-button:hover, .join-button:hover {
+    background-color: rgb(0, 120, 220);
+    scale: 1.03 1.03;
+}
+.menu-button:active, .action-button:active, .back-button:active, .join-button:active {
+    background-color: rgb(0, 60, 120);
+    scale: 0.98 0.98;
+}
+
+/* Styling for Settings Fields */
+.settings-field {
+    /* --- Responsiveness Changes --- */
+    /* Use percentage width relative to panel */
+    width: 90%;
+     /* Set max-width like buttons */
+    max-width: 500px;
+    /* Use clamp for font size */
+font-size: 18px;
+
+    margin-bottom: 10px;
+    color: white;
+    /* Make label and input field stack vertically on narrow screens if needed */
+    /* By default Label/Input are row. Could change flex-direction via C# or media queries if available */
+}
+
+/* Style the input part of TextFields, Dropdowns etc. */
+.settings-field .unity-base-field__input {
+     /* Input fields might need flex-grow if inside another flex container */
+     /* flex-grow: 1; */
+     background-color: rgb(30, 30, 50);
+     color: rgb(200, 200, 255);
+     border-width: 1px;
+     border-color: rgb(80, 80, 120);
+     border-radius: 5px;
+     min-height: 25px; /* Ensure decent height */
+}
+/* Ensure Sliders take up available width */
+.settings-field Slider {
+    width: 100%; /* Make slider element take full width */
+}
+/* ... other slider styles ... */
+
+
+/* Button Row Helper */
+.button-row {
+    display: flex;
+    flex-direction: row;
+    /* Allow wrapping on narrow screens */
+    flex-wrap: wrap; /* Change from nowrap (default) */
+    justify-content: space-around;
+    align-items: center; /* Align items vertically if they wrap */
+    width: 100%; /* Take full width of panel */
+    margin-top: 15px;
+}
+.button-row > Button {
+     /* --- Responsiveness Changes --- */
+     /* Allow buttons to grow and shrink, but set a base size */
+     flex-grow: 1; /* Allow growing */
+     flex-shrink: 1; /* Allow shrinking */
+     flex-basis: 45%; /* Try to be about 45% wide */
+     /* Set min/max directly on button or rely on general button styles */
+     min-width: 120px; /* Override general button min-width if needed for rows */
+     margin: 5px; /* Add margin for spacing when wrapped */
+}
+
+/* Multiplayer Room List */
+.room-list {
+    width: 100%; /* Take full panel width */
+    /* Use min/max height relative to viewport or panel */
+    min-height: 150px;
+    max-height: 40%; /* Max 40% of viewport height */
+    flex-grow: 1; /* Allow scroll view to grow if panel has extra vertical space */
+
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Styling for dynamically created room entries */
+.room-entry {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(100, 100, 150, 0.5);
+    /* Allow wrapping if really narrow? Optional */
+    /* flex-wrap: wrap; */
+}
+.room-entry Label {
+     font-size: 20px; /* Scale label font */
+     color: rgb(200, 200, 255);
+     /* Allow label to shrink if needed */
+     flex-shrink: 1;
+     margin-right: 10px; /* Space between label and button */
+}
+.room-entry Button {
+     /* Join Button Styling */
+     width: auto; /* Let button size to content */
+     padding: 5px 15px; /* Adjust padding instead of fixed width */
+     height: 30px;
+     font-size: 18px;
+     margin: 0;
+     /* Prevent button from shrinking too much */
+     flex-shrink: 0;
+}
