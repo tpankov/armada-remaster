@@ -1,0 +1,84 @@
+A common and effective approach focuses on building the **core gameplay loop** iteratively and getting the riskiest or most fundamental systems working early.
+
+**Recommended Implementation Sequence (Iterative Approach):**
+
+Think in layers, starting with the absolute basics and ensuring each layer works (especially with networking) before adding the next level of complexity.
+
+1.  **Phase 1: Project Setup & Basic Input/Camera**
+    * **Goal:** Get a controllable view into an empty world.
+    * **Tasks:**
+        * Create the Unity project.
+        * Install necessary packages: Entities (ECS), Netcode (Fusion), Input System.
+        * Set up version control (Git is highly recommended).
+        * Configure the **New Unity Input System**: Define basic actions (camera movement, potentially a placeholder "select" and "command" action).
+        * Implement the **Basic Camera Controller**: Get your RTS camera panning, zooming, and rotating using the Input System.
+    * **Why:** This validates your input setup immediately and gives you a way to interact with the world, which is essential for testing everything else.
+
+2.  **Phase 2: Basic Networking & Spawning**
+    * **Goal:** Get two instances of the game connected and see a networked object appear in both.
+    * **Tasks:**
+        * Set up basic **Photon Fusion**: Implement a simple `NetworkManager` to handle starting a host and connecting a client.
+        * Create a **very simple placeholder prefab** (e.g., a Cube) with a `NetworkObject` component.
+        * Implement basic **Networked Spawning**: Use `Runner.Spawn()` in your `NetworkManager` (triggered perhaps by a temporary button or key press) to spawn the placeholder prefab.
+    * **Why:** Networking is complex. Getting the fundamental connection and object instantiation working across the network early is crucial. It confirms your Fusion setup is viable before you build complex systems on top of it.
+
+3.  **Phase 3: Core ECS Movement (Local First, then Networked)**
+    * **Goal:** Get a single unit moving based on commands, using ECS, first locally, then synchronized over the network.
+    * **Tasks:**
+        * Define **Basic ECS Movement Components** (`MoveSpeed`, `TargetPosition`).
+        * Create an **Authoring Component** for your placeholder prefab to add these ECS components during baking/conversion.
+        * Implement the **Core `UnitMovementSystem` (ECS)**: Start with simple "move towards TargetPosition" logic kinematically. (Spline logic comes later).
+        * **Local Test:** Create a temporary script or use the Input System actions (from Phase 1) to set the `TargetPosition` component on the entity and verify it moves *locally* (in a single instance without networking).
+        * **Networking Integration:**
+            * Decide how movement state is networked (e.g., `NetworkTransform` syncing the GameObject driven by ECS, or a custom system syncing ECS data directly to `[Networked]` properties). Implement the chosen method on the placeholder prefab.
+            * Implement sending a "Move Command" (containing the target position) from the client to the host/server using a Fusion **RPC**.
+            * Ensure the host/server receives the RPC, updates the appropriate entity's `TargetPosition` component.
+            * Ensure the `UnitMovementSystem` runs authoritatively on the host/server.
+            * Verify that the movement is correctly synchronized visually on the client(s).
+    * **Why:** This tackles one of your core technical requirements (ECS movement) and integrates it with networking early. Getting a networked cube moving via ECS commands is a major milestone.
+
+4.  **Phase 4: Asset/Data Loading & Unit Definition**
+    * **Goal:** Load unit properties from external files and use them to define unit characteristics.
+    * **Tasks:**
+        * Define your text-based format (e.g., JSON, CSV) for unit properties (Health, Name, Speed, Model Path, etc.).
+        * Implement the `UnitDataLoader` to parse these files and store the data (e.g., in a dictionary).
+        * Implement basic `AssetLoader` functionality (using Addressables or Resources) to load assets based on paths defined in your data files.
+        * Modify the **Unit Prefab Authoring**: Instead of hardcoding values, have the authoring component fetch the correct `UnitData` (based on unit type) from `UnitDataLoader` and apply those stats (Health, Speed etc.) to the ECS components during baking.
+        * Modify **Spawning**: When spawning, choose which unit type to spawn, ensuring the correct data and potentially model are used.
+    * **Why:** Connects your external data pipeline to the actual units in the game. Now your units can have diverse stats defined outside the editor.
+
+5.  **Phase 5: Refined Movement (Splines) & Selection**
+    * **Goal:** Implement spline-following movement and basic unit selection.
+    * **Tasks:**
+        * Implement spline generation/definition (e.g., integrate a pathfinding library that outputs splines, or define paths manually for testing).
+        * Update `UnitMovementSystem` and ECS components to handle path following (tracking segment, progress along segment).
+        * Implement `UnitSelector` logic using the Input System (raycasting on click, drag for box selection). Highlight selected units.
+        * Update the "Command" logic: When a move command is issued for selected units, generate/assign a spline path and update the relevant ECS components to initiate spline following.
+    * **Why:** Builds upon the core movement system to implement your specific kinematic spline approach and adds essential RTS interaction (selection).
+
+6.  **Phase 6: Core Gameplay Systems (Combat, Resources, etc.)**
+    * **Goal:** Add other fundamental RTS mechanics.
+    * **Tasks:**
+        * Implement **Combat**: Define combat components (Target, Range, Damage, Cooldown), create combat systems (Targeting, Attacking, Damage Application), network actions and health changes.
+        * Implement **UI Basics**: Unit info panels, resource displays.
+        * Implement other core features as needed (resource gathering, buildings).
+    * **Why:** Flesh out the core gameplay beyond just movement.
+
+7.  **Phase 7: Game Flow & Polish**
+    * **Goal:** Create the overall game structure and polish the experience.
+    * **Tasks:**
+        * Implement the **`GameManager`**: Now is a good time to formalize game states (MainMenu, Playing, Paused, GameOver), win/loss conditions, and coordination between managers.
+        * Add AI opponents.
+        * Refine UI/UX, add visual effects, sound effects.
+        * Optimization pass.
+    * **Why:** Ties everything together into a cohesive game experience.
+
+**Key Takeaways:**
+
+* **Iterate:** Build small, test often, especially with networking involved.
+* **Focus on Core Loop:** Get units spawning, moving via player commands, and synchronized online as early as possible.
+* **Tackle Risks Early:** Networking and ECS integration are key technical choices; validate them sooner rather than later.
+* **Input is Foundational:** You need input to test almost everything else.
+* **`GameManager` Comes Later:** It manages the systems you build; build the systems first.
+
+This sequence provides a structured way to build complexity while ensuring the foundation is solid at each step. Remember to be flexible and adjust based on the challenges you encounter!

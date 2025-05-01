@@ -47,6 +47,7 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+*.vscode
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -72,3 +73,17 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# My random stuff
+/TempScripts
+/Assets/SceneTemplateAssets*
+Assets/SceneTemplateAssets.meta
+
+# Extra packages / dependencies
+/Assets/Photon/
+/Assets/TextMesh Pro/
+/Assets/UI Toolkit/
+/Assets/Spacial/
+/Assets/TextMeshPro/
+/Downloads/
+/Packages/

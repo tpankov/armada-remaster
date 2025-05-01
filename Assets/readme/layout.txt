@@ -1,0 +1,97 @@
+Assets/
+├── Scripts/
+│   ├── Core/             # Essential managers, game state, core systems
+│   │   ├── GameManager.cs
+│   │   ├── SceneLoader.cs
+│   │   ├── ServiceLocator.cs  # Optional: For dependency management
+│   │   └── ...
+│   │
+│   ├── Input/              # Handling player input
+│   │   ├── InputActions.inputactions # Generated Input Actions asset
+│   │   ├── InputManager.cs         # Reads input, triggers events/commands
+│   │   ├── CameraController.cs     # Handles RTS camera controls
+│   │   └── ...
+│   │
+│   ├── Networking/         # Network-specific logic, setup, Fusion integration
+│   │   ├── NetworkManager.cs     # Handles Fusion connection, spawning, callbacks
+│   │   ├── NetworkCallbacksHandler.cs # Processes specific Fusion callbacks
+│   │   ├── NetworkedPlayer.cs    # Represents a player connection/data
+│   │   └── ...
+│   │
+│   ├── Units/              # Unit logic, selection, commands (non-ECS parts)
+│   │   ├── UnitSelector.cs
+│   │   ├── UnitCommander.cs      # Translates player commands to unit actions
+│   │   ├── UnitData.cs           # Class/Struct definition for unit properties
+│   │   ├── UnitRegistry.cs       # Keeps track of spawned units (maybe)
+│   │   └── Components/         # MonoBehaviour components for high-level unit logic
+│   │       ├── UnitHealthMB.cs   # Example: MonoBehaviour interacting with ECS health
+│   │       ├── UnitVisionMB.cs
+│   │       └── ...
+│   │
+│   ├── ECS/                # All ECS-related code
+│   │   ├── Components/         # ECS ComponentData structs
+│   │   │   ├── Movement/
+│   │   │   │   ├── TargetPosition.cs
+│   │   │   │   ├── MoveSpeed.cs
+│   │   │   │   ├── PathFollowData.cs  # Includes spline info, progress
+│   │   │   │   └── ...
+│   │   │   ├── Combat/
+│   │   │   │   ├── AttackTarget.cs
+│   │   │   │   ├── AttackRange.cs
+│   │   │   │   └── ...
+│   │   │   └── UnitProperties/
+│   │   │       ├── Health.cs
+│   │   │       ├── TeamId.cs
+│   │   │       └── ...
+│   │   │
+│   │   ├── Systems/            # ECS Systems (logic processing components)
+│   │   │   ├── Movement/
+│   │   │   │   ├── UnitMovementSystem.cs # Core kinematic movement along splines
+│   │   │   │   ├── PathfindingRequestSystem.cs # If pathfinding generates splines
+│   │   │   │   └── ...
+│   │   │   ├── Combat/
+│   │   │   │   ├── TargetingSystem.cs
+│   │   │   │   ├── DamageSystem.cs
+│   │   │   │   └── ...
+│   │   │   └── Networking/         # Systems to sync ECS state over network
+│   │   │       ├── EcsNetworkSyncSystem.cs # Example name
+│   │   │       └── ...
+│   │   │
+│   │   └── Authoring/          # MonoBehaviour scripts to convert GameObjects to Entities
+│   │       ├── UnitAuthoring.cs
+│   │       ├── MovementAuthoring.cs
+│   │       └── ...
+│   │
+│   ├── AI/                 # Artificial intelligence for opponents/units
+│   │   ├── AIController.cs
+│   │   ├── DecisionMaking/
+│   │   └── Steering/           # (If not fully handled by ECS movement)
+│   │
+│   ├── UI/                 # User Interface logic
+│   │   ├── UIManager.cs
+│   │   ├── UnitInfoPanel.cs
+│   │   ├── ResourceDisplay.cs
+│   │   ├── MiniMapController.cs
+│   │   └── ...
+│   │
+│   ├── AssetsManagement/   # Loading and managing external assets/data
+│   │   ├── AssetLoader.cs        # Core loading functions (models, textures)
+│   │   ├── UnitDataLoader.cs     # Loads and parses unit stats (from text/JSON/etc.)
+│   │   ├── AssetCache.cs         # Optional: Caching loaded assets
+│   │   └── ...
+│   │
+│   ├── Utilities/          # Common helper functions, extensions
+│   │   └── ...
+│   │
+│   └── ScriptableObjects/  # Definitions stored as Unity assets (alternative to text files)
+│       ├── UnitDefinitions/
+│       └── WeaponDefinitions/
+│
+├── Prefabs/
+│   ├── Units/
+│   └── FX/
+│
+├── Settings/             # Input Actions, Physics, etc.
+│   └── InputActions.inputactions # Reference, actual asset likely in Scripts/Input
+│
+└── ... (Other folders like Materials, Scenes, Textures, Models)
