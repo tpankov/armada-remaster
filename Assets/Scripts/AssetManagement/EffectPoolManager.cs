@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using CustomSpriteFormat;
-using Unity.Mathematics; // Assuming SpriteData.cs is in this namespace
+//using Unity.Mathematics;
+//using NUnit.Framework; // Assuming SpriteData.cs is in this namespace
 
 public class EffectPoolManager : MonoBehaviour
 {
@@ -16,12 +17,18 @@ public class EffectPoolManager : MonoBehaviour
     public List<PoolInfo> poolsToInitialize;
 
     // The master dictionary storing all pools. Key is effectId.
-    private Dictionary<string, Queue<GameObject>> _pools = new Dictionary<string, Queue<GameObject>>();
+    private Dictionary<string, Queue<GameObject>> _pools = new Dictionary<string, Queue<GameObject>>(); // Store pooled GameObjects
+    private Dictionary<string, EffectAnimationDataArrayBased> _animationData = new Dictionary<string, EffectAnimationDataArrayBased>(); // Store animation data for each effectId
+    
     // Optional: Store parent transforms for organization
     private Dictionary<string, Transform> _poolParents = new Dictionary<string, Transform>();
 
     // Singleton pattern for easy access (optional but common)
     public static EffectPoolManager Instance { get; private set; }
+
+    //private Dictionary<string, Material> _materialCache = new Dictionary<string, Material>();
+    //private Shader _flipbookShader; // Assign the array shader in Inspector or load via Resources
+
 
     void Awake()
     {
@@ -32,14 +39,17 @@ public class EffectPoolManager : MonoBehaviour
         else
         {
             Instance = this;
+            //_flipbookShader = Shader.Find("Custom/HDRP/FlipbookAnimatorArray"); // Find the shader
             InitializePools();
+
         }
     }
 
-    void InitializePools()
+    void InitializePools(int addPool = 0, string effectId = null)
     {
         foreach (PoolInfo poolInfo in poolsToInitialize)
         {
+            if (effectId != null && poolInfo.effectId != effectId) continue; // Filter by effectId if specified
             if (poolInfo.prefab == null || string.IsNullOrEmpty(poolInfo.effectId))
             {
                 Debug.LogError($"PoolInfo for '{poolInfo.effectId}' is invalid (missing prefab or ID). Skipping.");
@@ -52,7 +62,9 @@ public class EffectPoolManager : MonoBehaviour
             _poolParents[poolInfo.effectId] = parentGO.transform;
 
             Queue<GameObject> objectPool = new Queue<GameObject>();
-            for (int i = 0; i < poolInfo.initialSize; i++)
+            if (addPool == 0)
+                addPool = poolInfo.initialSize; // Default to initial size if not specified
+            for (int i = 0; i < addPool; i++)
             {
                 GameObject obj = Instantiate(poolInfo.prefab, parentGO.transform);
                 obj.SetActive(false); // Start inactive
@@ -71,55 +83,91 @@ public class EffectPoolManager : MonoBehaviour
     /// <param name="rotation">World rotation to spawn with.</param>
     /// <param name="animationData">The pre-processed animation data for configuration.</param>
     /// <returns>The activated GameObject, or null if pool doesn't exist or is empty.</returns>
-    public GameObject SpawnEffect(string effectId, Vector3 position, Quaternion rotation, EffectAnimationData animationData)
+    public GameObject SpawnEffect(string effectId, Vector3 position, Quaternion rotation)//, EffectAnimationData animationData)
+    {
+        // 1. Get Definition: Lookup your SpriteNodeDefinition / AnimationDefinitions based on effectLookupId
+    // Example: SpriteNodeDefinition nodeDef = LookupNodeDefinition(effectLookupId);
+    // Example: AnimationDefinition[] animDefs = LookupAnimationDefinitions(nodeDef.AnimationName); // Find all relevant anims
+    // Example: SpriteDefinition spriteDef = LookupSpriteDefinition(nodeDef.BaseSpriteName);
+    EffectAnimationDataArrayBased controllerData; // Placeholder for animation data
+    if (_animationData.ContainsKey(effectId))
+    {
+        // Use cached animation data if available
+        controllerData = _animationData[effectId];
+        Debug.Log($"Using cached animation data for effectId: {effectId}");
+    }
+    else
+    {
+        // If not cached, create and cache it
+        SpriteNodeDefinition snd = SpriteAssetManager.Instance.GetSpriteNodeDefinition(effectId);
+        controllerData = EffectAnimationDataArrayBased.CreateFromSpriteNode(snd);
+        //EffectAnimationDataArrayBased controllerData = CreateEffectAnimationData(effectId);
+        //if (controllerData != null)
+        _animationData[effectId] = controllerData;
+    }
+
+    // Debug print the animation data for verification
+    Debug.Log($"EffectAnimationData for {effectId}: {controllerData.autoRowFPS}, {controllerData.autoRowTotalFrames}, {controllerData.drawFrameVisibilities}, {controllerData.offsetFrameData.Count}, {controllerData.useAutoRow}");
+    // --- TODO: Replace Placeholders with your actual data lookup ---
+    //SpriteNodeDefinition nodeDef = new SpriteNodeDefinition(); // Placeholder
+    //SpriteDefinition spriteDef = new SpriteDefinition(); // Placeholder
+    //List<AnimationDefinition> animDefs = new List<AnimationDefinition>(); // Placeholder
+    //Texture2D effectTexture = null; // Placeholder: Load texture based on spriteDef.sourceTextureName
+    // --- End Placeholder ---
+
+
+    //if (effectTexture == null) { Debug.LogError("Texture not found!"); return null; }
+
+    // 2. Get Material: Use caching function
+    //Material instanceMaterial = GetOrCreateMaterial(effectTexture, spriteDef.materialType);
+
+    // 3. Get Pooled Object: Get a raw Quad from pool
+    GameObject objToSpawn = GetFromRawPool("sprite"); // Implement pooling for raw quads
+    //GameObject objToSpawn = Instantiate(quadPrefab); // Simple instantiate for now
+    objToSpawn.transform.position = position;
+    objToSpawn.transform.rotation = rotation;
+
+    // 4. Assign Material
+    //Renderer rend = objToSpawn.GetComponent<Renderer>();
+    //if (rend == null) { Debug.LogError("Quad prefab missing Renderer!"); Destroy(objToSpawn); return null; }
+    //rend.material = instanceMaterial; // Assign the shared/cached material
+
+    // 5. Prepare Animation Data for Controller
+    //EffectAnimationDataArrayBased controllerData = ConvertDefinitionsToControllerData(nodeDef, spriteDef, animDefs);
+
+    // 6. Configure Controller
+    AdvancedFlipbookControllerArrays controller = objToSpawn.GetComponent<AdvancedFlipbookControllerArrays>();
+    if (controller == null) controller = objToSpawn.AddComponent<AdvancedFlipbookControllerArrays>(); // Add if missing
+    controller.Configure(controllerData);
+
+    objToSpawn.SetActive(true);
+    return objToSpawn;
+}
+
+    /// <summary>
+    /// Gets a GameObject from the pool. If the pool is empty, it creates a new instance.   
+    /// /// </summary>
+    /// <param name="effectId">The ID of the pool to get from.</param>  
+    /// <returns>The GameObject instance from the pool.</returns>
+    private GameObject GetFromRawPool(string effectId)
     {
         if (!_pools.ContainsKey(effectId))
         {
-            Debug.LogWarning($"Pool for effect ID '{effectId}' does not exist.");
+            Debug.LogWarning($"Pool '{effectId}' does not exist. Returning null.");
             return null;
         }
 
         Queue<GameObject> pool = _pools[effectId];
-        GameObject objToSpawn = null;
-
         if (pool.Count > 0)
         {
-            objToSpawn = pool.Dequeue();
+            return pool.Dequeue();
         }
         else
         {
-            // Optional: Instantiate a new one if pool is empty (can cause spikes)
-            Debug.LogWarning($"Pool '{effectId}' empty. Instantiating new object.");
-            Transform parent = _poolParents.ContainsKey(effectId) ? _poolParents[effectId] : this.transform;
-            // Find the original prefab to instantiate
-             PoolInfo info = poolsToInitialize.Find(p => p.effectId == effectId);
-             if (info?.prefab != null) {
-                 objToSpawn = Instantiate(info.prefab, parent);
-             } else {
-                  Debug.LogError($"Cannot instantiate for empty pool '{effectId}', prefab info not found.");
-                  return null; // Cannot instantiate
-             }
-
+            // Optional: Expand the pool if needed
+            InitializePools(5, effectId); // Add more objects to the pool
+            return pool.Dequeue();
         }
-
-        // Configure the spawned object
-        objToSpawn.transform.position = position;
-        objToSpawn.transform.rotation = rotation;
-        objToSpawn.SetActive(true);
-
-        // Get the controller script and configure it
-        AdvancedFlipbookController controller = objToSpawn.GetComponent<AdvancedFlipbookController>();
-        if (controller != null)
-        {
-            controller.Configure(animationData); // Call a configuration method (see step 3)
-            // Optionally, trigger something on the controller: controller.OnSpawn();
-        }
-        else
-        {
-            Debug.LogError($"Prefab for pool '{effectId}' is missing AdvancedFlipbookController component!", objToSpawn);
-        }
-
-        return objToSpawn;
     }
 
     /// <summary>
@@ -139,7 +187,7 @@ public class EffectPoolManager : MonoBehaviour
         }
 
          // Optional: Call a reset method on the controller
-         AdvancedFlipbookController controller = objToReturn.GetComponent<AdvancedFlipbookController>();
+         AdvancedFlipbookControllerArrays controller = objToReturn.GetComponent<AdvancedFlipbookControllerArrays>();
          controller?.OnReturnToPool(); // See step 3
 
         objToReturn.SetActive(false);
@@ -150,224 +198,66 @@ public class EffectPoolManager : MonoBehaviour
 
         _pools[effectId].Enqueue(objToReturn);
     }
-}
 
+    // Function to get or create a material based on texture and blend mode
+    // Material GetOrCreateMaterial(Texture2D texture, CustomSpriteFormat.MaterialType materialType)
+    // {
+    //     string cacheKey = $"{texture.name}_{materialType}"; // Unique key per combo
 
-/// <summary>
-/// Helper struct to hold processed data ready for AdvancedFlipbookController.
-/// You would create instances of this from your SpriteData definitions.
-/// </summary>
-public struct EffectAnimationData
-{
-    // Material properties (can be set via MPB if not texture)
-    public float framesPerSecond;
-    public Color tint; // Base tint (can be overridden by tint track)
-    public float alpha; // Global alpha
-    public bool useEmissive;
-    public Color emissiveColor;
-    public float emissiveIntensity;
-    public Texture2D texture; // Main texture (if not using sprite sheet)
+    //     if (_materialCache.TryGetValue(cacheKey, out Material cachedMat))
+    //     {
+    //         return cachedMat;
+    //     }
 
-    // Fallback settings (if keyframes are empty)
-    public AdvancedFlipbookController.FlipbookType autoType;
-    public int autoTotalFrames;
-    public int autoFramesPerRow;
-    public Color autoTint;
-    public bool autoVisible;
+    //     // Create new material
+    //     Material newMat = new Material(_flipbookShader);
+    //     newMat.name = cacheKey; // Helpful for debugging
+    //     newMat.SetTexture("_BaseMap", texture);
 
-    // Interpolation modes
-    public AdvancedFlipbookController.OffsetInterpolation offsetInterpolation;
-    public AdvancedFlipbookController.TintInterpolation tintInterpolation;
+    //     // Configure blend mode based on type
+    //     ConfigureMaterialBlendMode(newMat, materialType);
 
-    // Processed Keyframe Data
-    public List<AdvancedFlipbookController.OffsetKeyframe> offsetKeyframes;
-    public List<AdvancedFlipbookController.TintKeyframe> tintKeyframes;
-    public List<AdvancedFlipbookController.DrawKeyframe> drawKeyframes;
-
-    // Optional: Lifetime for auto-return
-    public float lifetime; // If <= 0, doesn't auto-return
-
-    public static EffectAnimationData CreateFromSpriteNode(SpriteNodeDefinition spriteNode)
-    {
-        SpriteAssetManager spriteAssetManager = SpriteAssetManager.Instance;
-        if (spriteAssetManager == null)
-        {
-            Debug.LogErrorFormat($"SpriteAssetManager instance not found. Cannot create EffectAnimationData.{spriteNode.AnimationName}");
-            return default;
-        }
-        EffectAnimationData data = new EffectAnimationData();
-        AnimationDefinition animDef = spriteAssetManager.GetAnimation(spriteNode.AnimationName); // Ensure not null
-        // Set default values from spriteNode or other sources
-        if (animDef == null)
-        {
-            // use default values if no animation definition found
-            data.framesPerSecond = 0.0f; // Example default FPS
-            data.tint = Color.white; // Example tint from node
-            data.alpha = 1.0f; // Example alpha
-            data.autoType = AdvancedFlipbookController.FlipbookType.Row; // Example type
-            data.autoTotalFrames = 1; // Example total frames
-            data.autoFramesPerRow = 1; // Example frames per row
-            data.autoTint = Color.white; // Example auto tint
-            data.autoVisible = true; // Example visibility
-        }
-        else
-        {
-            Debug.LogFormat($"AnimationDefinition for {spriteNode.BaseSpriteName} found. Creating EffectAnimationData {animDef.name}");
-            data.framesPerSecond = animDef.frameCount/animDef.duration; // Example default FPS
-            data.tint = spriteNode.Tint; // Example tint from node
-            data.alpha = 1.0f; // Example alpha
-            data.autoType = animDef.autoKeyframe;//AdvancedFlipbookController.FlipbookType.Grid; // Example type
-            data.autoTotalFrames = animDef.frameCount; // Example total frames
-            data.autoFramesPerRow = animDef.autoKeyframe == AdvancedFlipbookController.FlipbookType.Grid ? (int)math.sqrt(animDef.frameCount) : animDef.frameCount; // Example frames per row
-            data.autoTint = Color.white; // Example auto tint
-            data.autoVisible = true; // Example visibility
-            if (animDef.type == AnimationType.Draw)
-            {
-                data.autoVisible = true;
-                data.drawKeyframes = ConvertDrawKeyframes(animDef);
-            }
-            else if (animDef.type == AnimationType.Colour)
-            {
-                data.tintKeyframes = ConvertTintKeyframes(animDef); 
-                data.tintInterpolation = animDef.interpolation == AdvancedFlipbookController.OffsetInterpolation.Step ? AdvancedFlipbookController.TintInterpolation.Step : AdvancedFlipbookController.TintInterpolation.Linear;
-            }
-            else if (animDef.type == AnimationType.Offset)
-            {
-                data.offsetKeyframes = ConvertOffsetKeyframes(animDef); 
-                data.offsetInterpolation = animDef.interpolation;
-            }
-            
-        }
-        
-        // Texture animation
-        string animName = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).DefaultAnimationName;
-        animDef = spriteAssetManager.GetAnimation(animName); // Ensure not null
-        if (animDef == null)
-        {
-            Debug.LogErrorFormat($"AnimationDefinition for {spriteNode.BaseSpriteName} not found. Cannot create EffectAnimationData {animName}");
-        }
-        else
-        {
-            if (animDef.type == AnimationType.Draw)
-            {
-                data.autoVisible = true;
-                data.drawKeyframes = ConvertDrawKeyframes(animDef);
-            }
-            else if (animDef.type == AnimationType.Colour)
-            {
-                data.tintKeyframes = ConvertTintKeyframes(animDef); 
-                data.tintInterpolation = animDef.interpolation == AdvancedFlipbookController.OffsetInterpolation.Step ? AdvancedFlipbookController.TintInterpolation.Step : AdvancedFlipbookController.TintInterpolation.Linear;
-            }
-            else if (animDef.type == AnimationType.Offset)
-            {
-                data.offsetKeyframes = ConvertOffsetKeyframes(animDef); 
-                data.offsetInterpolation = animDef.interpolation;
-            } 
-            data.autoType = animDef.autoKeyframe; // Example
-            data.autoTotalFrames = animDef.frameCount; // Example
-            data.autoFramesPerRow = animDef.autoKeyframe == AdvancedFlipbookController.FlipbookType.Grid ? (int)math.sqrt(animDef.frameCount) : animDef.frameCount ; // Example
-            data.autoTint = Color.white; // Example TODO: Set from animDef if needed
-            data.autoVisible = true; // Example TODO: Set from animDef if needed
-            
-        }
-
-        // Set the actual texture.
-        Sprite spr = spriteAssetManager.GetSprite(spriteNode.BaseSpriteName);
-        data.texture = spr.texture; // Get the texture from the sprite asset manager
-        data.useEmissive = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType == MaterialType.Additive; // Example emissive setting
-        data.emissiveColor = Color.white; // Example emissive color
-        data.emissiveIntensity = 6.0f; // Example emissive intensity
-        return data;
-    }
-     // Constructor or factory method to convert from SpriteData
-     public static EffectAnimationData CreateFrom(AnimationDefinition offsetAnim, AnimationDefinition tintAnim, AnimationDefinition drawAnim, /* other params like SpriteNodeDefinition for defaults */ float defaultFps)
-     {
-         EffectAnimationData data = new EffectAnimationData();
-         data.framesPerSecond = offsetAnim.frameCount/offsetAnim.duration; // Example default
-         // Set auto values from SpriteNodeDefinition or defaults
-         data.autoType = AdvancedFlipbookController.FlipbookType.Grid; // Example
-         data.autoTotalFrames = 16; // Example
-         data.autoFramesPerRow = 4; // Example
-         data.autoTint = Color.white; // Example
-         data.autoVisible = true; // Example
-
-         // --- Conversion Logic ---
-         // This is where you translate AnimationDefinition into the controller's format
-         data.offsetKeyframes = ConvertOffsetKeyframes(offsetAnim);
-         data.tintKeyframes = ConvertTintKeyframes(tintAnim);
-         data.drawKeyframes = ConvertDrawKeyframes(drawAnim);
-
-         // Determine interpolation modes based on AnimationDefinition
-         data.offsetInterpolation = offsetAnim.interpolation;//ConvertInterpolationMode_Offset(offsetAnim?.interpolation ?? InterpolationMode.Step);
-         data.tintInterpolation = tintAnim.interpolation == AdvancedFlipbookController.OffsetInterpolation.Step ? AdvancedFlipbookController.TintInterpolation.Step : AdvancedFlipbookController.TintInterpolation.Linear;
-
-         // Set other properties like lifetime, base tint, alpha etc.
-         data.tint = Color.white; // Example
-         data.alpha = 1.0f; // Example
-         data.lifetime = offsetAnim?.duration ?? tintAnim?.duration ?? drawAnim?.duration ?? 2.0f; // Estimate lifetime
-
-         return data;
-     }
-
-    // --- TODO: Implement these conversion functions ---
-     private static List<AdvancedFlipbookController.OffsetKeyframe> ConvertOffsetKeyframes(AnimationDefinition animDef) {
-         var list = new List<AdvancedFlipbookController.OffsetKeyframe>();
-         if (animDef == null || animDef.type != AnimationType.Offset) return list; // Return empty if null or wrong type
-
-         // Example: Assuming animDef.keyframes[i].value is already Vector4(offsetX, offsetY, tileX, tileY)
-         // You'll need to calculate this based on your SpriteDefinition sourceRect etc.
-         foreach (var kf in animDef.keyframes) {
-              // This is pseudo-code - you need the actual calculation based on your source data format
-              // Vector4 offsetAndTiling = CalculateOffsetTilingFromSpriteIndex(kf.IntValue, spriteDefinition);
-              Vector4 offsetAndTiling = Vector4.zero; // Placeholder! Needs real calculation.
-              if (kf.value is Vector4 v4) offsetAndTiling = v4; // Use if value is already correct Vector4
-
-             list.Add(new AdvancedFlipbookController.OffsetKeyframe { time = kf.time, offsetAndTiling = offsetAndTiling });
-         }
-         list.Sort((a, b) => a.time.CompareTo(b.time)); // Ensure sorted
-         return list;
-     }
-
-     private static List<AdvancedFlipbookController.TintKeyframe> ConvertTintKeyframes(AnimationDefinition animDef) {
-          var list = new List<AdvancedFlipbookController.TintKeyframe>();
-         if (animDef == null || animDef.type != AnimationType.Colour) return list;
-
-         foreach (var kf in animDef.keyframes) {
-             list.Add(new AdvancedFlipbookController.TintKeyframe { time = kf.time, color = kf.ColorValue });
-         }
-          list.Sort((a, b) => a.time.CompareTo(b.time));
-         return list;
-     }
-
-      private static List<AdvancedFlipbookController.DrawKeyframe> ConvertDrawKeyframes(AnimationDefinition animDef) {
-          // Draw animation likely controls OFFSET frames in the original design.
-          // If Draw means Visibility in the new shader, convert accordingly.
-          // If Draw means switching Sprites (which implies Offset changes), handle in ConvertOffsetKeyframes.
-          // This example assumes Draw means Visibility:
-          var list = new List<AdvancedFlipbookController.DrawKeyframe>();
-         if (animDef == null || animDef.type != AnimationType.Draw) return list; // Adjust type check if needed
-
-         foreach (var kf in animDef.keyframes) {
-             // Assuming kf.IntValue > 0 means visible? Adjust logic as needed.
-             list.Add(new AdvancedFlipbookController.DrawKeyframe { time = kf.time, visibility = (kf.IntValue > 0) ? 1.0f : 0.0f });
-         }
-         list.Sort((a, b) => a.time.CompareTo(b.time));
-         return list;
-     }
-
-    //   private static AdvancedFlipbookController.OffsetInterpolation ConvertInterpolationMode_Offset(InterpolationMode mode) {
-    //      switch (mode) {
-    //          case InterpolationMode.Linear: return AdvancedFlipbookController.OffsetInterpolation.LinearScroll; // Map Linear to Scroll? Or Crossfade? Decide based on desired effect.
-    //          case InterpolationMode.LinearCrossfade: return AdvancedFlipbookController.OffsetInterpolation.LinearCrossfade;
-    //          case InterpolationMode.Step:
-    //          default: return AdvancedFlipbookController.OffsetInterpolation.Step;
-    //      }
-    //  }
-    //   private static AdvancedFlipbookController.TintInterpolation ConvertInterpolationMode_Tint(InterpolationMode mode) {
-    //     return (mode == InterpolationMode.Linear || mode == InterpolationMode.LinearCrossfade) // Treat Crossfade as Linear for Tint
-    //         ? AdvancedFlipbookController.TintInterpolation.Linear
-    //         : AdvancedFlipbookController.TintInterpolation.Step;
+    //     _materialCache.Add(cacheKey, newMat);
+    //     return newMat;
     // }
 
+    // void ConfigureMaterialBlendMode(Material mat, CustomSpriteFormat.MaterialType type)
+    // {
+    //     // Set common properties for transparency
+    //     mat.SetFloat("_SurfaceType", 1.0f); // 1 = Transparent
+    //     mat.SetFloat("_ZWrite", 0.0f);      // ZWrite Off
+
+    //     // HDRP blend mode setup (Simplified - adjust based on exact HDRP standard lit blend properties if needed)
+    //     // These property names might need updating based on exact HDRP Lit shader conventions if not using legacy properties.
+    //     // Assuming _SrcBlend, _DstBlend control it here based on previous shader.
+    //     switch (type)
+    //     {
+    //         case CustomSpriteFormat.MaterialType.Additive:
+    //             mat.SetFloat("_UseEmissive", 1.0f); // Enable emissive path in shader
+    //             mat.SetFloat("_BlendMode", 1.0f);  // Set to Additive if HDRP uses this property
+    //             mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One); // SrcAlpha for pre-multiplied, One for additive
+    //             mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
+    //             break;
+
+    //         case CustomSpriteFormat.MaterialType.Alpha: // Standard Alpha Blending
+    //         default:
+    //             mat.SetFloat("_UseEmissive", 0.0f);
+    //             mat.SetFloat("_BlendMode", 0.0f); // Set to Alpha if HDRP uses this property
+    //             mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha); // Standard alpha blend
+    //             mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+    //             break;
+    //     }
+    //     // Make sure shader features dependent on blend mode are enabled/disabled if necessary
+    //     // For example, mat.EnableKeyword("_USEEMISSIVE_ON"); / mat.DisableKeyword(...)
+    //     if (type == CustomSpriteFormat.MaterialType.Additive) {
+    //         mat.EnableKeyword("_USEEMISSIVE_ON");
+    //     } else {
+    //         mat.DisableKeyword("_USEEMISSIVE_ON");
+    //     }
+
+    //     // Set Render Queue (Transparent is 3000) - HDRP might manage this via _SurfaceType
+    //     mat.renderQueue = 3000;
+    // }
 
 }
+
