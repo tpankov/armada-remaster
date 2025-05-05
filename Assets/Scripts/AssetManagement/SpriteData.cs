@@ -33,21 +33,21 @@ namespace CustomSpriteFormat
     }
 
     // Enum for interpolation modes
-    // public enum InterpolationMode
-    // {
-    //     Step,
-    //     Linear,
-    //     LinearCrossfade
-    // }
+    public enum InterpolationMode
+    {
+        Step,
+        Linear,
+        LinearCrossfade
+    }
 
      // Enum for automatic keyframe generation types (parsed but generation logic not implemented here)
-    // public enum AutoKeyframeType
-    // {
-    //     None,
-    //     Row,
-    //     Column,
-    //     Grid
-    // }
+    public enum AutoKeyframeType
+    {
+        None,
+        Row,
+        Column,
+        Grid
+    }
 
     // Represents a single keyframe in an animation
     public struct KeyframeData
@@ -57,6 +57,7 @@ namespace CustomSpriteFormat
 
         // Convenience getters
         public int IntValue => (value is int i) ? i : 0;
+        public float FloatValue => (value is float f) ? f : 0f; // Default to 0 if not float
         public Color ColorValue => (value is Color c) ? c : Color.clear; // Default to clear if not Color
         public Vector2 Vector2Value => (value is Vector2 v) ? v : Vector2.zero;
     }
@@ -68,8 +69,8 @@ namespace CustomSpriteFormat
         public AnimationType type = AnimationType.Unknown; // Type of animation (draw, colour, offset)
         public int frameCount; // Frame count specified in definition (e.g., draw 3 ...)
         public float duration;
-        public AdvancedFlipbookController.OffsetInterpolation interpolation = AdvancedFlipbookController.OffsetInterpolation.Step;
-        public AdvancedFlipbookController.FlipbookType autoKeyframe = AdvancedFlipbookController.FlipbookType.Unknown; // If @auto is used
+        public InterpolationMode interpolation; // Interpolation mode (step, linear, linear crossfade)
+        public AutoKeyframeType autoKeyframe; // If @auto is used (e.g., row, column, grid)
         public int autoDimension = 0; // Dimension for @auto (e.g., offset 64 ...)
         public List<KeyframeData> keyframes = new List<KeyframeData>();
         public int referenceSize = 0; // Store the @reference value active when defined (for offset animations)

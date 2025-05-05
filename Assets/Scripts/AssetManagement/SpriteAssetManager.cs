@@ -60,8 +60,8 @@ public class SpriteAssetManager : MonoBehaviour
         public AnimationType Type; 
         public int FrameCount; 
         public float Duration; 
-        public AdvancedFlipbookController.OffsetInterpolation Interpolation; 
-        public AdvancedFlipbookController.FlipbookType AutoKeyframe; 
+        public InterpolationMode Interpolation; 
+        public AutoKeyframeType AutoKeyframe; 
         public int AutoDimension; 
         public List<ParsedKeyframe> Keyframes = new List<ParsedKeyframe>(); // List of keyframes for this animation
         public int ReferenceSize; }
@@ -199,9 +199,9 @@ public class SpriteAssetManager : MonoBehaviour
                                 currentAnimation = new ParsedAnimation { 
                                     Name = animName, 
                                     ReferenceSize = currentReference, 
-                                    Interpolation = AdvancedFlipbookController.OffsetInterpolation.Step, 
+                                    Interpolation = InterpolationMode.Step, 
                                     Type = AnimationType.Unknown,
-                                    AutoKeyframe = AdvancedFlipbookController.FlipbookType.Unknown 
+                                    AutoKeyframe = AutoKeyframeType.None, // Default to None
                                     }; // Initialize with defaults
                                 tempAnimDefs.Add(currentAnimation); // Add to temp list
                             } else Debug.LogWarning($"Missing name for @animation on line {i + 1}");
@@ -210,7 +210,7 @@ public class SpriteAssetManager : MonoBehaviour
                                 if (currentAnimation != null)
                                 {
                                     // Check if @auto was set for this animation
-                                    if (currentAnimation.AutoKeyframe != AdvancedFlipbookController.FlipbookType.Unknown)
+                                    if (currentAnimation.AutoKeyframe != AutoKeyframeType.None)
                                     {
                                         // Generate keyframes automatically based on @auto settings
                                         // GenerateAutoKeyframes(currentAnimation); // Handled in shader now
@@ -241,10 +241,10 @@ public class SpriteAssetManager : MonoBehaviour
                                 currentAnimation.AutoKeyframe = valuePart.ToLower() 
                                 switch 
                                 {
-                                     "row" => AdvancedFlipbookController.FlipbookType.Row, 
-                                     "column" => AdvancedFlipbookController.FlipbookType.Column, 
-                                     "square" => AdvancedFlipbookController.FlipbookType.Grid, 
-                                     _ => AdvancedFlipbookController.FlipbookType.Unknown }; 
+                                     "row" => AutoKeyframeType.Row, 
+                                     "column" => AutoKeyframeType.Column,
+                                     "square" => AutoKeyframeType.Grid, 
+                                     _ => AutoKeyframeType.None }; 
                                 }
                             else if (currentAnimation == null) Debug.LogWarning($"@auto outside @animation context line {i+1}");
                             else Debug.LogWarning($"Missing value for @auto on line {i + 1}");
@@ -308,13 +308,13 @@ public class SpriteAssetManager : MonoBehaviour
          if (parts.Length > 3) 
          {
             if (parts[3].ToLower() == "linear") 
-                anim.Interpolation = AdvancedFlipbookController.OffsetInterpolation.LinearScroll; 
+                anim.Interpolation = InterpolationMode.Linear; 
             else if (parts[3].ToLower() == "linearcrossfade" && anim.Type == AnimationType.Offset) 
-                anim.Interpolation = AdvancedFlipbookController.OffsetInterpolation.LinearCrossfade; 
+                anim.Interpolation = InterpolationMode.LinearCrossfade; 
             else if (parts[3].ToLower() == "step") 
-                anim.Interpolation = AdvancedFlipbookController.OffsetInterpolation.Step; 
+                anim.Interpolation = InterpolationMode.Step; 
          }
-         if(anim.Type == AnimationType.Offset && anim.AutoKeyframe != AdvancedFlipbookController.FlipbookType.Unknown && anim.FrameCount == 0) anim.FrameCount = anim.AutoDimension;
+         if(anim.Type == AnimationType.Offset && anim.AutoKeyframe != AutoKeyframeType.None && anim.FrameCount == 0) anim.FrameCount = anim.AutoDimension;
       }
     // Helper for Keyframe Line
     private void ParseKeyframeLineInternal(string line, string[] parts, ParsedAnimation anim, Regex tupleRegex, int lineNum) {
@@ -500,93 +500,94 @@ public class SpriteAssetManager : MonoBehaviour
         loadedTextures.Clear();
         if (_instance == this) _instance = null;
     }
-// *** ADDED: Helper method to generate keyframes for @auto offset animations ***
-    private void GenerateAutoKeyframes(ParsedAnimation anim)
-    {
-        // Ensure this logic only runs for Offset animations
-        if (anim.Type != AnimationType.Offset)
-        {
-            Debug.LogWarning($"@auto keyframe generation requested for non-Offset animation '{anim.Name}'. Skipping generation.");
-            return;
-        }
-
-        if (anim.FrameCount <= 0)
-        {
-            Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': FrameCount ({anim.FrameCount}) must be positive.");
-            return;
-        }
-        if (anim.Duration <= 0)
-        {
-             Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': Duration ({anim.Duration}) must be positive.");
-            return; // Prevent division by zero
-        }
-
-        anim.Keyframes?.Clear(); // Clear any potentially parsed (but ignored) keyframes
-
-        float frameDuration = anim.Duration / anim.FrameCount;
-        // Use reference size defined for the animation context. Fallback needed?
-        float refSize = anim.ReferenceSize > 0 ? anim.ReferenceSize : 512f; // Using 512 fallback if not specified
-
-        float frameWidth = refSize;
-        float frameHeight = refSize;
-        int gridDim = 1; // Dimension for row/column/square calculations
-
-        switch (anim.AutoKeyframe)
-        {
-            case AdvancedFlipbookController.FlipbookType.Row:
-                gridDim = anim.FrameCount;
-                frameWidth = refSize / gridDim;
-                // frameHeight = refSize; // Assuming single row fills height
-                break;
-            case AdvancedFlipbookController.FlipbookType.Column:
-                gridDim = anim.FrameCount;
-                // frameWidth = refSize; // Assuming single col fills width
-                frameHeight = refSize / gridDim;
-                break;
-            case AdvancedFlipbookController.FlipbookType.Grid:
-                double sqrtFrames = System.Math.Sqrt(anim.FrameCount);
-                if (sqrtFrames != System.Math.Floor(sqrtFrames)) // Check if not a perfect square
-                {
-                     Debug.LogError($"Cannot generate Square keyframes for animation '{anim.Name}': FrameCount ({anim.FrameCount}) is not a perfect square.");
-                     return;
-                }
-                gridDim = (int)sqrtFrames;
-                frameWidth = refSize / gridDim;
-                frameHeight = refSize / gridDim;
-                break;
-            default:
-                Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': Unknown or None AutoKeyframeType.");
-                return;
-        }
-
-        Debug.Log($"Generating {anim.FrameCount} keyframes for '{anim.Name}' (Type: {anim.AutoKeyframe}, RefSize: {refSize}, Frame W/H: {frameWidth}x{frameHeight})");
-
-        for (int i = 0; i < anim.FrameCount; i++)
-        {
-            float time = i * frameDuration;
-            float offsetX = 0;
-            float offsetY = 0;
-
-            switch (anim.AutoKeyframe)
-            {
-                case AdvancedFlipbookController.FlipbookType.Row:
-                    offsetX = i * frameWidth;
-                    offsetY = 0;
-                    break;
-                case AdvancedFlipbookController.FlipbookType.Column:
-                    offsetX = 0;
-                    offsetY = i * frameHeight;
-                    break;
-                case AdvancedFlipbookController.FlipbookType.Grid:
-                    int row = i / gridDim;
-                    int col = i % gridDim;
-                    offsetX = col * frameWidth;
-                    offsetY = row * frameHeight;
-                    break;
-            }
-
-            anim.Keyframes.Add(new ParsedKeyframe { Time = time, Value = new Vector2(offsetX, offsetY) });
-        }
-    }
-
 }
+// *** ADDED: Helper method to generate keyframes for @auto offset animations ***
+//     private void GenerateAutoKeyframes(ParsedAnimation anim)
+//     {
+//         // Ensure this logic only runs for Offset animations
+//         if (anim.Type != AnimationType.Offset)
+//         {
+//             Debug.LogWarning($"@auto keyframe generation requested for non-Offset animation '{anim.Name}'. Skipping generation.");
+//             return;
+//         }
+
+//         if (anim.FrameCount <= 0)
+//         {
+//             Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': FrameCount ({anim.FrameCount}) must be positive.");
+//             return;
+//         }
+//         if (anim.Duration <= 0)
+//         {
+//              Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': Duration ({anim.Duration}) must be positive.");
+//             return; // Prevent division by zero
+//         }
+
+//         anim.Keyframes?.Clear(); // Clear any potentially parsed (but ignored) keyframes
+
+//         float frameDuration = anim.Duration / anim.FrameCount;
+//         // Use reference size defined for the animation context. Fallback needed?
+//         float refSize = anim.ReferenceSize > 0 ? anim.ReferenceSize : 512f; // Using 512 fallback if not specified
+
+//         float frameWidth = refSize;
+//         float frameHeight = refSize;
+//         int gridDim = 1; // Dimension for row/column/square calculations
+
+//         switch (anim.AutoKeyframe)
+//         {
+//             case AdvancedFlipbookController.FlipbookType.Row:
+//                 gridDim = anim.FrameCount;
+//                 frameWidth = refSize / gridDim;
+//                 // frameHeight = refSize; // Assuming single row fills height
+//                 break;
+//             case AdvancedFlipbookController.FlipbookType.Column:
+//                 gridDim = anim.FrameCount;
+//                 // frameWidth = refSize; // Assuming single col fills width
+//                 frameHeight = refSize / gridDim;
+//                 break;
+//             case AdvancedFlipbookController.FlipbookType.Grid:
+//                 double sqrtFrames = System.Math.Sqrt(anim.FrameCount);
+//                 if (sqrtFrames != System.Math.Floor(sqrtFrames)) // Check if not a perfect square
+//                 {
+//                      Debug.LogError($"Cannot generate Square keyframes for animation '{anim.Name}': FrameCount ({anim.FrameCount}) is not a perfect square.");
+//                      return;
+//                 }
+//                 gridDim = (int)sqrtFrames;
+//                 frameWidth = refSize / gridDim;
+//                 frameHeight = refSize / gridDim;
+//                 break;
+//             default:
+//                 Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': Unknown or None AutoKeyframeType.");
+//                 return;
+//         }
+
+//         Debug.Log($"Generating {anim.FrameCount} keyframes for '{anim.Name}' (Type: {anim.AutoKeyframe}, RefSize: {refSize}, Frame W/H: {frameWidth}x{frameHeight})");
+
+//         for (int i = 0; i < anim.FrameCount; i++)
+//         {
+//             float time = i * frameDuration;
+//             float offsetX = 0;
+//             float offsetY = 0;
+
+//             switch (anim.AutoKeyframe)
+//             {
+//                 case AdvancedFlipbookController.FlipbookType.Row:
+//                     offsetX = i * frameWidth;
+//                     offsetY = 0;
+//                     break;
+//                 case AdvancedFlipbookController.FlipbookType.Column:
+//                     offsetX = 0;
+//                     offsetY = i * frameHeight;
+//                     break;
+//                 case AdvancedFlipbookController.FlipbookType.Grid:
+//                     int row = i / gridDim;
+//                     int col = i % gridDim;
+//                     offsetX = col * frameWidth;
+//                     offsetY = row * frameHeight;
+//                     break;
+//             }
+
+//             anim.Keyframes.Add(new ParsedKeyframe { Time = time, Value = new Vector2(offsetX, offsetY) });
+//         }
+//     }
+
+// }

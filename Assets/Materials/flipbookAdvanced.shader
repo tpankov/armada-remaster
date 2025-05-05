@@ -68,6 +68,7 @@ Shader "Custom/HDRP/AsyncAnimatedFlipbookSpriteAdvanced"
 
             // --- Shader Features ---
             // Auto modes (only relevant if _OffsetKeyframeCount == 0)
+            #pragma shader_feature_local _ENABLED
             #pragma shader_feature_local _AUTOFLIPBOOKTYPE_ROW _AUTOFLIPBOOKTYPE_COLUMN _AUTOFLIPBOOKTYPE_GRID
             // Interpolation modes
             #pragma shader_feature_local _OFFSETINTERPOLATION_STEP _OFFSETINTERPOLATION_LINEARSCROLL _OFFSETINTERPOLATION_LINEARCROSSFADE
@@ -101,12 +102,12 @@ Shader "Custom/HDRP/AsyncAnimatedFlipbookSpriteAdvanced"
             };
 
             // --- Structured Buffers ---
-            //OffsetKeyframe _OffsetKeyframes[32];
-            //TintKeyframe _TintKeyframes[32];
-            //DrawKeyframe _DrawKeyframes[32];
-            StructuredBuffer<OffsetKeyframe> _OffsetKeyframes;
-            StructuredBuffer<TintKeyframe> _TintKeyframes;
-            StructuredBuffer<DrawKeyframe> _DrawKeyframes;
+            OffsetKeyframe _OffsetKeyframes[32];
+            TintKeyframe _TintKeyframes[32];
+            DrawKeyframe _DrawKeyframes[32];
+            //StructuredBuffer<OffsetKeyframe> _OffsetKeyframes;
+            //StructuredBuffer<TintKeyframe> _TintKeyframes;
+            //StructuredBuffer<DrawKeyframe> _DrawKeyframes;
 
             // --- Textures & Samplers ---
             TEXTURE2D(_BaseMap);
@@ -179,16 +180,17 @@ Shader "Custom/HDRP/AsyncAnimatedFlipbookSpriteAdvanced"
             {
                 FrameIndicesInfo info;
                 info.index0 = 0; info.index1 = 0; info.t = 0.0f;
-                if (count == 0) return info;
 
                 for (int i = 0; i < count; ++i) {
-                    if (_OffsetKeyframes[i].time <= t_eval) { // Accesses correct buffer
+                    if (_OffsetKeyframes[i].time <= t_eval ) { // Accesses correct buffer
                         info.index0 = i;
                     } else {
                         break;
                     }
                 }
-                info.index1 = min(info.index0 + 1, count - 1);
+                if (count == 0) return info;
+
+                info.index1 = min(info.index0 + 1, count - 1); // Ensure index1 is within bounds
 
                 if (info.index0 != info.index1) {
                     float time0 = _OffsetKeyframes[info.index0].time; // Accesses correct buffer
@@ -297,10 +299,13 @@ Shader "Custom/HDRP/AsyncAnimatedFlipbookSpriteAdvanced"
                 output.baseUV = input.uv; // Store original UV
                 output.instanceColor = input.color;
                 output.debugValue = float4(1,0,0,0); // Optional debug value
+                #if !defined(_ENABLED)
+                    return output; // Skip processing if not enabled
+                #endif
+
                 // Use _Time.y for game time. Could also pass custom time via MaterialPropertyBlock.
                 float totalTime = _Time.y + _TimeOffset;
                 float adjustedTime = fmod(totalTime, _FramesPerSecond > 0 ? (1.0 / _FramesPerSecond) * _AutoTotalFrames : 1.0); // Example: Loop based on auto total frames duration
-                
                 
                 // --- Calculate Offset/Tiling ---
                 float4 uvOffsetTiling0 = float4(0,0,1,1); // Default: offset(0,0) tiling(1,1)
@@ -309,8 +314,9 @@ Shader "Custom/HDRP/AsyncAnimatedFlipbookSpriteAdvanced"
                 
                 if (_OffsetKeyframeCount > 0)
                 {
-                    output.debugValue = float4(1,1,0,0); // Optional debug value
-                    FrameIndicesInfo offsetInfo = FindOffsetKeyframeIndices(adjustedTime, _OffsetKeyframeCount);
+                    FrameIndicesInfo offsetInfo = FindOffsetKeyframeIndices(adjustedTime,_OffsetKeyframeCount );
+                    output.debugValue = float4(offsetInfo.index0 ,1,0,0); // Optional debug value
+                    return output;
                     uvOffsetTiling0 = _OffsetKeyframes[offsetInfo.index0].offsetAndTiling;
                     
                     #if defined(_OFFSETINTERPOLATION_STEP)
@@ -321,19 +327,21 @@ Shader "Custom/HDRP/AsyncAnimatedFlipbookSpriteAdvanced"
                         if(offsetInfo.index0 != offsetInfo.index1) {
                              float time0 = _OffsetKeyframes[offsetInfo.index0].time;
                              float time1 = _OffsetKeyframes[offsetInfo.index1].time;
-                             crossfadeT = saturate((adjustedTime - time0) / max(time1 - time0, 1e-6f));
+                             crossfadeT = adjustedTime;//saturate((adjustedTime - time0) / max(time1 - time0, 1e-6f));
                         } else {
-                             crossfadeT = (offsetInfo.t > 0.5) ? 1.0 : 0.0; // Handle edge case: stay on frame
+                             crossfadeT = 0.0f;//(offsetInfo.t > 0.5) ? 1.0 : 0.0; // Handle edge case: stay on frame
                         }
-                        return output;
-                                        
+                        
                         #if defined(_OFFSETINTERPOLATION_LINEARSCROLL)
+                            return output;
                             // Interpolate only offset (xy), use tiling from frame 0 (zw)
                             float2 interpolatedOffset = lerp(uvOffsetTiling0.xy, uvOffsetTiling1.xy, crossfadeT);
                             uvOffsetTiling0 = float4(interpolatedOffset, uvOffsetTiling0.zw); // Store result in uvData0
                         #elif defined(_OFFSETINTERPOLATION_LINEARCROSSFADE)
                              // Pass both frames' data and lerp factor to fragment shader
                              output.crossfadeLerp = crossfadeT;
+                            return output;
+
                         #endif
                     #endif
 
@@ -401,8 +409,10 @@ Shader "Custom/HDRP/AsyncAnimatedFlipbookSpriteAdvanced"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
                 // --- Visibility Check ---
-                //clip(input.visibility > 0 ? 1 : -1); // Discard if not visible
-                return input.debugValue;
+                #if !defined(_ENABLED)
+                    return input.debugValue;
+                #endif
+                clip(input.visibility > 0 ? 1 : -1); // Discard if not visible
 
                 // --- Calculate Final UVs and Sample Texture ---
                 float4 finalColor;

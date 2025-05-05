@@ -96,14 +96,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 596259691829541320}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59d6d36a30d9ed2438fe2d088c485bed, type: 3}
+  m_Script: {fileID: 11500000, guid: 38af30c004372554fa85ca4e5fac8648, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  framesPerSecond: 24
-  autoFlipbookType: 0
-  autoTotalFrames: 8
-  autoFramesPerRow: 8
-  autoTint: {r: 1, g: 1, b: 1, a: 1}
-  autoVisible: 1
+  instanceStartTime: 0
+  offsetDuration: 1
   offsetInterpolation: 0
+  offsetFrameTimes: []
+  offsetFrameData: []
+  tintDuration: 1
   tintInterpolation: 0
+  tintFrameTimes: []
+  tintFrameColors: []
+  drawDuration: 1
+  drawFrameTimes: []
+  drawFrameVisibilities: []
