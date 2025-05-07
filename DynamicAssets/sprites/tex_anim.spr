@@ -1,0 +1,415 @@
+sprite_table
+
+# Texture 'flipbook' animations
+# =============================
+
+# Keyframes can be specified explicitly, or can be automatically
+# generated for common styles by using the @keyframes command.
+
+# 4 frame texture scroll animation 
+@animation tex2x2lin
+offset 4 7.6 linear
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 8 frame animation for bormine2, borres
+@animation tex8x1b2
+offset 8 1.2 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+# 8 frame animation for damage vents
+@animation tex8x1_smoke
+offset 8 1.8 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+# 20 frame animation for fedbase runway
+@animation tex20x1
+offset 20 2.5 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+# 16 frame animation for fedsens array
+@animation tex16x1
+offset 16 2.0 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+# 3 frame animation for fedyard1 lights
+@animation tex1x3ya
+offset 3 0.6 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 8 frame animation for damage nodes
+@animation tex1x8.eng
+offset 8 1.6 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 16 frame animation for damage nodes
+@animation tex1x16.eng
+offset 16 3 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# animation for shield remodulation
+@animation tex2x2rmd
+offset 4 0.33 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 16 frame texture 'flipbook' animation 
+@animation tex4x4_1.1
+offset 16 1.1 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+############################### 36
+
+# 36 frame texture 'flipbook' animation 
+@animation tex6x6_1.5
+offset 36 1.5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 36 frame texture 'flipbook' animation 
+@animation tex6x6_1.3
+offset 36 1.3 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 36 frame texture 'flipbook' animation 
+@animation tex6x6_1.1
+offset 36 1.1 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+###################################################### 64
+
+# 64 frame texture 'flipbook' animation 
+@animation tex8x8_1.5
+offset 64 1.5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 64 frame texture 'flipbook' animation 
+@animation tex8x8_1.3
+offset 64 1.3 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 64 frame texture 'flipbook' animation 
+@animation tex8x8_1.1
+offset 64 1.1 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+##################################### 49
+
+# 49 frame texture 'flipbook' animation 
+@animation tex7x7_1.5
+offset 49 1.5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 49 frame texture 'flipbook' animation 
+@animation tex7x7_1.3
+offset 49 1.3 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 49 frame texture 'flipbook' animation 
+@animation tex7x7_1.1
+offset 49 1.1 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+
+# 16 frame texture 'flipbook' animation 
+@animation tex4x4_1.3
+offset 16 1.3 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 16 frame texture 'flipbook' animation 
+@animation tex4x4_1.5
+offset 16 1.5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 16 frame texture 'flipbook' animation 
+@animation tex4x4_0.5
+offset 16 0.5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+
+
+##### STANDARD ROW ANIMATIONS ####
+
+# 2 row animation 
+@animation tex2x1
+offset 2 3.0 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+# 3 row animation
+@animation tex3x1
+offset 3 3.0 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+# 4 row animation 
+@animation tex4x1
+offset 4 3.0 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+# 4 row cursor animation
+@animation cursor4x1
+offset 4 1.0 step
+#Auto generate keyframes
+@auto=row
+@keyframes
+
+# 5 row cursor animation
+@animation cursor5x1
+offset 5 1.0 step
+#Auto generate keyframes
+@auto=row
+@keyframes
+
+# 6 row cursor animation
+@animation cursor6x1
+offset 6 1.0 step
+#Auto generate keyframes
+@auto=row
+@keyframes
+
+# 7 row cursor animation
+@animation cursor7x1
+offset 7 1.0 step
+#Auto generate keyframes
+@auto=row
+@keyframes
+
+# 8 row cursor animation
+@animation cursor8x1
+offset 8 1.0 step
+#Auto generate keyframes
+@auto=row
+@keyframes
+
+# 6 column animation
+@animation tex1x6
+offset 6 0.5 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 5 column animation
+@animation tex1x5
+offset 5 1.0 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 4 column animation
+@animation tex1x4
+offset 4 0.5 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 4 column animation
+@animation tex1x4med
+offset 4 0.75 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 2 frame column animation
+@animation tex1x2med
+offset 2 3 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 4 column animation - slow
+@animation tex1x4slow
+offset 4 4.5 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+
+# 3 column animation
+@animation tex1x3
+offset 3 1.5 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 2 column animation
+@animation tex1x2
+offset 2 1.0 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 8 row animation
+@animation tex1x6.8
+offset 256 5.0 step
+# Automatically generate keyframes
+@auto=row
+@keyframes
+
+##### STANDARD SQUARE ANIMATIONS ####
+
+# 4 frame texture 'flipbook' animation 
+@animation tex2x2
+offset 4 0.3 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 4 frame texture 'flipbook' animation 
+@animation tex2x2slow
+offset 4 2.5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 4 frame texture 'flipbook' animation 
+@animation tex2x2slow2
+offset 4 5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 9 frame texture 'flipbook' animation 
+@animation tex3x3
+offset 9 3.0 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 16 frame texture 'flipbook' animation 
+@animation tex4x4
+offset 16 0.5 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+##### CUSTOM ROW ANIMATIONS ####
+
+#damage venting gas or plasma animation
+@animation vent
+offset 6 1.0 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 4x4 texture 'flipbook' animation - only 12 keyframes.
+@animation tex4x4.12
+offset 12 3.0 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 4x4 texture 'flipbook' animation 
+@animation tex4x4slow
+offset 16 3.0 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+##### CUSTOM COLUMN ANIMATIONS ##############
+
+# linear column animation
+@animation ztrantex
+offset 256 2 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 4 column animation
+@animation photanim
+offset 4 0.5 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+##### CUSTOM SQUARE ANIMATIONS ##############
+
+@reference=128
+@animation tex2x3
+offset 6 0.42 step
+@keyframes
+0.0	0	0
+0.07	64	0
+0.14	0	42
+0.21	64	42
+0.28	0	84
+0.35	64	84
+
+# standard smoke animation
+@animation tex4x4_smoke
+offset 16 4.0 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# 4 frame texture 'flipbook' animation flip flop
+@animation tex2x2flip
+offset 16 4.0 step
+@auto=square
+@keyframes
+
+# 4 shield collapse anim
+@animation shldieanm
+offset 4 0.33 step
+# Automatically generate keyframes
+@auto=column
+@keyframes
+
+# 16 frame texture 'flipbook' animation
+@animation shieldanim
+offset 16 0.4 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# animation for shield death
+@animation tex2x2die
+offset 16 2.0 step
+# Automatically generate keyframes
+@auto=square
+@keyframes
+
+# End of texture animations 

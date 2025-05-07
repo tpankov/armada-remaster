@@ -16,8 +16,12 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
         _UseAutoColumn("Use Auto Column Anim", Float) = 0 // 0 or 1
         _AutoColTotalFrames("Auto Column Total Frames", Int) = 16
         _AutoColFPS("Auto Column FPS", Float) = 24
-        _AutoFramesPerRow("Layout: Frames Per Row", Int) = 4 // Needed for tiling calc
-        _AutoFramesPerColumn("Layout: Frames Per Column", Int) = 4 // Needed for tiling calc
+        _offsetX("Offset X", Range(0, 1)) = 0.0 // Offset for auto animation
+        _offsetY("Offset Y", Range(0, 1)) = 0.0 // Offset for auto animation
+        _tileX("Tile X", Range(0, 1)) = 0.0625 // 1/16 for 16 frames in row
+        _tileY("Tile Y", Range(0, 1)) = 0.0625 // 1/16 for 16 frames in column
+        //_AutoFramesPerRow("Layout: Frames Per Row", Int) = 4 // Needed for tiling calc
+        //_AutoFramesPerColumn("Layout: Frames Per Column", Int) = 4 // Needed for tiling calc
 
         [Header(Custom Animation Set via MPB)]
         // These are placeholders for MPB, default values don't matter much
@@ -40,8 +44,8 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
         [HideInInspector] [ToggleUI] _AddPrecomputedVelocity("Add Precomputed Velocity", Float) = 0.0
         [HideInInspector] _SurfaceType("Surface Type", Float) = 1.0 // Transparent
         [HideInInspector] _BlendMode("Blend Mode", Float) = 0.0 // Alpha
-        [HideInInspector] _SrcBlend("Source Blend", Float) = 1.0 // One
-        [HideInInspector] _DstBlend("Destination Blend", Float) = 10.0 // OneMinusSrcAlpha
+        _SrcBlend("Source Blend", Float) = 1.0 // One
+        _DstBlend("Destination Blend", Float) = 1.0 // Alpha
         [HideInInspector] _ZWrite("ZWrite", Float) = 0.0 // Off
 
         [ToggleUI] _EnableInstancing("Enable Instancing", Float) = 1.0 // IMPORTANT
@@ -94,8 +98,10 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
             float _UseAutoColumn;
             int _AutoColTotalFrames;
             float _AutoColFPS;
-            int _AutoFramesPerRow;
-            int _AutoFramesPerColumn;
+            float _offsetX;
+            float _offsetY;
+            float _tileX;
+            float _tileY;
 
             // Custom Anim Track Data (Set via MPB)
             float _InstanceStartTime;
@@ -183,8 +189,9 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
                 float instanceTime = _Time.y - _InstanceStartTime;
 
                 // --- 1. Calculate Offset/Tiling (Custom overrides Auto) ---
-                float4 finalOffsetTiling = float4(0,0,1,1); // Default Identity
-                float4 offsetTilingNext = float4(0,0,1,1); // For crossfade
+                float4 finalOffsetTiling = float4(_offsetX,_offsetY,_tileX,_tileY); // Default Identity
+                float4 offsetTilingNext = float4(_offsetX,_offsetY,_tileX,_tileY); // For crossfade
+
 
                 if (_OffsetFrameCount > 0)
                 {
@@ -213,16 +220,16 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
                 else if (_UseAutoRow > 0.5 || _UseAutoColumn > 0.5) // Auto Animation (if no custom offset)
                 {
                     // Calculate base tiling based on layout counts
-                    float tileX = (_AutoFramesPerRow > 0) ? (1.0 / _AutoFramesPerRow) : 1.0;
-                    float tileY = (_AutoFramesPerColumn > 0) ? (1.0 / _AutoFramesPerColumn) : 1.0;
-                    finalOffsetTiling = float4(0, 1-tileY, tileX, tileY); // Base tile
-                    offsetTilingNext = float4(0, 1-tileY, tileX, tileY);
+                    float rowStep = 1/((float)_AutoRowTotalFrames); // Step size for row animation
+                    float colStep = 1/((float)_AutoColTotalFrames); // Step size for column animation
+                    //float tileSizeX = ; //(_AutoFramesPerRow > 0) ? (1.0 / _AutoFramesPerRow) : 1.0;
+                    //float tileSizeY = _tileY; //(_AutoFramesPerColumn > 0) ? (1.0 / _AutoFramesPerColumn) : 1.0;
+                    finalOffsetTiling = float4(_offsetX, 1 - _offsetY - _tileY, _tileX, _tileY); // Base tile
+                    offsetTilingNext = float4(_offsetX, 1 - _offsetY - _tileY, _tileX, _tileY);
                     float rowOffset = 0;
                     float colOffset = 0;
                     float rowOffsetNext = 0; // For crossfade path
                     float colOffsetNext = 0; // For crossfade path
-                    float rowStep = 1/((float)_AutoRowTotalFrames); // Step size for row animation
-                    float colStep = 1/((float)_AutoColTotalFrames); // Step size for column animation
                     float rowFrame = 0;
 
                     // Calculate Row animation contribution

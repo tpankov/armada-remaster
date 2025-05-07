@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using CustomSpriteFormat;
+using UnityEngine.Pool;
 //using Unity.Mathematics;
 //using NUnit.Framework; // Assuming SpriteData.cs is in this namespace
 
@@ -61,7 +62,16 @@ public class EffectPoolManager : MonoBehaviour
             parentGO.transform.SetParent(this.transform);
             _poolParents[poolInfo.effectId] = parentGO.transform;
 
-            Queue<GameObject> objectPool = new Queue<GameObject>();
+            // Initialize the pool
+            Queue<GameObject> objectPool;
+            if (_pools.ContainsKey(poolInfo.effectId))
+            {
+                objectPool = _pools[poolInfo.effectId];
+            }
+            else
+            {
+                objectPool = new Queue<GameObject>();
+            }
             if (addPool == 0)
                 addPool = poolInfo.initialSize; // Default to initial size if not specified
             for (int i = 0; i < addPool; i++)
@@ -86,63 +96,55 @@ public class EffectPoolManager : MonoBehaviour
     public GameObject SpawnEffect(string effectId, Vector3 position, Quaternion rotation)//, EffectAnimationData animationData)
     {
         // 1. Get Definition: Lookup your SpriteNodeDefinition / AnimationDefinitions based on effectLookupId
-    // Example: SpriteNodeDefinition nodeDef = LookupNodeDefinition(effectLookupId);
-    // Example: AnimationDefinition[] animDefs = LookupAnimationDefinitions(nodeDef.AnimationName); // Find all relevant anims
-    // Example: SpriteDefinition spriteDef = LookupSpriteDefinition(nodeDef.BaseSpriteName);
-    EffectAnimationDataArrayBased controllerData; // Placeholder for animation data
-    if (_animationData.ContainsKey(effectId))
-    {
-        // Use cached animation data if available
-        controllerData = _animationData[effectId];
-        Debug.Log($"Using cached animation data for effectId: {effectId}");
+        EffectAnimationDataArrayBased controllerData; // Placeholder for animation data
+        if (_animationData.ContainsKey(effectId))
+        {
+            // Use cached animation data if available
+            controllerData = _animationData[effectId];
+            Debug.Log($"Using cached animation data for effectId: {effectId}");
+        }
+        else
+        {
+            // If not cached, create and cache it
+            SpriteNodeDefinition snd = SpriteAssetManager.Instance.GetSpriteNodeDefinition(effectId);
+            controllerData = EffectAnimationDataArrayBased.CreateFromSpriteNode(snd);
+            //EffectAnimationDataArrayBased controllerData = CreateEffectAnimationData(effectId);
+            //if (controllerData != null)
+            _animationData[effectId] = controllerData;
+        }
+
+        // Debug print the animation data for verification
+        //Debug.Log($"EffectAnimationData for {effectId}: {controllerData.autoRowFPS}, {controllerData.autoRowTotalFrames}, {controllerData.drawFrameVisibilities.Count}, {controllerData.offsetFrameData.Count}, {controllerData.useAutoRow}");
+        
+
+
+        //if (effectTexture == null) { Debug.LogError("Texture not found!"); return null; }
+
+        // 2. Get Material: Use caching function
+        //Material instanceMaterial = GetOrCreateMaterial(effectTexture, spriteDef.materialType);
+
+        // 3. Get Pooled Object: Get a raw Quad from pool
+        GameObject objToSpawn = GetFromRawPool("sprite"); // Implement pooling for raw quads
+        //GameObject objToSpawn = Instantiate(quadPrefab); // Simple instantiate for now
+        objToSpawn.transform.position = position;
+        objToSpawn.transform.rotation = rotation;
+
+        // 4. Assign Material
+        //Renderer rend = objToSpawn.GetComponent<Renderer>();
+        //if (rend == null) { Debug.LogError("Quad prefab missing Renderer!"); Destroy(objToSpawn); return null; }
+        //rend.material = instanceMaterial; // Assign the shared/cached material
+
+        // 5. Prepare Animation Data for Controller
+        //EffectAnimationDataArrayBased controllerData = ConvertDefinitionsToControllerData(nodeDef, spriteDef, animDefs);
+
+        // 6. Configure Controller
+        AdvancedFlipbookControllerArrays controller = objToSpawn.GetComponent<AdvancedFlipbookControllerArrays>();
+        if (controller == null) controller = objToSpawn.AddComponent<AdvancedFlipbookControllerArrays>(); // Add if missing
+        controller.Configure(controllerData);
+
+        objToSpawn.SetActive(true);
+        return objToSpawn;
     }
-    else
-    {
-        // If not cached, create and cache it
-        SpriteNodeDefinition snd = SpriteAssetManager.Instance.GetSpriteNodeDefinition(effectId);
-        controllerData = EffectAnimationDataArrayBased.CreateFromSpriteNode(snd);
-        //EffectAnimationDataArrayBased controllerData = CreateEffectAnimationData(effectId);
-        //if (controllerData != null)
-        _animationData[effectId] = controllerData;
-    }
-
-    // Debug print the animation data for verification
-    Debug.Log($"EffectAnimationData for {effectId}: {controllerData.autoRowFPS}, {controllerData.autoRowTotalFrames}, {controllerData.drawFrameVisibilities}, {controllerData.offsetFrameData.Count}, {controllerData.useAutoRow}");
-    // --- TODO: Replace Placeholders with your actual data lookup ---
-    //SpriteNodeDefinition nodeDef = new SpriteNodeDefinition(); // Placeholder
-    //SpriteDefinition spriteDef = new SpriteDefinition(); // Placeholder
-    //List<AnimationDefinition> animDefs = new List<AnimationDefinition>(); // Placeholder
-    //Texture2D effectTexture = null; // Placeholder: Load texture based on spriteDef.sourceTextureName
-    // --- End Placeholder ---
-
-
-    //if (effectTexture == null) { Debug.LogError("Texture not found!"); return null; }
-
-    // 2. Get Material: Use caching function
-    //Material instanceMaterial = GetOrCreateMaterial(effectTexture, spriteDef.materialType);
-
-    // 3. Get Pooled Object: Get a raw Quad from pool
-    GameObject objToSpawn = GetFromRawPool("sprite"); // Implement pooling for raw quads
-    //GameObject objToSpawn = Instantiate(quadPrefab); // Simple instantiate for now
-    objToSpawn.transform.position = position;
-    objToSpawn.transform.rotation = rotation;
-
-    // 4. Assign Material
-    //Renderer rend = objToSpawn.GetComponent<Renderer>();
-    //if (rend == null) { Debug.LogError("Quad prefab missing Renderer!"); Destroy(objToSpawn); return null; }
-    //rend.material = instanceMaterial; // Assign the shared/cached material
-
-    // 5. Prepare Animation Data for Controller
-    //EffectAnimationDataArrayBased controllerData = ConvertDefinitionsToControllerData(nodeDef, spriteDef, animDefs);
-
-    // 6. Configure Controller
-    AdvancedFlipbookControllerArrays controller = objToSpawn.GetComponent<AdvancedFlipbookControllerArrays>();
-    if (controller == null) controller = objToSpawn.AddComponent<AdvancedFlipbookControllerArrays>(); // Add if missing
-    controller.Configure(controllerData);
-
-    objToSpawn.SetActive(true);
-    return objToSpawn;
-}
 
     /// <summary>
     /// Gets a GameObject from the pool. If the pool is empty, it creates a new instance.   

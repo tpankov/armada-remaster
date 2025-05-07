@@ -24,22 +24,22 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: unlit_uv_anim
-  m_Shader: {fileID: 4800000, guid: 99a28b28787d8ad4ab67ad5404613d02, type: 3}
+  m_Shader: {fileID: 4800000, guid: db9688078e530f047b577905c20e3431, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _AUTOFLIPBOOKTYPE_ROW
-  - _OFFSETINTERPOLATION_LINEARCROSSFADE
-  - _TINTINTERPOLATION_STEP
   - _USEEMISSIVE_ON
   m_InvalidKeywords:
+  - _AUTOFLIPBOOKTYPE_ROW
   - _DISABLE_SSR_TRANSPARENT
   - _FALLBACKFLIPBOOKTYPE_GRID
   - _FLIPBOOKTYPE_ROW
   - _NORMALMAP_TANGENT_SPACE
+  - _OFFSETINTERPOLATION_LINEARCROSSFADE
   - _SURFACE_TYPE_TRANSPARENT
+  - _TINTINTERPOLATION_STEP
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap:
@@ -82,9 +82,13 @@ Material:
     - _AlphaRemapMax: 1
     - _AlphaRemapMin: 0
     - _AlphaSrcBlend: 1
+    - _AutoColFPS: 1
+    - _AutoColTotalFrames: 16
     - _AutoFlipbookType: 0
-    - _AutoFramesPerColumn: 4
+    - _AutoFramesPerColumn: 8
     - _AutoFramesPerRow: 4
+    - _AutoRowFPS: 16.666668
+    - _AutoRowTotalFrames: 16
     - _AutoTotalFrames: 8
     - _AutoVisibility: 1
     - _BlendMode: 0
@@ -108,13 +112,15 @@ Material:
     - _DistortionVectorScale: 2
     - _DoubleSidedEnable: 0
     - _DoubleSidedGIMode: 0
+    - _DrawDuration: 1
+    - _DrawFrameCount: 0
     - _DrawKeyframeCount: 0
     - _DstBlend: 10
     - _EmissiveExposureWeight: 1
     - _EmissiveIntensity: 4
     - _EmissiveIntensityUnit: 0
     - _EnableFogOnTransparent: 0
-    - _EnableInstancing: 0
+    - _EnableInstancing: 1
     - _FallbackFlipbookType: 2
     - _FallbackFramesPerColumn: 4
     - _FallbackFramesPerRow: 4
@@ -125,8 +131,11 @@ Material:
     - _FramesPerRow: 8
     - _FramesPerSecond: 2
     - _IncludeIndirectLighting: 1
+    - _InstanceStartTime: 0
+    - _OffsetDuration: 1
+    - _OffsetFrameCount: 0
     - _OffsetInterpolation: 2
-    - _OffsetKeyframeCount: 1
+    - _OffsetKeyframeCount: 0
     - _OpaqueCullMode: 2
     - _RenderQueueType: 5
     - _SrcBlend: 1
@@ -140,18 +149,26 @@ Material:
     - _StencilWriteMaskMV: 43
     - _SurfaceType: 1
     - _TimeOffset: 0
+    - _TintDuration: 1
+    - _TintFrameCount: 0
     - _TintInterpolation: 0
     - _TintKeyframeCount: 0
     - _TotalFrames: 8
     - _TransparentCullMode: 2
     - _TransparentSortPriority: 0
     - _TransparentZWrite: 0
+    - _UseAutoColumn: 0
+    - _UseAutoRow: 0
     - _UseEmissive: 1
     - _UseEmissiveIntensity: 0
     - _ZTestDepthEqualForOpaque: 4
     - _ZTestModeDistortion: 4
     - _ZTestTransparent: 4
     - _ZWrite: 0
+    - _offsetX: 0
+    - _offsetY: 0
+    - _tileX: 0.0625
+    - _tileY: 0.0625
     m_Colors:
     - _AutoTint: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
