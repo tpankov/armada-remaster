@@ -10,6 +10,11 @@
      
         public static bool LoadTGA(string fileName, out Texture2D tex)
         {
+            if (File.Exists(fileName) == false)
+            {
+                tex = null;
+                return false;
+            }
             using (var imageFile = File.OpenRead(fileName))
             {
                 tex = LoadTGA(imageFile);

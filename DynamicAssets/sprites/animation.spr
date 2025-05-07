@@ -1,0 +1,584 @@
+sprite_table
+
+# Sprite keyframed animation prototype.
+
+# @animation [id]
+# [field to animate] [nkeyframes] [length of animation] [interpolation method] 
+
+# Animated sprite definition
+# @define id sprite animation
+
+# Fade from white to black in 8 seconds
+@animation sunflare
+colour 3 8.0 linear
+@keyframes
+0.0	(1.0,1.0,1.0)
+6.0	(0.5,0.5,0.5)
+8.0	(0,0,0)
+
+# Fade from red to yellow to black in 0.8 seconds
+@animation redfade1
+colour 3 0.8 linear
+@keyframes
+0.0	(0.8,0.5,0.2)
+0.3	(0.8,0,0)
+0.8	(0,0,0)
+
+# Fade from red to yellow to black in 2 seconds
+@animation redfade2
+colour 3 2 linear
+@keyframes
+0.0	(0.8,0.5,0.2)
+1.4	(0.8,0.1,0.1)
+2.0	(0,0,0)
+
+# Fade from red to yellow to black in 2 seconds
+@animation gemfade2
+colour 4 2.0 linear
+@keyframes
+0.0	(1,0.7,0)
+0.7	(1,0,0)
+1.5	(1,0.5,0)
+2.0	(0,0,0)
+
+# explosion animation
+@animation explode1.1
+draw 2 1.5 step
+@keyframes
+0.0	1
+1.099	0
+
+# explosion animation
+@animation explode1.3
+draw 2 1.5 step
+@keyframes
+0.0	1
+1.299	0
+
+# explosion animation
+@animation explode1.5
+draw 2 1.5 step
+@keyframes
+0.0	1
+1.499	0
+
+
+# Fade from white to blue to black in 3 seconds
+@animation fadeblue3
+colour 3 2.0 linear
+@keyframes
+0.0	(0.8,0.8,1)
+0.6	(0.3,0.3,1)
+2.0	(0,0,0)
+
+
+# Fade override particles
+@animation overfade4
+colour 3 4.0 linear
+@keyframes
+0.0	(1,0.8,0)
+1.0	(0.15,0.15,0.5)
+2.0	(0.75,0,1.0)
+
+
+# fade rocket thrusters
+@animation fadefast.25
+colour 3 0.2499 linear
+@keyframes
+0.0	(1,1,1)
+0.15	(0,0,1)
+0.2499	(0,0,0)
+
+# fade rocket thrusters
+@animation kredfast.3
+colour 4 0.299 linear
+@keyframes
+0.0	(0.2,0.2,0.2)
+0.1	(0.5,0.3,0)
+0.2	(0.3,0,0)
+0.299	(0,0,0)
+
+# Fade premgate particles
+@animation gatefade4
+colour 3 4.0 linear
+@keyframes
+0.0	(0,0,0)
+1.0	(0.15,0.15,0.5)
+3.8	(0,0,0)
+
+# Fade rift particles
+@animation riftfade4
+colour 4 4.0 linear
+@keyframes
+0.0	(0,0,0)
+0.5	(0.8,0.15,0.3)
+2.2	(0.15,0.15,0.8)
+3.8	(0,0,0)
+
+# pulse premgate
+@animation pulse2
+colour 4 2.0 linear
+@keyframes
+0.0	(0.75,0.75,0.75)
+0.5	(1,1,1)
+1.0	(1,1,1)
+1.5	(0.75,0.75,0.75)
+
+# Fade from grey to black in 2 seconds
+@animation steamfade2
+colour 3 2.0 linear
+@keyframes
+0.0	(0.5,0.5,.5)
+0.7	(0.15,0.15,0.5)
+2.0	(0,0,0)
+
+# Fade from grey to black in 4 seconds
+@animation steamfade4
+colour 3 4.0 linear
+@keyframes
+0.0	(0.5,0.5,.5)
+1.5	(0.15,0.15,0.5)
+4.0	(0,0,0)
+
+# Fade from grey to black in 4 seconds
+@animation kstemfade4
+colour 3 4.0 linear
+@keyframes
+0.0	(0.8,0.4,.3)
+1.5	(0.5,0.15,0.15)
+4.0	(0,0,0)
+
+# Fade from white to black in 3 seconds
+@animation fade3
+colour 2 3.0 linear
+@keyframes
+0.0	(1,1,1)
+3.0	(0,0,0)
+
+# blue contrail fade blue to black in 2 seconds
+@animation gasfade3
+colour 2 2.0 linear
+@keyframes
+0.0	(.3,0.3,1)
+2.0	(0,0,0)
+
+# Fade from white to black in 4 seconds
+@animation fade4
+colour 3 4.0 linear
+@keyframes
+0.0	(1,1,1)
+2.0	(0.7,0.7,0.7)
+4.0	(0,0,0)
+
+# pulse hold beam
+@animation holdbeam
+colour 2 2.0 linear
+@keyframes
+0.0	(0.2,1.0,0.3)
+1.0	(0.1,0.8,0.2)
+
+# pulse bore
+@animation assimbore
+colour 2 2.0 linear
+@keyframes
+0.0	(0.0,0.8,1.0)
+1.0	(0.0,0.5,1.0)
+
+# Fade from white to black in 5 seconds
+@animation fade5
+colour 3 5.0 linear
+@keyframes
+0.0	(1,1,1)
+4.0	(0.6,0.6,0.6)
+5.0	(0,0,0)
+
+# FlickeryFade from white to black in 5 seconds
+@animation flickerfade5
+colour 9 5.0 linear
+@keyframes
+0.0	(1,1,1)
+0.3	(.8,.8,.8)
+0.5	(1,1,1)
+0.8	(.7,.7,.7)
+1.0	(.9,.9,.9)
+1.5	(.6,.6,.6)
+2.0	(.8,.8,.8)
+3.0	(.5,.5,.5)
+5.0	(0,0,0)
+
+# Double strobe
+@animation strobe
+draw 4 2.0 step
+@keyframes
+0.0	1
+0.1 0
+0.2	1
+0.3	0
+
+# Flicker
+@animation flicker
+colour 3 3 linear
+@keyframes
+0.0	(1,.8,.8)
+0.8	(1,.8,.8)
+2.0 (.5,.4,.4)
+
+# Arc weld animation
+@animation arcing
+colour 4 0.1 step
+@keyframes
+0.0	(1,1,1)
+0.1	(0.5,0.5,1)
+0.2	(1,1,1)
+0.3	(0.5,0.5,1)
+
+# Omega particle pulse
+@animation partpulse
+colour 2 1.5 linear
+@keyframes
+0.0		(1,.3,0)
+1.0 	(.5,.3,0)
+
+# Dmoon nimbus pulse
+@animation moonpulse
+colour 2 1.5 linear
+@keyframes
+0.0	(0,0.5,1)
+1.0 	(0,0.2,0.4)
+
+# Infinite ore moon nimbus pulse
+@animation infpulse
+colour 2 1.5 linear
+@keyframes
+0.0	(0.6,0.2,0.8)
+1.0 	(0.4,0,0.6)
+
+#fire animation for crew damage
+@animation fire
+colour 2 1.5 linear
+@keyframes
+0.0	(1,1,0)
+0.75	(1,0.5,0)
+
+#fire animation for crew damage
+@animation fire2
+colour 2 1.1 linear
+@keyframes
+0.0		(1,0.5,0)
+0.6		(1,1,0)
+
+# Long blink
+@animation strobe1
+draw 2 4.0 step
+@keyframes
+0.0	1
+1.0 0
+
+# Short strobe
+@animation strobe2
+draw 3 2.0 step
+@keyframes
+0.0	0
+0.4 	1
+0.5	0
+
+# Colour animation example
+@animation bstrobe1 
+colour 2 2.0 linear
+@keyframes
+0.0 (0.0,0.6,0.0)
+1.0 (.084,1.0,.2)
+
+# Aternate borg pulse
+@animation bstrobe2 
+colour 2 4.0 linear
+@keyframes
+0.0 (0.0,0.6,0.0)
+1.0 (.084,1.0,.2)
+
+# Aternate2 borg pulse
+@animation bstrobe3 
+colour 2 4.0 linear
+@keyframes
+0.0 (0.0,0.6,0.0)
+2.0 (.084,1.0,.2)
+
+# Aternate3 borg pulse
+@animation bstrobeblue 
+colour 4 3.0 linear
+@keyframes
+0.0 (0.02,0.06,0.33)
+0.5 (0.02,0.06,0.33)
+1.5 (.05,.12,.5)
+2.0 (.05,.12,.5)
+
+#lightning flashes
+# flash animation version 1
+@animation flash1
+draw 5 5.0 step
+@keyframes
+0.0 0
+2.1 1
+2.2 0
+2.3 1
+2.4 0
+
+#lightning flashes
+# flash animation version 2
+@animation flash2
+draw 5 7.0 step
+@keyframes
+0.0 0
+4.1 1
+4.15 0
+4.2 1
+4.3 0
+
+#lightning flashes
+# flash animation version 3
+@animation flash3
+draw 5 6.0 step
+@keyframes
+0.0 0
+5.6 1
+5.65 0
+5.7 1
+5.75 0
+
+#lightning flashes
+# flash animation version 4
+@animation flash4
+draw 5 10.0 step
+@keyframes
+0.0	0
+7.0	1
+7.1	0
+7.15	1
+7.2	0
+
+#lightning flashes
+# flash animation version 5
+@animation flash5
+draw 5 12.0 step
+@keyframes
+0.0	0
+3.0	1
+3.1	0
+3.15	1
+3.2	0
+
+# Nebular Red1
+@animation red1.colour 
+colour 7 5.0 linear
+@keyframes
+0.0 (.4,.2,.2)
+2.0 (.3,.2,0.0)
+2.1 (1,1,1)
+2.2 (.3,.2,0.0)
+2.3 (1,1,1)
+2.4 (.3,.2,0.0)
+4.0 (.2,0,.3)
+
+# Nebular Red2
+@animation red2.colour 
+colour 7 7.0 linear
+@keyframes
+0.0 (.2,.1,.15)
+3.0 (.4,.1,0.3)
+4.0 (.3,.1,.1)
+4.1 (1,1,1)
+4.15 (.3,.1,.1)
+4.2 (1,1,1)
+4.3 (.3,.1,.1)
+
+# Nebular Red3
+@animation red3.colour 
+colour 7 6.0 linear
+@keyframes
+0.0 (.2,.1,.15)
+3.0 (.4,.1,0.3)
+5.5 (.3,.1,.1)
+5.6 (1,1,1)
+5.65 (.3,.1,.1)
+5.7 (1,1,1)
+5.75 (.3,.1,.1)
+
+# Nebular yellow1
+@animation yellow.colour 
+colour 3 6.0 linear
+@keyframes
+0.0 (.5,.4,0)
+2.0 (.3,.2,0) #fix this animation
+4.0 (.5,.3,0)
+
+# Nebular yellow2
+@animation yellow2.colour 
+colour 3 8.0 linear
+@keyframes
+0.0 (1,.9,.9)
+3.5 (.7,.7,.6) #fix this animation
+6.0 (.8,.7,.9)
+
+# Nebular blue1
+@animation blue1.colour 
+colour 3 6.0 linear
+@keyframes
+0.0 (0,.2,0.3)
+2.0 (.2,.2,.7) #fix this animation
+4.0 (.1,.2,.5)
+
+# Nebular blue2
+@animation blue2.colour 
+colour 3 8.0 linear
+@keyframes
+0.0 (.2,.7,.7)
+2.5 (.2,.4,.6) #fix this animation
+5.0 (.8,.9,1)
+
+# Nebular purple1
+@animation purple1.colour 
+colour 3 6.0 linear
+@keyframes
+0.0 (.5,0,1)
+2.0 (.7,0,1) #fix this animation
+4.0 (.5,0,1)
+
+# Nebular purple2
+@animation purple2.colour 
+colour 3 8.0 linear
+@keyframes
+0.0 (.5,0,1)
+2.5 (.5,0,1) #fix this animation
+5.0 (.5,0,1)
+
+# Nebular green1
+@animation green1.colour 
+colour 3 6.0 linear
+@keyframes
+0.0 (0,.6,.3)
+2.0 (.3,.4,0) #fix this animation
+4.0 (0,.6,.3)
+
+# Nebular green2
+@animation green2.colour 
+colour 3 8.0 linear
+@keyframes
+0.0 (0,.8,.2)
+2.5 (0,.8,.2) #fix this animation
+5.0 (0,.8,.2)
+
+# Nebular multi1
+@animation multi1.colour 
+colour 3 6.0 linear
+@keyframes
+0.0 (.3,.3,.1)
+2.0 (.2,.0,.2)
+4.0 (.5,.1,.1)
+
+# Nebular multi2
+@animation multi2.colour 
+colour 3 8.0 linear
+@keyframes
+0.0 (.2,.4,.2)
+2.5 (.3,.1,.1)
+5.0 (.3,.3,.6)
+
+# Nebular multi3
+@animation multi3.colour 
+colour 3 8.0 linear
+@keyframes
+0.0 (.2,.4,.2)
+2.5 (.5,.5,.5)
+5.0 (.3,.3,.6)
+
+# Nebular multi4
+@animation multi4.colour 
+colour 3 6.0 linear
+@keyframes
+0.0 (.3,.3,.1)
+2.0 (.2,.0,.4)
+4.0 (.5,.5,.5)
+
+# klingon ion storm pod animation
+@animation storm.colour 
+colour 3 6.0 linear
+@keyframes
+0.0 (.1,.2,.2)
+2.0 (.6,.5,0.0)
+4.0 (.2,.5,.5)
+
+# Particle fade-in fade-out
+@animation inoutpurple
+colour 4 10.0 linear
+@keyframes
+0.0 (0,0,0)
+2.0 (.6,0,1)
+8.0 (.6,0,1)
+9.5 (0,0,0)
+
+# Particle fade-in fade-out
+@animation inoutred
+colour 4 10.0 linear
+@keyframes
+0.0 (0,0,0)
+2.0 (1,0,0)
+8.0 (1,0,0)
+9.5 (0,0,0)
+
+# Atmosphere vent in/out in 1.8 seconds
+@animation airvent
+colour 3 1.8 linear
+@keyframes
+0.0	(0.2,0.2,0.2)
+0.9	(0.4,0.4,0.4)
+1.7	(0,0,0)
+
+# Dark Blue vent in 2.5 seconds
+@animation bluevent
+colour 3 2.5 linear
+@keyframes
+0.0	(0.2,0.2,0.6)
+0.9	(0.0,0.0,0.5)
+2.5	(0,0,0)
+
+# Dark Blue vent in 3.5 seconds
+@animation dblue3
+colour 3 3.5 linear
+@keyframes
+0.0	(0.1,0.1,0.4)
+1.2	(0.05,0.05,0.45)
+3.5	(0,0,0)
+
+# Cyan vent in 4 seconds
+@animation cyana
+colour 3 4 linear
+@keyframes
+0.0	(0.1,0.3,0.4)
+2.0	(0.2,0.5,0.6)
+4.0	(0,0,0)
+
+# FT Strobes
+@animation FTstra
+draw 5 3 step
+@keyframes
+0.0	0
+2.0	1
+2.2	0
+2.4	1
+2.6	0
+
+@animation FTstrb
+draw 5 2.5 step
+@keyframes
+0.0	0
+1.0	1
+1.2	0
+1.4	1
+1.6	0
+
+@animation FTstrc
+draw 3 2.0 step
+@keyframes
+0.0	0
+0.8	1
+1.0	0

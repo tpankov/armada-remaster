@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.IO; // Required for File I/O
 using System.Globalization; // For float parsing
 using System.Text.RegularExpressions; // For parsing tuples
-using CustomSpriteFormat; // For enums like AnimationType, MaterialType etc.
+using CustomSpriteFormat;
+using UnityEngine.UI; // For enums like AnimationType, MaterialType etc.
 // NOTE: Does NOT require CustomSpriteFormat.ECS namespace
 
 // Placeholder for the required TGA Loader. Replace with your actual implementation.
@@ -30,13 +31,13 @@ public class SpriteAssetManager : MonoBehaviour
     public string configFileName = "ftspecial.txt"; // Config file in StreamingAssets/DynamicAssets/sprites/
 
     // --- Runtime Data Storage ---
-    private Dictionary<string, Sprite> loadedSprites = new Dictionary<string, Sprite>();
-    private Dictionary<string, AnimationDefinition> loadedAnimations = new Dictionary<string, AnimationDefinition>();
-    private Dictionary<string, SpriteNodeDefinition> loadedSpriteNodes = new Dictionary<string, SpriteNodeDefinition>();
-    private Dictionary<string, Texture2D> loadedTextures = new Dictionary<string, Texture2D>(); // Cache loaded textures
+    public Dictionary<string, Sprite> loadedSprites = new Dictionary<string, Sprite>();
+    public Dictionary<string, AnimationDefinition> loadedAnimations = new Dictionary<string, AnimationDefinition>();
+    public Dictionary<string, SpriteNodeDefinition> loadedSpriteNodes = new Dictionary<string, SpriteNodeDefinition>();
+    public Dictionary<string, Texture2D> loadedTextures = new Dictionary<string, Texture2D>(); // Cache loaded textures
 
     // *** ADDED: To store parsed definition including MaterialType for later lookup ***
-    private Dictionary<string, ParsedSprite> parsedSpriteDefinitions = new Dictionary<string, ParsedSprite>();
+    public Dictionary<string, ParsedSprite> parsedSpriteDefinitions = new Dictionary<string, ParsedSprite>();
 
     // --- Singleton Pattern ---
     private static SpriteAssetManager _instance;
@@ -124,7 +125,7 @@ public class SpriteAssetManager : MonoBehaviour
 
         // --- Step 2: Load Textures ---
         List<string> requiredTextures = GetRequiredTextureNames(tempParsedSprites);
-        if (!LoadRequiredTextures(requiredTextures)) { Debug.LogError($"Failed to load required textures."); return; }
+        if (!LoadRequiredTextures(requiredTextures)) { Debug.LogError($"Failed to load required textures."); }
 
         // --- Step 3: Create Sprite Objects ---
         CreateSprites(tempParsedSprites); // Uses loadedTextures and populates loadedSprites
@@ -186,6 +187,19 @@ public class SpriteAssetManager : MonoBehaviour
 
                     switch (directive)
                     {
+                        case "@include":
+                            string includeFile = initialParts[1];//.Trim(); 
+                            string includePath = Path.Combine("DynamicAssets", "sprites", includeFile);
+                            if (File.Exists(includePath)) 
+                            { 
+                                string includedContent = File.ReadAllText(includePath); 
+                                ParseFileContent(includedContent, tempSpriteDefs, tempAnimDefs, finalNodeDefs, finalParsedSpriteDefs);
+                            } 
+                            else 
+                            {
+                                Debug.LogWarning($"Include file '{includeFile}' not found."); 
+                            } 
+                            break;
                         case "@reference":
                             if (equalsIndex != -1 && int.TryParse(valuePart, out int refValue)) currentReference = refValue;
                             else if (equalsIndex != -1) Debug.LogWarning($"Could not parse @reference value '{valuePart}' on line {i + 1}");
@@ -362,8 +376,13 @@ public class SpriteAssetManager : MonoBehaviour
                 string texturePath = Path.Combine("DynamicAssets", "textures", texName + ".tga");
                 if (TGALoader.LoadTGA(texturePath, out Texture2D loadedTexture)) {
                     loadedTextures.Add(texName, loadedTexture);
-                    Debug.Log($"Loaded texture: {texName}.tga");
-                } else { Debug.LogError($"Failed to load required texture: {texName}.tga"); success = false; }
+                    //Debug.Log($"Loaded texture: {texName}.tga");
+                } else 
+                { 
+                    Debug.LogError($"Failed to load required texture: {texName}.tga"); 
+                    loadedTexture = new Texture2D(2,2); 
+                    loadedTextures.Add(texName, loadedTexture);
+                    success = false; }
             }
         }
         return success;
@@ -461,20 +480,20 @@ public class SpriteAssetManager : MonoBehaviour
         if (!isInitialized && !initializationAttempted) Initialize();
         if (loadedAnimations.TryGetValue(animationName, out var animDef)) return animDef;
         if (isInitialized) Debug.LogWarning($"Animation definition '{animationName}' not found.");
-        return null;
+        return new AnimationDefinition();;
      }
     public SpriteNodeDefinition GetSpriteNodeDefinition(string nodeName) {
         if (!isInitialized && !initializationAttempted) Initialize();
         if (loadedSpriteNodes.TryGetValue(nodeName.ToLower(), out var nodeDef)) return nodeDef;
         if (isInitialized) Debug.LogWarning($"Sprite Node Definition '{nodeName}' not found.");
-        return null;
+        return new SpriteNodeDefinition();
      }
     // Accessor for the raw parsed sprite data (useful for getting MaterialType)
     public ParsedSprite GetParsedSpriteDefinition(string spriteName) {
         if (!isInitialized && !initializationAttempted) Initialize();
         if (parsedSpriteDefinitions.TryGetValue(spriteName, out var parsedDef)) return parsedDef;
         // Don't warn every time for this one, might be called speculatively
-        return null;
+        return null; // No warning if not found
     }
 
 

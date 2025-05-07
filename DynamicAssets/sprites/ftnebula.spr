@@ -1,0 +1,186 @@
+sprite_table
+
+# Custom Nebula Animation Definitions
+
+# Yellow slow pulse
+@animation yel1 
+colour 3 6.0 linear
+@keyframes
+0.0 (.6,.5,.6)
+2.0 (.4,.6,.6) #fix this animation
+4.0 (.5,.4,.6)
+
+# All slow pulse
+@animation slp1 
+colour 3 6.0 linear
+@keyframes
+0.0 (.5,.5,.4)
+2.0 (.4,.4,.6) #fix this animation
+4.0 (.6,.5,.5)
+
+# Nebula Fadein-fadeout 10-sec
+#@animation ftneba
+#colour 3 10.0 linear
+#@keyframes
+#0.0 (1,1,1)
+#5.0 (0,0,0)
+#10.0 (1,1,1)
+
+#@animation ftnebb
+#colour 3 10.0 linear
+#@keyframes
+#0.0 (0,0,0)
+#5.0 (1,1,1)
+#10.0 (0,0,0)
+
+# Custom Nebula Texture Animations
+
+##
+
+# Name	File			U	V	W	H		
+
+#######################
+# Texture Definitions
+@reference=256
+@tmaterial=additive
+
+mneb1a		FTmneb1		0	0	128	128	
+mneb1b		FTmneb1		0	128	128	128	
+mneb1c		FTmneb1		128	0	128	128	
+mneb1d		FTmneb1		128	128	128	128	
+
+mneb4a		FTmneb4		0	0	128	128	
+mneb4b		FTmneb4		0	128	128	128	
+mneb4c		FTmneb4		128	0	128	128	
+mneb4d		FTmneb4		128	128	128	128	
+
+mneb5a		FTmneb5a	0	0	128	128	
+mneb5b		FTmneb5a	128	0	128	128	
+mneb5c		FTmneb5a	0	128	128	128	
+mneb5d		FTmneb5a	128	128	128	128	
+
+mneb5e		FTmneb5b	0	0	128	128	
+mneb5f		FTmneb5b	128	0	128	128	
+mneb5g		FTmneb5b	0	128	128	128	
+mneb5h		FTmneb5b	128	128	128	128	
+
+mneb5i		FTmneb5c	0	0	128	128	
+mneb5j		FTmneb5c	128	0	128	128	
+mneb5k		FTmneb5c	0	128	128	128	
+mneb5l		FTmneb5c	128	128	128	128	
+
+mneb6a		FTmneb6		0	0	128	128
+mneb6b		FTmneb6		128	0	128	128
+mneb6c		FTmneb6		0	128	128	128
+mneb6d		FTmneb6		128	128	128	128
+
+mneb7a		FTmneb7		0	0	128	128
+mneb7b		FTmneb7		128	0	128	128
+mneb7c		FTmneb7		0	128	128	128
+mneb7d		FTmneb7		128	128	128	128
+
+@tmaterial=alpha
+mneb8a		FTmneb8		0	0	128	128
+mneb8b		FTmneb8		128	0	128	128
+mneb8c		FTmneb8		0	128	128	128
+mneb8d		FTmneb8		128	128	128	128
+@reference=64
+mneb8e		FTmneb9		0	0	64	64
+
+@reference=512
+@tmaterial=additive
+
+mneb2a		FTmneb2		0	0	256	256	
+mneb2b		FTmneb2		0	256	256	256	
+mneb2c		FTmneb2		256	0	256	256	
+mneb2d		FTmneb2		256	256	256	256	
+
+mneb3a		FTmneb3		0	0	256	256	
+mneb3b		FTmneb3		0	256	256	256	
+mneb3c		FTmneb3		256	0	256	256	
+mneb3d		FTmneb3		256	256	256	256	
+
+ftflash1	FTmnebfl1	2	0	187	206
+#ftflash2	FTmnebfl1	213	20	250	144
+#ftflash3	FTmnebfl1	2	260	214	240
+#ftflash4	FTmnebfl1	215	168	270	320
+
+#Sernaix Rift animation and sprites
+rift1		FTserift	0	0	256	256	
+rift2		FTserift	0	256	256	256	
+rift3		FTserift	256	0	256	256	
+rift4		FTserift	256	256	256	256	
+
+#######################
+# Sprite Nodes
+
+#nebula1 Purple gas
+@sprite_node mneb1a mneb1a slp1 (70,70) (1,1,1) billboard
+@sprite_node mneb1b mneb1b slp1 (80,80) (1,1,1) billboard
+@sprite_node mneb1c mneb1c slp1 (100,100) (1,1,1) billboard
+@sprite_node mneb1d mneb1d slp1 (70,70) (1,1,1) billboard
+
+#nebula2a Yellow fire
+@sprite_node mneb2a mneb2a slp1 (75,75) (1,1,1) billboard
+@sprite_node mneb2b mneb2b slp1 (60,60) (1,1,1) billboard
+@sprite_node mneb2c mneb2c slp1 (100,100) (1,1,1) billboard
+@sprite_node mneb2d mneb2d slp1 (90,90) (1,1,1) billboard
+
+#nebula2b Red Gas
+@sprite_node mneb7a mneb7a slp1 (120,120) (1,1,1) billboard
+@sprite_node mneb7b mneb7b slp1 (100,100) (1,1,1) billboard
+@sprite_node mneb7c mneb7c slp1 (125,125) (1,1,1) billboard
+@sprite_node mneb7d mneb7d slp1 (130,130) (1,1,1) billboard
+
+#nebula3a Cyan_yellow nova
+@sprite_node mneb3a mneb3a slp1 (90,90) (1,1,1) billboard
+@sprite_node mneb3b mneb3b slp1 (75,75) (1,1,1) billboard
+@sprite_node mneb3c mneb3c slp1 (70,70) (1,1,1) billboard
+@sprite_node mneb3d mneb3d slp1 (70,70) (1,1,1) billboard
+
+#nebula3b Cyan haze
+@sprite_node mneb3e mneb4a slp1 (110,110) (1,1,1) billboard
+@sprite_node mneb3f mneb4b slp1 (140,140) (1,1,1) billboard
+@sprite_node mneb3g mneb4c slp1 (130,130) (1,1,1) billboard
+@sprite_node mneb3h mneb4d slp1 (140,140) (1,1,1) billboard
+
+#nebula5 Green star nursery
+@sprite_node mneb5a mneb5a slp1 (130,130) (1,1,1) billboard
+@sprite_node mneb5b mneb5b slp1 (110,110) (1,1,1) billboard
+@sprite_node mneb5c mneb5c slp1 (120,120) (1,1,1) billboard
+@sprite_node mneb5d mneb5d slp1 (150,150) (1,1,1) billboard
+
+@sprite_node mneb5e mneb5e slp1 (130,130) (1,1,1) billboard
+@sprite_node mneb5f mneb5f slp1 (120,120) (1,1,1) billboard
+@sprite_node mneb5g mneb5g slp1 (120,120) (1,1,1) billboard
+@sprite_node mneb5h mneb5h slp1 (140,140) (1,1,1) billboard
+
+@sprite_node mneb5i mneb5i slp1 (110,110) (1,1,1) billboard
+@sprite_node mneb5j mneb5j slp1 (100,100) (1,1,1) billboard
+@sprite_node mneb5k mneb5k slp1 (90,90) (1,1,1) billboard
+@sprite_node mneb5l mneb5l slp1 (80,80) (1,1,1) billboard
+
+#nebula6 Hot Gas
+@sprite_node mneb6a mneb6a slp1 (80,80) (1,1,1) billboard
+@sprite_node mneb6b mneb6b slp1 (70,70) (1,1,1) billboard
+@sprite_node mneb6c mneb6c slp1 (90,90) (1,1,1) billboard
+@sprite_node mneb6d mneb6d slp1 (80,80) (1,1,1) billboard
+
+#nebula8 Dust
+@sprite_node mneb8a mneb8a const (160,160) (1,1,1) billboard
+@sprite_node mneb8b mneb8b const (150,150) (1,1,1) billboard
+@sprite_node mneb8c mneb8c const (130,130) (1,1,1) billboard
+@sprite_node mneb8d mneb8d const (140,140) (1,1,1) billboard
+@sprite_node mneb8e mneb8e const (250,250) (1,1,1) billboard
+
+# Lightning Flash
+@sprite_node ftflash1 ftflash1 flash1 (62,69) (1,1,1) billboard
+#@sprite_node ftflash2 ftflash2 flash2 (60,35) (1,1,1) billboard
+#@sprite_node ftflash3 ftflash3 flash4 (54,60) (1,1,1) billboard
+#@sprite_node ftflash4 ftflash4 flash3 (45,54) (1,1,1) billboard
+
+# Sernaix Rift Sprite Nodes
+@sprite_node rift1 rift1 slp1  (80,80) (.2,.1,.1) billboard
+@sprite_node rift2 rift2 slp1  (50,50) (.4,.2,.1) billboard
+@sprite_node rift3 rift3 slp1  (40,40) (.1,.2,.4) billboard
+@sprite_node rift4 rift4 slp1  (40,40) (.1,.5,.2) billboard
