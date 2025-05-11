@@ -291,11 +291,11 @@ ftsflarc	FTflared	0	0	256	256	@anim=tex8x8fl
 
 # -------- Sprite Nodes --------
 
-@sprite_node ftwaspr1 ftspark1 const (7,7) (1,1,1) billboard
-@sprite_node ftwaspr2 ftspark6 const (7,7) (1,1,1) billboard
-@sprite_node ftspark2 ftspark2 const (6,6) (1,1,1) billboard
-@sprite_node ftspark3 ftspark3 const (6,6) (1,1,1) billboard
-@sprite_node ftspark4 ftspark4 const (6,6) (1,1,1) billboard
+#@sprite_node ftwaspr1 ftspark1 const (7,7) (1,1,1) billboard
+#@sprite_node ftwaspr2 ftspark6 const (7,7) (1,1,1) billboard
+#@sprite_node ftspark2 ftspark2 const (6,6) (1,1,1) billboard
+#@sprite_node ftspark3 ftspark3 const (6,6) (1,1,1) billboard
+#@sprite_node ftspark4 ftspark4 const (6,6) (1,1,1) billboard
 @sprite_node ftspark5 ftspark5 const (6,6) (1,1,1) billboard
 @sprite_node ftriker1 ftriker1 const (16,16) (1,1,1) billboard
 @sprite_node ftriker2 ftriker2 riker2 (40,40) (1,1,1) billboard

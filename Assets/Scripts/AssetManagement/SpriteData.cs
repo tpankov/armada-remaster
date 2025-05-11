@@ -53,13 +53,13 @@ namespace CustomSpriteFormat
     public struct KeyframeData
     {
         public float time;
-        public object value; // Can be int (draw), Color (colour), Vector2 (offset)
+        public object value; // Can be int (draw), Color (colour), Vector4 (offset+tile)
 
         // Convenience getters
         public int IntValue => (value is int i) ? i : 0;
         public float FloatValue => (value is float f) ? f : 0f; // Default to 0 if not float
         public Color ColorValue => (value is Color c) ? c : Color.clear; // Default to clear if not Color
-        public Vector2 Vector2Value => (value is Vector2 v) ? v : Vector2.zero;
+        public Vector4 Vector4Value => (value is Vector4 v) ? v : Vector4.zero;
     }
 
     // Holds definition parsed from an @animation block

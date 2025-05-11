@@ -75,7 +75,7 @@ Material:
     m_Floats:
     - _AddPrecomputedVelocity: 0
     - _AlbedoAffectEmissive: 0
-    - _Alpha: 1
+    - _Alpha: 0.496
     - _AlphaCutoff: 0.5
     - _AlphaCutoffEnable: 0
     - _AlphaDstBlend: 10
@@ -115,7 +115,7 @@ Material:
     - _DrawDuration: 1
     - _DrawFrameCount: 0
     - _DrawKeyframeCount: 0
-    - _DstBlend: 10
+    - _DstBlend: 1
     - _EmissiveExposureWeight: 1
     - _EmissiveIntensity: 4
     - _EmissiveIntensityUnit: 0
@@ -131,7 +131,7 @@ Material:
     - _FramesPerRow: 8
     - _FramesPerSecond: 2
     - _IncludeIndirectLighting: 1
-    - _InstanceStartTime: 0
+    - _InstanceStartTime: 29
     - _OffsetDuration: 1
     - _OffsetFrameCount: 0
     - _OffsetInterpolation: 2
