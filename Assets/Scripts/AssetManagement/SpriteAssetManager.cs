@@ -338,7 +338,7 @@ public class SpriteAssetManager : MonoBehaviour
         switch (anim.Type) {
             case AnimationType.Draw: if (int.TryParse(parts[1], out int index)) value = index; break;
             case AnimationType.Colour: Match match = tupleRegex.Match(valueString); if (match.Success) { try { value = new Color( float.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture), float.Parse(match.Groups[2].Value, CultureInfo.InvariantCulture), float.Parse(match.Groups[3].Value, CultureInfo.InvariantCulture), 1f);} catch {} } break;
-            case AnimationType.Offset: if (parts.Length >= 3 && float.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out float x) && float.TryParse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture, out float y)) value = new Vector2(x, y); break;
+            case AnimationType.Offset: if (parts.Length >= 3 && float.TryParse(parts[1], NumberStyles.Any, CultureInfo.InvariantCulture, out float x) && float.TryParse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture, out float y)) value = new Vector4(x/anim.ReferenceSize, y/anim.ReferenceSize, 0, 0); break;
         }
         if (value != null) anim.Keyframes.Add(new ParsedKeyframe { Time = time, Value = value });
         else Debug.LogWarning($"Could not parse keyframe value '{valueString}' for type {anim.Type} on line {lineNum}");
@@ -480,19 +480,19 @@ public class SpriteAssetManager : MonoBehaviour
         if (!isInitialized && !initializationAttempted) Initialize();
         if (loadedAnimations.TryGetValue(animationName, out var animDef)) return animDef;
         if (isInitialized) Debug.LogWarning($"Animation definition '{animationName}' not found.");
-        return new AnimationDefinition();;
+        return null;
      }
     public SpriteNodeDefinition GetSpriteNodeDefinition(string nodeName) {
         if (!isInitialized && !initializationAttempted) Initialize();
         if (loadedSpriteNodes.TryGetValue(nodeName.ToLower(), out var nodeDef)) return nodeDef;
         if (isInitialized) Debug.LogWarning($"Sprite Node Definition '{nodeName}' not found.");
-        return new SpriteNodeDefinition();
+        return null;
      }
     // Accessor for the raw parsed sprite data (useful for getting MaterialType)
     public ParsedSprite GetParsedSpriteDefinition(string spriteName) {
         if (!isInitialized && !initializationAttempted) Initialize();
         if (parsedSpriteDefinitions.TryGetValue(spriteName, out var parsedDef)) return parsedDef;
-        // Don't warn every time for this one, might be called speculatively
+        if (isInitialized) Debug.LogWarning($"Parsed Sprite Definition '{spriteName}' not found.");
         return null; // No warning if not found
     }
 
@@ -520,93 +520,3 @@ public class SpriteAssetManager : MonoBehaviour
         if (_instance == this) _instance = null;
     }
 }
-// *** ADDED: Helper method to generate keyframes for @auto offset animations ***
-//     private void GenerateAutoKeyframes(ParsedAnimation anim)
-//     {
-//         // Ensure this logic only runs for Offset animations
-//         if (anim.Type != AnimationType.Offset)
-//         {
-//             Debug.LogWarning($"@auto keyframe generation requested for non-Offset animation '{anim.Name}'. Skipping generation.");
-//             return;
-//         }
-
-//         if (anim.FrameCount <= 0)
-//         {
-//             Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': FrameCount ({anim.FrameCount}) must be positive.");
-//             return;
-//         }
-//         if (anim.Duration <= 0)
-//         {
-//              Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': Duration ({anim.Duration}) must be positive.");
-//             return; // Prevent division by zero
-//         }
-
-//         anim.Keyframes?.Clear(); // Clear any potentially parsed (but ignored) keyframes
-
-//         float frameDuration = anim.Duration / anim.FrameCount;
-//         // Use reference size defined for the animation context. Fallback needed?
-//         float refSize = anim.ReferenceSize > 0 ? anim.ReferenceSize : 512f; // Using 512 fallback if not specified
-
-//         float frameWidth = refSize;
-//         float frameHeight = refSize;
-//         int gridDim = 1; // Dimension for row/column/square calculations
-
-//         switch (anim.AutoKeyframe)
-//         {
-//             case AdvancedFlipbookController.FlipbookType.Row:
-//                 gridDim = anim.FrameCount;
-//                 frameWidth = refSize / gridDim;
-//                 // frameHeight = refSize; // Assuming single row fills height
-//                 break;
-//             case AdvancedFlipbookController.FlipbookType.Column:
-//                 gridDim = anim.FrameCount;
-//                 // frameWidth = refSize; // Assuming single col fills width
-//                 frameHeight = refSize / gridDim;
-//                 break;
-//             case AdvancedFlipbookController.FlipbookType.Grid:
-//                 double sqrtFrames = System.Math.Sqrt(anim.FrameCount);
-//                 if (sqrtFrames != System.Math.Floor(sqrtFrames)) // Check if not a perfect square
-//                 {
-//                      Debug.LogError($"Cannot generate Square keyframes for animation '{anim.Name}': FrameCount ({anim.FrameCount}) is not a perfect square.");
-//                      return;
-//                 }
-//                 gridDim = (int)sqrtFrames;
-//                 frameWidth = refSize / gridDim;
-//                 frameHeight = refSize / gridDim;
-//                 break;
-//             default:
-//                 Debug.LogError($"Cannot generate keyframes for animation '{anim.Name}': Unknown or None AutoKeyframeType.");
-//                 return;
-//         }
-
-//         Debug.Log($"Generating {anim.FrameCount} keyframes for '{anim.Name}' (Type: {anim.AutoKeyframe}, RefSize: {refSize}, Frame W/H: {frameWidth}x{frameHeight})");
-
-//         for (int i = 0; i < anim.FrameCount; i++)
-//         {
-//             float time = i * frameDuration;
-//             float offsetX = 0;
-//             float offsetY = 0;
-
-//             switch (anim.AutoKeyframe)
-//             {
-//                 case AdvancedFlipbookController.FlipbookType.Row:
-//                     offsetX = i * frameWidth;
-//                     offsetY = 0;
-//                     break;
-//                 case AdvancedFlipbookController.FlipbookType.Column:
-//                     offsetX = 0;
-//                     offsetY = i * frameHeight;
-//                     break;
-//                 case AdvancedFlipbookController.FlipbookType.Grid:
-//                     int row = i / gridDim;
-//                     int col = i % gridDim;
-//                     offsetX = col * frameWidth;
-//                     offsetY = row * frameHeight;
-//                     break;
-//             }
-
-//             anim.Keyframes.Add(new ParsedKeyframe { Time = time, Value = new Vector2(offsetX, offsetY) });
-//         }
-//     }
-
-// }

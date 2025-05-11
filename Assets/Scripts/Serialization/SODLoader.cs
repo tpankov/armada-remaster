@@ -40,6 +40,40 @@ public class SODLoader
         
     }
 
+    private GameObject configureNode(string nodeName, string parentName, Matrix4x4 localTransform)
+    {
+        GameObject nodeObject = new GameObject(nodeName);
+        nodeObject.transform.localPosition = localTransform.GetColumn(3);
+        nodeObject.transform.localRotation = localTransform.rotation;
+        //Quaternion.LookRotation(localTransform.GetColumn(2), localTransform.GetColumn(1));
+        nodeObject.transform.localScale = new Vector3(localTransform.GetColumn(0).magnitude, localTransform.GetColumn(1).magnitude, localTransform.GetColumn(2).magnitude);
+        if (parentName != null && parentName.Length > 0 && nodeObjects.ContainsKey(parentName))
+        {
+            nodeObject.transform.parent = nodeObjects[parentName].transform;
+        }
+        else
+        {
+            nodeObject.transform.parent = null;
+        }
+        nodeObjects.Add(nodeName, nodeObject);
+        return nodeObject;
+    }
+    // {
+    //     GameObject nodeObject = new GameObject(nodeName);
+    //     nodeObject.transform.localPosition = localTransform.GetPosition();  
+    //     nodeObject.transform.SetLocalPositionAndRotation(localTransform.GetPosition(),localTransform.rotation);
+        
+    //     if (!string.IsNullOrEmpty(parentName) && nodeObjects.ContainsKey(parentName))
+    //     {
+    //         nodeObject.transform.parent = nodeObjects[parentName].transform;
+    //     }
+    //     else if (go != null)
+    //     {
+    //         nodeObject.transform.parent = go.transform;
+    //     }
+
+    //     nodeObjects[nodeName] = nodeObject;
+    //}
     public void LoadSOD(string filePath, GameObject go = null, Dictionary<string, string> legacyLightmaps = null)
     {
         if (!File.Exists(filePath))
@@ -69,11 +103,11 @@ public class SODLoader
             {
                 string materialName = ReadIdentifier(reader);
                 Debug.Log("Material Name: " + materialName);
-                if (ShipMaterialManager.Instance.sharedMaterials.ContainsKey(materialName))
-                {
-                    Debug.LogWarning("Material already loaded: " + materialName);
-                    //continue;
-                }
+                // if (MaterialManager.Instance.sharedMaterials.ContainsKey(materialName))
+                // {
+                //     Debug.LogWarning("Material already loaded: " + materialName);
+                //     //continue;
+                // }
                 Color ambient = ReadColor(reader);
                 Color diffuse = ReadColor(reader);
                 Color specular = ReadColor(reader);
@@ -103,31 +137,11 @@ public class SODLoader
                 string parentName = ReadIdentifier(reader);
                 Matrix4x4 localTransform = ReadMatrix(reader);
 
-                GameObject nodeObject = new GameObject(nodeName);
-                nodeObject.transform.localPosition = localTransform.GetPosition();
-                // Debug.LogFormat("{0} {1} {2} {3}\n{4} {5} {6} {7}\n{8} {9} {10} {11}\n{12} {13} {14} {15}",
-                //     localTransform.GetRow(0).x,localTransform.GetRow(0).y,localTransform.GetRow(0).z, localTransform.GetRow(0).w,
-                //     localTransform.GetRow(1).x,localTransform.GetRow(1).y,localTransform.GetRow(1).z, localTransform.GetRow(1).w,
-                //     localTransform.GetRow(2).x,localTransform.GetRow(2).y,localTransform.GetRow(2).z, localTransform.GetRow(2).w,
-                //     localTransform.GetRow(3).x,localTransform.GetRow(3).y,localTransform.GetRow(3).z, localTransform.GetRow(3).w
-                //     );
-                    
-                nodeObject.transform.SetLocalPositionAndRotation(localTransform.GetPosition(),localTransform.rotation);
-                //Debug.LogFormat("EulD: {0},{1},{2},{3}",localTransform.GetR().eulerAngles.x,localTransform.rotation.eulerAngles.y,localTransform.GetR().eulerAngles.z,localTransform.determinant);
-
-                if (!string.IsNullOrEmpty(parentName) && nodeObjects.ContainsKey(parentName))
-                {
-                    nodeObject.transform.parent = nodeObjects[parentName].transform;
-                }
-                else if (go != null)
-                {
-                    nodeObject.transform.parent = go.transform;
-                }
-
-                nodeObjects[nodeName] = nodeObject;
+                
                 Debug.LogFormat("Node Name: {0}:{1}", nodeName, nodeType);
                 if (nodeType == 1) // MESH
                 {
+                    GameObject nodeObject = configureNode(nodeName, parentName, localTransform);
                     string textureMaterial = ReadIdentifier(reader); // alpha, opaque, etc
                     ulong dummy0 = 0; 
                     ushort dummy2 = 0;
@@ -298,30 +312,20 @@ public class SODLoader
                     for (int g = 0; g < lightingGroups.Count; g++)
                     {
                         // Apply to submesh
-                        if (lightingGroups[g].lightingMaterial.Length > 0)
-                            ShipMaterialManager.Instance.ApplyShipMaterial(lightingGroups[g].lightingMaterial, 
-                                meshRenderer, 
-                                baseTexture , 
-                                null, 
-                                null,
-                                textureMaterial == "alpha",
-                                textureMaterial == "translucent",
-                                cull == 1,
-                                g,
-                                lightingGroups.Count);//, myNormalTexture, myEmissionTexture);
-                        else
-                        {
-                            ShipMaterialManager.Instance.ApplyShipMaterial("default", 
-                                meshRenderer, 
-                                baseTexture, 
-                                null, 
-                                null,
-                                textureMaterial == "alpha",
-                                textureMaterial == "translucent",
-                                cull == 1,
-                                g,
-                                lightingGroups.Count);
-                        }
+                        MaterialManager.Instance.ApplyMaterial(
+                            materialName: lightingGroups[g].lightingMaterial.Length > 0 ? lightingGroups[g].lightingMaterial : "stdhull",
+                            renderer: meshRenderer,
+                            baseTex: baseTexture, 
+                            normalTex: null, 
+                            emissionTex: null,
+                            useAnimationData: false,
+                            effectAnimationData: new EffectAnimationDataArrayBased(),
+                            isTransparent: textureMaterial == "alpha" || textureMaterial == "wormhole", 
+                            isAdditive: textureMaterial == "additive",
+                            backfaceCulling: cull == 1,
+                            materialIndex: g,
+                            numberOfMaterials: lightingGroups.Count
+                        );
                     }
                 }
                 else if (nodeType == 12)
@@ -334,6 +338,11 @@ public class SODLoader
                     //string hardpoint = ReadIdentifier(reader);
                     //Debug.Log("Point: " + nodeName);
                 }
+                else if (nodeType == 3)
+                {
+                    EffectPoolManager.Instance.SpawnEffect(nodeName, localTransform.GetPosition(), localTransform.rotation, go);
+                }
+                
                 
             }
 
@@ -453,16 +462,16 @@ public class SODLoader
         }
     }
 
-    private System.Collections.IEnumerator AnimateTextureOffset(Material mat, float playbackOffset)
-    {
-        float speed = 1f / playbackOffset;
-        while (true)
-        {
-            float offset = Time.time * speed;
-            mat.mainTextureOffset = new Vector2(offset % 1, 0);
-            yield return null;
-        }
-    }
+    // private System.Collections.IEnumerator AnimateTextureOffset(Material mat, float playbackOffset)
+    // {
+    //     float speed = 1f / playbackOffset;
+    //     while (true)
+    //     {
+    //         float offset = Time.time * speed;
+    //         mat.mainTextureOffset = new Vector2(offset % 1, 0);
+    //         yield return null;
+    //     }
+    // }
 
     private string ReadIdentifier(BinaryReader reader) => new string(reader.ReadChars(reader.ReadUInt16())).TrimEnd('\0');
     private Color ReadColor(BinaryReader reader) => new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());

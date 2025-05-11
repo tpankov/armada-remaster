@@ -13,7 +13,7 @@ public class test : MonoBehaviour
     {
         //CustomSpriteFormat.SpriteNodeDefinition snd = SpriteAssetManager.Instance.GetSpriteNodeDefinition(SpriteNodeName);
         //EffectAnimationDataArrayBased ad = EffectAnimationDataArrayBased.CreateFromSpriteNode(snd);
-        effect = EffectPoolManager.Instance.SpawnEffect(SpriteNodeName, transform.position, Quaternion.identity);
+        //effect = EffectPoolManager.Instance.SpawnEffect(SpriteNodeName, transform.position, Quaternion.identity);
         
     }
 
@@ -30,17 +30,19 @@ public class test : MonoBehaviour
             randomIndex++;
             if (randomIndex >= SpriteAssetManager.Instance.loadedSpriteNodes.Count)
             {
-                randomIndex = 0;
+                randomIndex = 6;
+                Debug.Log("Resetting random index to 0");
             }
             Vector3 spawnPosition = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0);
-            effect = EffectPoolManager.Instance.SpawnEffect(SpriteNodeName, spawnPosition, Quaternion.identity);
+            effect = EffectPoolManager.Instance.SpawnEffect(toSpawn, spawnPosition, Quaternion.identity);
             // Example of how to use the EffectPoolManager to spawn an effect
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (effect != null)
             {
-                EffectPoolManager.Instance.ReturnEffect(SpriteNodeName,effect);
+                string toSpawn = SpriteAssetManager.Instance.loadedSpriteNodes.ElementAt(randomIndex).Key;
+                EffectPoolManager.Instance.ReturnEffect(toSpawn,effect);
                 effect = null;
             }
         }
