@@ -390,46 +390,86 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
                 // Visibility Check
                 clip(input.visibility > 0 ? 1 : -1);
 
-                 // --- Depth Calculations ---
-                // Screen UVs for sampling depth texture
-                float2 screenUV = input.positionCS.xy / input.positionCS.w;
-                screenUV = screenUV * 0.5 + 0.5;
-                #if UNITY_UV_STARTS_AT_TOP // Required for DirectX
-                    screenUV.y = 1.0 - screenUV.y;
-                #endif
+                //  // --- Depth Calculations ---
+                // // Screen UVs for sampling depth texture
+                // float2 screenUV = input.positionCS.xy / input.positionCS.w;
+                // screenUV = screenUV * 0.5 + 0.5;
+                // #if UNITY_UV_STARTS_AT_TOP // Required for DirectX
+                //     screenUV.y = 1.0 - screenUV.y;
+                // #endif
 
-                // Sample scene depth (opaque objects behind this fragment)
-                float sceneRawDepth = SampleCameraDepth(screenUV); // HDRP function
-                // Linearize scene depth to view space (distance from camera plane)
-                float sceneViewZ = LinearEyeDepth(sceneRawDepth, _ZBufferParams); // _ZBufferParams is built-in
+                // //return float4(screenUV.x, screenUV.x, 0, 1); // Default white color
+                // // Sample scene depth (opaque objects behind this fragment)
+                // float sceneRawDepth = SampleCameraDepth(screenUV); // HDRP function
+                // // Linearize scene depth to view space (distance from camera plane)
+                // float sceneViewZ = LinearEyeDepth(sceneRawDepth, _ZBufferParams); // _ZBufferParams is built-in
+                // //return float4(0.001*sceneViewZ, 0.01*sceneViewZ, 0.01*sceneViewZ, 1.0); // Debugging output
+                // // Fragment's own view space depth (distance from camera plane)
+                // // input.viewSpaceZ is negative, make it positive distance
+                // float fragmentViewZ = -input.viewSpaceZ;
 
-                // Fragment's own view space depth (distance from camera plane)
-                // input.viewSpaceZ is negative, make it positive distance
-                float fragmentViewZ = -input.viewSpaceZ;
+                // // --- Calculate Depth-Based Alpha Modifier ---
+                // float depthAlphaMod = 1.0;
 
-                // --- Calculate Depth-Based Alpha Modifier ---
-                float depthAlphaMod = 1.0;
+                // // 1. Soft Particle Intersection Fade
+                // float depthDifference = sceneViewZ - fragmentViewZ; // Positive if fragment is in front
+                // //float softFade = saturate((depthDifference - _DepthFadeStartDistance) / max(1e-6f, _DepthFadeEndDistance - _DepthFadeStartDistance));
+                // // softFade = 0 when fragment is at or behind _DepthFadeStartDistance from surface
+                // // softFade = 1 when fragment is at or beyond _DepthFadeEndDistance from surface
 
-                // 1. Soft Particle Intersection Fade
-                float depthDifference = sceneViewZ - fragmentViewZ; // Positive if fragment is in front
-                float softFade = saturate((depthDifference - _DepthFadeStartDistance) / max(1e-6f, _DepthFadeEndDistance - _DepthFadeStartDistance));
-                // softFade = 0 when fragment is at or behind _DepthFadeStartDistance from surface
-                // softFade = 1 when fragment is at or beyond _DepthFadeEndDistance from surface
+                // //depthAlphaMod *= softFade;
 
-                depthAlphaMod *= softFade;
+                // // --- DEBUGGING OUTPUTS (Uncomment ONE return statement at a time) ---
 
-                // 2. Volumetric Density (Fog-like)
-                if (_UseVolumetricDensity > 0.5)
-                {
-                    // Option A: Density based on how much "fog volume" is between fragment and background surface
-                    float volumeThickness = saturate(depthDifference / max(1e-6f, _VolumeMaxDepth));
+                // // 1. Visualize Raw Scene Depth (often non-linear, might look mostly white or black)
+                // //    Values are usually 0 (near plane) to 1 (far plane) before linearization.
+                // //return float4(sceneRawDepth, sceneRawDepth, sceneRawDepth, 1.0);
 
-                    // Option B: Density based on distance from camera (more traditional fog)
-                    // float viewDistanceFade = saturate(fragmentViewZ / max(1e-6f, _VolumeMaxDepth));
-                    // viewDistanceFade = 1.0 - viewDistanceFade; // Closer is denser, or vice-versa
+                // // 2. Visualize Linear Scene View Z (distance from camera)
+                // //    Divide by a reasonable max distance to bring it into 0-1 color range.
+                // //    Adjust 'maxExpectedSceneDepth' based on your scene scale.
+                // //float maxExpectedSceneDepth = 100.0; // Example: 100 units
+                // //return float4(saturate(sceneViewZ / 1), 0, 0, 1.0); // Red channel
 
-                    depthAlphaMod *= volumeThickness * _VolumeDensityScale; // Using Option A
-                }
+                // // 3. Visualize Fragment's Own View Z
+                // //float maxExpectedFragmentDepth = 1.0; // Example
+                // //return float4(0, saturate(fragmentViewZ / maxExpectedFragmentDepth), 0, 1.0); // Green channel
+
+                // // 4. Visualize Depth Difference
+                // //    This can be positive or negative. Remap to 0-1.
+                // //    Positive (particle in front of surface) = green, Negative (particle behind) = red.
+                // float vizDepthDiffScale = 100.0; // Scale factor to see smaller differences
+                // if (depthDifference > 0) {
+                //     return float4(0, saturate(depthDifference / vizDepthDiffScale), 0, 1.0); // Green for positive diff
+                // } else {
+                //     return float4(saturate(abs(depthDifference) / vizDepthDiffScale), 0, 0, 1.0); // Red for negative diff
+                // }
+
+                // // 5. Visualize Soft Particle Intersection Fade Factor
+                // float softFade = saturate((depthDifference - _DepthFadeStartDistance) / max(1e-6f, _DepthFadeEndDistance - _DepthFadeStartDistance));
+                // // return float4(softFade, softFade, softFade, 1.0); // Grayscale: Black = faded, White = opaque
+
+                // // 6. Visualize Volumetric Density Factor (if enabled)
+                // // if (_UseVolumetricDensity > 0.5)
+                // // {
+                // //     float volumeThickness = saturate(depthDifference / max(1e-6f, _VolumeMaxDepth));
+                // //     float volDensity = volumeThickness * _VolumeDensityScale;
+                // //     return float4(saturate(volDensity), saturate(volDensity), saturate(volDensity), 1.0); // Grayscale
+                // // }
+
+
+                // // 2. Volumetric Density (Fog-like)
+                // if (_UseVolumetricDensity > 0.5)
+                // {
+                //     // Option A: Density based on how much "fog volume" is between fragment and background surface
+                //     float volumeThickness = saturate(depthDifference / max(1e-6f, _VolumeMaxDepth));
+
+                //     // Option B: Density based on distance from camera (more traditional fog)
+                //     // float viewDistanceFade = saturate(fragmentViewZ / max(1e-6f, _VolumeMaxDepth));
+                //     // viewDistanceFade = 1.0 - viewDistanceFade; // Closer is denser, or vice-versa
+
+                //     depthAlphaMod *= volumeThickness * _VolumeDensityScale; // Using Option A
+                // }
 
                 // Calculate Final UVs and Sample Texture
                 float4 texColor;
@@ -462,7 +502,7 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
 
                 // Combine original alpha with depth-based modifier
                 finalColor.a *= _Alpha; // Global alpha from properties
-                finalColor.a *= depthAlphaMod; // Apply depth-based alpha
+                //finalColor.a *= depthAlphaMod; // Apply depth-based alpha
                 finalColor.a = saturate(finalColor.a); // Clamp final alpha
 
                 return finalColor;

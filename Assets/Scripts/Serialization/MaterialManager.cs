@@ -30,56 +30,12 @@ public class MaterialManager : MonoBehaviour {
         sharedMaterials.Add("lightmap_alpha",CreateHDRPMaterial("HDRP/Unlit",isTransparent:true));
         sharedMaterials.Add("lightmap_additive",CreateHDRPMaterial("HDRP/Unlit",isAdditive:true));
         sharedMaterials.Add("lightmap_alpha_nocull",CreateHDRPMaterial("HDRP/Unlit",isTransparent:true,backfaceCulling:false));
-        sharedMaterials.Add("sprite_additive",CreateHDRPMaterial("Custom/HDRP/FlipbookAnimatorArray",isAdditive:true));
-        sharedMaterials.Add("sprite_alpha",CreateHDRPMaterial("Custom/HDRP/FlipbookAnimatorArray",isTransparent:true));
+        sharedMaterials.Add("sprite_additive",CreateHDRPMaterial("Custom/HDRP/FlipbookAnimatorArray",isAdditive:true, backfaceCulling:false));
+        sharedMaterials.Add("sprite_alpha",CreateHDRPMaterial("Custom/HDRP/FlipbookAnimatorArray",isTransparent:true, backfaceCulling:false));
         sharedMaterials.Add("sprite",CreateHDRPMaterial("Custom/HDRP/FlipbookAnimatorArray",isTransparent:false,backfaceCulling:false));
         sharedMaterials.Add("nospec",sharedMaterials["stdhull"]);
         Debug.Log("MaterialManager initialized and shared materials created.");
     }
-
-    // public void ApplyShipMaterial(string materialName, 
-    //         MeshRenderer meshRenderer, 
-    //         Texture2D baseTex, 
-    //         Texture2D normalTex, 
-    //         Texture2D emissionTex, 
-    //         bool isTransparent = false,
-    //         bool isAdditive = false,
-    //         bool backfaceCulling = true,
-    //         int materialIndex = -1,
-    //         int numberOfMaterials = 1
-    //         ) {
-    //     if (meshRenderer == null) return;
-
-    //     // Assign the shared material
-    //     if (numberOfMaterials > 1)
-    //         meshRenderer.sharedMaterials[materialIndex] = GetOrCreateMaterial(materialName, isTransparent, isAdditive, backfaceCulling);
-    //     else
-    //         meshRenderer.sharedMaterial = GetOrCreateMaterial(materialName, isTransparent, isAdditive, backfaceCulling);
-
-    //     // Create a new MaterialPropertyBlock for per-instance texture overrides
-    //     MaterialPropertyBlock mpb = new MaterialPropertyBlock();
-
-    //     if (baseTex != null) mpb.SetTexture("_BaseColorMap", baseTex);
-    //     if (isTransparent) {
-    //         mpb.SetFloat("_AlphaCutoffEnable", 0.0f);
-    //         mpb.SetColor("_BaseColor", Color.black);
-    //         mpb.SetFloat("_SurfaceType", 1); // Transparent surface
-    //         mpb.SetFloat("_BlendMode", 0);   // Alpha blending  
-    //     }
-
-    //     if (normalTex != null) mpb.SetTexture("_NormalMap", normalTex);
-    //     if (emissionTex != null) {
-    //         mpb.SetTexture("_EmissiveColorMap", emissionTex);
-    //         mpb.SetColor("_EmissiveColor", Color.black * 10.0f); // HDR Emission Boost
-    //     }
-
-    //     // Apply property block to MeshRenderer
-    //     if (materialIndex > -1)
-    //         meshRenderer.SetPropertyBlock(mpb,materialIndex);
-    //     else
-    //         meshRenderer.SetPropertyBlock(mpb);
-
-    // }
 
 
     public void ApplyMaterial(string materialName, Renderer renderer, Texture2D baseTex, Texture2D normalTex, Texture2D emissionTex,
@@ -123,31 +79,6 @@ public class MaterialManager : MonoBehaviour {
         
     }
 
-    // 
-    //Material GetOrCreateMaterial(CustomSpriteFormat.MaterialType materialType)
-    // {
-    //     //string cacheKey = $"{texture.name}_{materialType}"; // Unique key per combo
-    //     string cacheKey = $"{materialType}"; // Unique key per combo
-    //     Debug.Log($"Cache key for material: {cacheKey}");
-    //     if (sharedMaterials.TryGetValue(cacheKey, out Material cachedMat))
-    //     {
-    //         return cachedMat;
-    //     }
-
-    //     // Create new material
-    //     Material newMat = new Material(_flipbookShader);
-    //     newMat.name = cacheKey; // Helpful for debugging
-    //     // newMat.SetTexture("_BaseMap", texture);
-
-    //     // Configure blend mode based on type
-    //     ConfigureMaterialBlendMode(newMat, materialType);
-
-    //     sharedMaterials.Add(cacheKey, newMat);
-    //     return newMat;
-    // }
-
-    
-
 
     public Material GetOrCreateMaterial(string materialName, bool isTransparent, bool isAdditive, bool backfaceCulling)
     {
@@ -158,26 +89,30 @@ public class MaterialManager : MonoBehaviour {
             key += "_additive";
         if (!backfaceCulling)
             key += "_culloff";
-        Debug.LogFormat("Creating material: {0}", key);
         if (!sharedMaterials.ContainsKey(key))
+        {
+            Debug.LogFormat("Creating material: {0}", key);
+            if (sharedMaterials.ContainsKey(materialName))
             {
-                if (sharedMaterials.ContainsKey(materialName))
-                {
-                    Debug.LogFormat("getOrCreate: {0}, {1}", materialName, sharedMaterials[materialName].shader);
-                    sharedMaterials.Add(key,CreateHDRPMaterial(sharedMaterials[materialName].shader,isTransparent,isAdditive,backfaceCulling));
-                }
-                else
-                    sharedMaterials.Add(key,CreateHDRPMaterial("HDRP/Lit",isTransparent,isAdditive,backfaceCulling));
+                Debug.LogFormat("getOrCreate: {0}, {1}", materialName, sharedMaterials[materialName].shader);
+                sharedMaterials.Add(key,CreateHDRPMaterial(sharedMaterials[materialName].shader,isTransparent,isAdditive,backfaceCulling));
             }
-        return sharedMaterials[materialName];
+            else
+                sharedMaterials.Add(key,CreateHDRPMaterial("HDRP/Lit",isTransparent,isAdditive,backfaceCulling));
+        }
+        else
+        {
+            Debug.LogFormat("Using existing material: {0}", key);
+        }
+        return sharedMaterials[key];
     }
 
-    void ConfigureMaterialBlendMode(Material mat, CustomSpriteFormat.MaterialType type, bool backfaceCulling = true)
+    void ConfigureMaterialBlendMode(ref Material mat, CustomSpriteFormat.MaterialType type, bool backfaceCulling = true)
     {
         mat.enableInstancing = true;
 
         // Surface Type: Opaque or Transparent
-        mat.SetFloat("_SurfaceType", (type == CustomSpriteFormat.MaterialType.Alpha || type == CustomSpriteFormat.MaterialType.Additive) ? 1.0f : 0.0f);
+        //mat.SetFloat("_SurfaceType", (type == CustomSpriteFormat.MaterialType.Alpha || type == CustomSpriteFormat.MaterialType.Additive) ? 1.0f : 0.0f);
        // mat.SetFloat("_BlendMode", type == CustomSpriteFormat.MaterialType.Additive ? 1.0f : 0.0f); // Additive blending
         //mat.SetFloat("_CullMode", backfaceCulling ? 2.0f : 0.0f); // 2 = Back, 0 = Off
         mat.SetFloat("_CullMode", backfaceCulling ? (int)UnityEngine.Rendering.CullMode.Back : (int)UnityEngine.Rendering.CullMode.Off);
@@ -185,19 +120,20 @@ public class MaterialManager : MonoBehaviour {
         // Set common properties for transparency
         //mat.SetFloat("_SurfaceType", 1.0f); // 1 = Transparent
         mat.SetFloat("_ZWrite", 0.0f);      // ZWrite Off
+        //return;
 
         // HDRP blend mode setup (Simplified - adjust based on exact HDRP standard lit blend properties if needed)
         // These property names might need updating based on exact HDRP Lit shader conventions if not using legacy properties.
         switch (type)
         {
             case CustomSpriteFormat.MaterialType.Additive:
-                mat.SetColor("_BaseColor", Color.black);
+                //mat.SetColor("_BaseColor", Color.black);
                 mat.SetFloat("_UseEmissive", 1.0f); // Enable emissive path in shader
-                mat.SetFloat("_BlendMode", 1.0f);  // Set to Additive if HDRP uses this property
+                //mat.SetFloat("_BlendMode", 1.0f);  // Set to Additive if HDRP uses this property
                 mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha); // SrcAlpha for pre-multiplied, One for additive
                 mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
-                mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 50 ;
-                mat.SetFloat("_AlphaCutoffEnable", 0.0f);
+                //mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent + 50 ;
+                //mat.SetFloat("_AlphaCutoffEnable", 0.0f);
                 mat.SetFloat("_SurfaceType", 1.0f); // Transparent surface
                 Debug.Log("Additive blend mode set.");
                 break;
@@ -205,11 +141,11 @@ public class MaterialManager : MonoBehaviour {
             case CustomSpriteFormat.MaterialType.Alpha: // Standard Alpha Blending
                 mat.SetColor("_BaseColor", Color.black);
                 mat.SetFloat("_UseEmissive", 0.0f);
-                mat.SetFloat("_BlendMode", 0.0f); // Set to Alpha if HDRP uses this property
+                //mat.SetFloat("_BlendMode", 0.0f); // Set to Alpha if HDRP uses this property
                 mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha); // Standard alpha blend
                 mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                 mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent  ;
-                mat.SetFloat("_AlphaCutoffEnable", 0.0f);
+                //mat.SetFloat("_AlphaCutoffEnable", 0.0f);
                 mat.SetFloat("_SurfaceType", 1.0f); // Transparent surface
                 Debug.Log("Alpha blend mode set.");
                 break;
@@ -217,7 +153,7 @@ public class MaterialManager : MonoBehaviour {
             default:
                 mat.SetColor("_BaseColor", Color.black);
                 mat.SetFloat("_UseEmissive", 0.0f);
-                mat.SetFloat("_BlendMode", 0.0f); // Set to Alpha if HDRP uses this property
+                //mat.SetFloat("_BlendMode", 0.0f); // Set to Alpha if HDRP uses this property
                 mat.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.One); // Standard alpha blend
                 mat.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.One);
                 mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
@@ -239,11 +175,11 @@ public class MaterialManager : MonoBehaviour {
     
         
     }
-    void ConfigureMaterialBlendMode(Material mat, bool isTransparent, bool isAdditive, bool backfaceCulling) {
+    void ConfigureMaterialBlendMode(ref Material mat, bool isTransparent, bool isAdditive, bool backfaceCulling) {
         // Set the blend mode based on the type
         CustomSpriteFormat.MaterialType type = isAdditive ? CustomSpriteFormat.MaterialType.Additive : 
             (isTransparent ? CustomSpriteFormat.MaterialType.Alpha : CustomSpriteFormat.MaterialType.Default);
-        ConfigureMaterialBlendMode(mat, type, backfaceCulling);
+        ConfigureMaterialBlendMode(ref mat, type, backfaceCulling);
     }
 
     Material CreateHDRPMaterial(string shaderName, bool isTransparent = false, bool isAdditive = false, bool backfaceCulling = true) {
@@ -252,7 +188,7 @@ public class MaterialManager : MonoBehaviour {
     }
     Material CreateHDRPMaterial(Shader shader, bool isTransparent = false, bool isAdditive = false, bool backfaceCulling = true) {
         Material mat = new Material(shader);
-        ConfigureMaterialBlendMode(mat, isTransparent, isAdditive, backfaceCulling);
+        ConfigureMaterialBlendMode(ref mat, isTransparent, isAdditive, backfaceCulling);
         mat.name = shader.name + (isTransparent ? "_Alpha" : "") + (isAdditive ? "_Additive" : "") + (backfaceCulling ? "" : "_NoCull");
         return mat;
     }

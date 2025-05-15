@@ -121,10 +121,8 @@ public class EffectPoolManager : MonoBehaviour
             
         }
         // 2. Get Material: Use caching function
-        Debug.Log($"Getting material for effectId: {effectId}, materialType: {controllerData.materialType}");
-        Debug.Log($"MatManager: {MaterialManager.Instance}");
         instanceMaterial = MaterialManager.Instance.GetOrCreateMaterial("sprite", 
-            isTransparent: controllerData.materialType == MaterialType.Alpha || controllerData.materialType == MaterialType.Additive, 
+            isTransparent: controllerData.materialType == MaterialType.Alpha, 
             isAdditive: controllerData.materialType == MaterialType.Additive,
             backfaceCulling: true);
 
@@ -143,9 +141,9 @@ public class EffectPoolManager : MonoBehaviour
         objToSpawn.transform.localRotation = rotation;
 
         // 4. Assign Material
-        Renderer rend = objToSpawn.GetComponent<Renderer>();
+        MeshRenderer rend = objToSpawn.GetComponent<MeshRenderer>();
         //if (rend == null) { Debug.LogError("Quad prefab missing Renderer!"); Destroy(objToSpawn); return null; }
-        rend.material = instanceMaterial; // Assign the shared/cached material
+        rend.sharedMaterial = instanceMaterial; // Assign the shared/cached material
 
         // 5. Prepare Animation Data for Controller
         //EffectAnimationDataArrayBased controllerData = ConvertDefinitionsToControllerData(nodeDef, spriteDef, animDefs);

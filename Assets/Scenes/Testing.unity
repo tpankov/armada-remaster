@@ -149,7 +149,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 130000
+  m_Intensity: 66904.914
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -211,14 +211,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 157207112}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.27781588, y: -0.36497167, z: 0.8811196, w: -0.1150751}
+  m_LocalRotation: {x: -0.5784665, y: -0.2983862, z: 0.72036797, w: -0.23960865}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 222420031}
   m_Father: {fileID: 1610324853}
-  m_LocalEulerAnglesHint: {x: 135, y: -215, z: 0}
+  m_LocalEulerAnglesHint: {x: 135, y: -257.53, z: 0}
 --- !u!114 &157207115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,7 +282,7 @@ MonoBehaviour:
   flareMultiplier: 1
   surfaceTexture: {fileID: 0}
   surfaceTint: {r: 1, g: 1, b: 1, a: 1}
-  m_Distance: 1.5e+11
+  m_Distance: 1.5e+10
   m_UseRayTracedShadows: 0
   m_NumRayTracingSamples: 4
   m_FilterTracedShadow: 1
@@ -351,7 +351,7 @@ MonoBehaviour:
   m_ShadowVariant: 0
   m_ShadowPrecision: 0
   useOldInspector: 0
-  useVolumetric: 1
+  useVolumetric: 0
   featuresFoldout: 1
   m_AreaLightEmissiveMeshShadowCastingMode: 0
   m_AreaLightEmissiveMeshMotionVectorGenerationMode: 0
@@ -571,7 +571,7 @@ MonoBehaviour:
   flareFalloff: 2
   flareMultiplier: 1
   surfaceTexture: {fileID: 2800000, guid: cce9f0cf7e606e547a7317aedb4ad6d9, type: 3}
-  surfaceTint: {r: 0.003921569, g: 0.003921569, b: 0.003921569, a: 1}
+  surfaceTint: {r: 0.25606465, g: 0.25606465, b: 0.25606465, a: 1}
   m_Distance: 384400000
   m_UseRayTracedShadows: 0
   m_NumRayTracingSamples: 4
@@ -764,7 +764,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: f730c975f3edf3d4e9fce9cad1bb4299, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 4594f4a3fb14247e192bcca6dc23c8ed, type: 2}
 --- !u!4 &432432461
 Transform:
   m_ObjectHideFlags: 0
@@ -1095,6 +1095,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1156530043}
+  - component: {fileID: 1156530046}
   - component: {fileID: 1156530042}
   - component: {fileID: 1156530044}
   - component: {fileID: 1156530045}
@@ -1162,6 +1163,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SpriteNodeName: ftwaspr1
+--- !u!114 &1156530046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156530040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e97215504f5a88848bee7e58821bdc89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1408877898
 GameObject:
   m_ObjectHideFlags: 0
@@ -1749,7 +1762,7 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 91.14905
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -1764,7 +1777,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 15.000001
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -1790,13 +1803,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1823688464}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.11476376, y: 0, z: 0, w: 0.9933929}
+  m_LocalRotation: {x: 0.17296053, y: 0, z: 0, w: 0.9849287}
   m_LocalPosition: {x: 0, y: 1.5, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 13.18, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 19.92, y: 0, z: 0}
 --- !u!114 &1823688468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1809,8 +1822,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23c1ce4fb46143f46bc5cb5224c934f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clearColorMode: 0
-  backgroundColorHDR: {r: 1, g: 0, b: 0, a: 0}
+  clearColorMode: 2
+  backgroundColorHDR: {r: 0.2520215, g: 0.2520215, b: 0.2520215, a: 1}
   clearDepth: 1
   volumeLayerMask:
     serializedVersion: 2
