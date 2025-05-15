@@ -3,8 +3,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using CustomSpriteFormat;
 using Unity.Mathematics;
-using Unity.VisualScripting;
-using TMPro.EditorUtilities;
+// using Unity.VisualScripting;
+// using TMPro.EditorUtilities;
 
 [RequireComponent(typeof(Renderer))]
 public class AdvancedFlipbookControllerArrays : MonoBehaviour
@@ -173,7 +173,14 @@ public class AdvancedFlipbookControllerArrays : MonoBehaviour
         //_propBlock.SetFloat(DstBlendID, data.materialType == MaterialType.Additive ? (float)UnityEngine.Rendering.BlendMode.One : (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
         // Essential for HDRP transparency
 
-        _propBlock.SetTexture(TextureID, data.texture); // Set the texture
+        if (data.texture != null) // Check if texture is not null
+        {
+            _propBlock.SetTexture(TextureID, data.texture); // Set the texture
+        }
+        else
+        {
+            Debug.LogError("Texture is null. Cannot set texture property.");
+        }
         if (data.normalTexture != null) _propBlock.SetTexture(NormalTextureID, data.normalTexture); // Set the normal texture
         if (data.emissiveTexture != null) _propBlock.SetTexture(EmissiveTextureID, data.emissiveTexture); // Set the emissive texture
 
@@ -372,13 +379,13 @@ public struct EffectAnimationDataArrayBased
         Sprite spr = spriteAssetManager.GetSprite(spriteNode.BaseSpriteName);
         if (spr == null)
         {
-            Debug.LogErrorFormat($"Sprite {spriteNode.BaseSpriteName} not found. Cannot create EffectAnimationData.{spriteNode.AnimationName}");
+            Debug.LogErrorFormat($"Sprite {spriteNode.BaseSpriteName} not found.");
             return default;
         }
         SpriteAssetManager.ParsedSprite spriteDef = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName);
         if (spriteDef == null)
         {
-            Debug.LogErrorFormat($"ParsedSpriteDefinition for {spriteNode.BaseSpriteName} not found. Cannot create EffectAnimationData.{spriteNode.AnimationName}");
+            Debug.LogErrorFormat($"ParsedSpriteDefinition for {spriteNode.BaseSpriteName} not found.");
             return default;
         }
 

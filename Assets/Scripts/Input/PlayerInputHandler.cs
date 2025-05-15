@@ -44,7 +44,7 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
     private Dictionary<PlayerRef, NetworkObject> _spawnedPlayers = new Dictionary<PlayerRef, NetworkObject>();
 
     // Flag to prevent multiple StartGame calls racing
-    private bool _isStartingGame = false;
+    //private bool _isStartingGame = false;
 
     // Hold the Unit Prefab reference
     [SerializeField] private NetworkPrefabRef _unitPrefab; // Assign your Unit Prefab here
