@@ -5,6 +5,7 @@ draw 1 1.0 step
 @keyframes
 1.0	1
 
+@include lights.spr
 @include animation.spr
 @include tex_anim.spr
 @include ftspecial.spr

@@ -110,7 +110,7 @@ public class EffectPoolManager : MonoBehaviour
             SpriteNodeDefinition snd = SpriteAssetManager.Instance.GetSpriteNodeDefinition(effectId);
             if (snd == null)
             {
-                Debug.LogError($"SpriteNodeDefinition for '{effectId}' not found. Cannot spawn effect.");
+                //Debug.LogError($"SpriteNodeDefinition for '{effectId}' not found. Cannot spawn effect.");
                 return null;
             }
             controllerData = EffectAnimationDataArrayBased.CreateFromSpriteNode(snd);
@@ -124,7 +124,8 @@ public class EffectPoolManager : MonoBehaviour
         instanceMaterial = MaterialManager.Instance.GetOrCreateMaterial("sprite", 
             isTransparent: controllerData.materialType == MaterialType.Alpha, 
             isAdditive: controllerData.materialType == MaterialType.Additive,
-            backfaceCulling: true);
+            backfaceCulling: true,
+            emissive: controllerData.emissiveColor != Color.clear);
 
         // 3. Get Pooled Object: Get a raw Quad from pool
         GameObject objToSpawn = GetFromRawPool("sprite"); // Implement pooling for raw quads

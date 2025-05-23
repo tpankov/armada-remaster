@@ -18,6 +18,10 @@
             using (var imageFile = File.OpenRead(fileName))
             {
                 tex = LoadTGA(imageFile);
+                tex.name = Path.GetFileNameWithoutExtension(fileName);
+                tex.wrapMode = TextureWrapMode.Repeat;
+                tex.filterMode = FilterMode.Bilinear;
+
                 return true;
             }
         }

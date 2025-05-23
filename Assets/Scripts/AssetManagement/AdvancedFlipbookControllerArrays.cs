@@ -300,7 +300,7 @@ public struct EffectAnimationDataArrayBased
                 data.drawDuration = animDef.duration;
                 data.drawFrameVisibilities = animDef.keyframes.ConvertAll(kf => (float)kf.IntValue); // Convert to visibility
                 data.drawFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
-                Debug.Log($"Draw: {data.drawDuration}, {data.drawFrameVisibilities.Count} frames.");
+                //Debug.Log($"Draw: {data.drawDuration}, {data.drawFrameVisibilities.Count} frames.");
             }
             else if (animDef.type == AnimationType.Colour)
             {
@@ -308,7 +308,7 @@ public struct EffectAnimationDataArrayBased
                 data.tintFrameColors = animDef.keyframes.ConvertAll(kf => kf.ColorValue); // Convert to Color
                 data.tintFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
                 data.tintInterpolation = (float)animDef.interpolation;
-                Debug.Log($"Tint: {data.tintDuration}, {data.tintFrameColors.Count} frames.");
+                //Debug.Log($"Tint: {data.tintDuration}, {data.tintFrameColors.Count} frames.");
             }
             else if (animDef.type == AnimationType.Offset)
             {
@@ -351,7 +351,7 @@ public struct EffectAnimationDataArrayBased
                     data.useAutoColumn = false; 
                     data.offsetFrameData = animDef.keyframes.ConvertAll(kf => (Vector4)kf.value); // Convert to Vector4
                     data.offsetFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
-                    Debug.Log($"Custom Offset: {data.offsetDuration}, {data.offsetFrameData.Count} frames.");
+                    //Debug.Log($"Custom Offset: {data.offsetDuration}, {data.offsetFrameData.Count} frames.");
                 }
                 
             }
@@ -379,7 +379,7 @@ public struct EffectAnimationDataArrayBased
         Sprite spr = spriteAssetManager.GetSprite(spriteNode.BaseSpriteName);
         if (spr == null)
         {
-            Debug.LogErrorFormat($"Sprite {spriteNode.BaseSpriteName} not found.");
+            //Debug.LogErrorFormat($"Sprite {spriteNode.BaseSpriteName} not found.");
             return default;
         }
         SpriteAssetManager.ParsedSprite spriteDef = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName);
@@ -389,7 +389,7 @@ public struct EffectAnimationDataArrayBased
             return default;
         }
 
-        Debug.LogFormat($"AnimationDefinition for {spriteNode.NodeName} found. Creating EffectAnimationData {animDef.name}");
+        //Debug.LogFormat($"AnimationDefinition for {spriteNode.NodeName} found. Creating EffectAnimationData {animDef.name}");
         data.tintDuration = animDef.frameCount/animDef.duration;
         data.useEmissive = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType == MaterialType.Additive; // Example emissive setting
         data.materialType = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType; // Example material type
@@ -407,11 +407,11 @@ public struct EffectAnimationDataArrayBased
         else
         {
             animDef = spriteAssetManager.GetAnimation(animName); // Ensure not null
-            Debug.LogFormat($"Texture AnimationDefinition for {spriteNode.BaseSpriteName} found. Creating EffectAnimationData {animDef.name}");
+            //Debug.LogFormat($"Texture AnimationDefinition for {spriteNode.BaseSpriteName} found. Creating EffectAnimationData {animDef.name}");
             setDataFromAnim(animDef, spriteDef, ref data); // Set data from AnimationDefinition
         }
         // print some values from data
-        Debug.LogFormat($"EffectAnimationData {spriteNode.NodeName} - offsetDuration: {data.offsetDuration}, tintDuration: {data.tintDuration}, drawDuration: {data.drawDuration}");
+        //Debug.LogFormat($"EffectAnimationData {spriteNode.NodeName} - offsetDuration: {data.offsetDuration}, tintDuration: {data.tintDuration}, drawDuration: {data.drawDuration}");
         // Set the actual texture.
         data.texture = spr.texture; // Get the texture from the sprite asset manager
         return data;
