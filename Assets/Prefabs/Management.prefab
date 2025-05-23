@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8574283976966836195
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8708456504295614328}
+  - component: {fileID: 4166077732487131345}
+  - component: {fileID: 6503272500635778805}
+  - component: {fileID: 1375003945353678214}
+  m_Layer: 0
+  m_Name: Management
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8708456504295614328
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8574283976966836195}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4166077732487131345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8574283976966836195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e97215504f5a88848bee7e58821bdc89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  definedMaterials:
+  - {fileID: 2100000, guid: d43c79ef19413de409433f690d94e93b, type: 2}
+  - {fileID: 2100000, guid: e230cf4fa7c08bb40abe4197a5a14f48, type: 2}
+  - {fileID: 2100000, guid: 4952b5734368fa14b85863b4cca2c24a, type: 2}
+  - {fileID: 2100000, guid: c767ccdf4d0f8004fa7aef1e14b810bd, type: 2}
+  - {fileID: 2100000, guid: aec35e2032bb2924a82feb493e86e20e, type: 2}
+  - {fileID: 2100000, guid: 9c0bdc4d3e016d14ba74e108e1977935, type: 2}
+  - {fileID: 2100000, guid: fbe82bf532ec0b545b6973fcb92998eb, type: 2}
+  - {fileID: 2100000, guid: 6582f44c8a7284843a68498c6add8f8f, type: 2}
+--- !u!114 &6503272500635778805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8574283976966836195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deaf6101503daa441acbdde6982dd16b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  configFileName: ftspecial.txt
+--- !u!114 &1375003945353678214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8574283976966836195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66397a3d3f44cfa46a871a8309e21d2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poolsToInitialize:
+  - effectId: sprite
+    prefab: {fileID: 596259691829541320, guid: 45a0575b880b72c4abeef7d3c37874fb, type: 3}
+    initialSize: 10

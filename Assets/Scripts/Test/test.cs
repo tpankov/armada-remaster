@@ -13,16 +13,16 @@ public class test : MonoBehaviour
     private GameObject effect;
 
     private int randomIndex = 0;
-    async Task Start()
+    void Start()
     {
         //CustomSpriteFormat.SpriteNodeDefinition snd = SpriteAssetManager.Instance.GetSpriteNodeDefinition(SpriteNodeName);
         //EffectAnimationDataArrayBased ad = EffectAnimationDataArrayBased.CreateFromSpriteNode(snd);
         //effect = EffectPoolManager.Instance.SpawnEffect(SpriteNodeName, transform.position, Quaternion.identity);
-        GameObject shipObject = new GameObject("fedbat2");
-        string configPath = Path.Combine("DynamicAssets","addon","fedbat2.odf");
+        GameObject shipObject = new GameObject("fedbat4");
+        string configPath = Path.Combine("DynamicAssets","addon","fedbat4.odf");
         StarshipBase ship = shipObject.AddComponent<StarshipBase>();
         ship.LoadFromConfig(configPath);
-        await AddressablePrefabSaver.SaveModelAsAddressable(shipObject, "fedbat2");
+        AddressablePrefabSaver.SaveModelAsAddressable(shipObject, "fedbat4");
         Debug.Log("Prefab saved as addressable: fedbat2");
     }
 

@@ -8,22 +8,6 @@ using CustomSpriteFormat;
 using UnityEngine.UI; // For enums like AnimationType, MaterialType etc.
 // NOTE: Does NOT require CustomSpriteFormat.ECS namespace
 
-// Placeholder for the required TGA Loader. Replace with your actual implementation.
-// (Ensure this static class exists as defined previously)
-/*
-public static class TGALoader
-{
-    public static bool LoadTGA(string filePath, out Texture2D texture)
-    {
-        // --- !! Replace this with your actual TGA loading logic !! ---
-        texture = null;
-        Debug.LogWarning($"TGALoader.LoadTGA needs implementation! Path: {filePath}");
-        if (!File.Exists(filePath)) Debug.LogError($"TGA File not found: {filePath}");
-        return false; // Return true on successful load
-    }
-}
-*/
-
 
 public class SpriteAssetManager : MonoBehaviour
 {
@@ -114,14 +98,14 @@ public class SpriteAssetManager : MonoBehaviour
             Debug.LogError($"Failed to parse the configuration file content.");
             return;
         }
-        Debug.Log($"Parsed {tempParsedSprites.Count} sprites and {tempParsedAnims.Count} animations from '{configFileName}'.");
-        Debug.Log($"Parsed {loadedSpriteNodes.Count} sprite nodes");
-        Debug.Log($"Parsed {parsedSpriteDefinitions.Count} parsed sprite definitions");
+        //Debug.Log($"Parsed {tempParsedSprites.Count} sprites and {tempParsedAnims.Count} animations from '{configFileName}'.");
+        //Debug.Log($"Parsed {loadedSpriteNodes.Count} sprite nodes");
+        //Debug.Log($"Parsed {parsedSpriteDefinitions.Count} parsed sprite definitions");
         // print out internal fields of sprites for debugging
-        foreach (var sprite in tempParsedSprites)
-        {
-            Debug.Log($"Parsed Sprite: {sprite.Name}, Texture: {sprite.SourceTextureName}, Rect: {sprite.SourceRect}, MaterialType: {sprite.MaterialType}, ReferenceSize: {sprite.ReferenceSize}");
-        }
+        //foreach (var sprite in tempParsedSprites)
+        //{
+            //Debug.Log($"Parsed Sprite: {sprite.Name}, Texture: {sprite.SourceTextureName}, Rect: {sprite.SourceRect}, MaterialType: {sprite.MaterialType}, ReferenceSize: {sprite.ReferenceSize}");
+        //}
 
         // --- Step 2: Load Textures ---
         List<string> requiredTextures = GetRequiredTextureNames(tempParsedSprites);
@@ -133,12 +117,12 @@ public class SpriteAssetManager : MonoBehaviour
         // --- Step 4: Store Animation Definitions ---
         StoreAnimations(tempParsedAnims); // Populates loadedAnimations
 
-        Debug.Log($"SpriteAssetManager Initialized: Loaded {loadedAnimations.Count} animations, {loadedSpriteNodes.Count} sprite nodes from '{configFileName}'.");
+        //Debug.Log($"SpriteAssetManager Initialized: Loaded {loadedAnimations.Count} animations, {loadedSpriteNodes.Count} sprite nodes from '{configFileName}'.");
         // Print out all loadedSpriteNodes and their properties
-        foreach (var node in loadedSpriteNodes)
-        {
-            Debug.Log($"Loaded Sprite Node: {node.Key}, BaseSprite: {node.Value.BaseSpriteName}, Animation: {node.Value.AnimationName}, Size: {node.Value.Size}, Tint: {node.Value.Tint}, Billboard: {node.Value.IsBillboard}");
-        }
+        // foreach (var node in loadedSpriteNodes)
+        // {
+        //     Debug.Log($"Loaded Sprite Node: {node.Key}, BaseSprite: {node.Value.BaseSpriteName}, Animation: {node.Value.AnimationName}, Size: {node.Value.Size}, Tint: {node.Value.Tint}, Billboard: {node.Value.IsBillboard}");
+        // }
         
         isInitialized = true;
     }
@@ -233,14 +217,14 @@ public class SpriteAssetManager : MonoBehaviour
                                         // Optional: Keep currentAnimation context active if other properties might follow?
                                         // Or set currentAnimation = null; if @keyframes always terminates the block?
                                         // Let's assume @keyframes terminates for now.
-                                        Debug.Log($"Known @auto directive {currentAnimation.AutoKeyframe}, skipping keyframe parsing.");
+                                        //Debug.Log($"Known @auto directive {currentAnimation.AutoKeyframe}, skipping keyframe parsing.");
                                         currentAnimation = null;
                                     }
                                     else
                                     {
                                         // No @auto directive, proceed with manual keyframe parsing
                                         parsingKeyframes = true;
-                                        Debug.Log($"No @auto directive {currentAnimation.AutoKeyframe}, doing keyframe parsing.");
+                                        //Debug.Log($"No @auto directive {currentAnimation.AutoKeyframe}, doing keyframe parsing.");
 
                                     }
                                 }
@@ -277,7 +261,8 @@ public class SpriteAssetManager : MonoBehaviour
                     if (parsingKeyframes && currentAnimation != null) ParseKeyframeLineInternal(line, parts, currentAnimation, tupleRegex, i + 1);
                     else if (currentAnimation != null && !parsingKeyframes && (firstWord == "draw" || firstWord == "colour" || firstWord == "color" || firstWord == "offset")) ParseAnimationPropertyLineInternal(parts, currentAnimation, i + 1);
                     else if (parts.Length >= 6 && !parsingKeyframes && currentAnimation == null) ParseSpriteDefinitionLineInternal(line, parts, currentReference, currentMaterial, tempSpriteDefs, finalParsedSpriteDefs, i + 1); // Add to temp list AND final dict
-                    else if (!firstWord.StartsWith("sprite_table")) Debug.LogWarning($"Ignoring unrecognized line format: '{line}' on line {i + 1} - {parsingKeyframes} - {currentAnimation?.Name}");
+                    else if (!firstWord.StartsWith("sprite_table")) { }
+                        //Debug.LogWarning($"Ignoring unrecognized line format: '{line}' on line {i + 1} - {parsingKeyframes} - {currentAnimation?.Name}");
                 }
             }
             catch (Exception ex) { Debug.LogError($"Error parsing line {i + 1}: '{line}'. Exception: {ex.Message}\n{ex.StackTrace}"); success = false; }

@@ -73,7 +73,8 @@ public class StarshipBase : NetworkBehaviour
     public float sensorRange = 100f;
     //private Quaternion targetRotation;
     public string modelPath;
-    
+
+    public string legacyLightmaps;
     // Placeholder for system status enum
     public enum SystemStatus { Online, Damaged, Offline }
 
@@ -120,7 +121,30 @@ public class StarshipBase : NetworkBehaviour
     private void LoadModel()
     {
         SODLoader SL = new SODLoader();
-        SL.LoadSOD(modelPath, gameObject);
+        if (this.legacyLightmaps != null)
+        {
+            // Load lightmaps
+            string[] lightmapComponent = legacyLightmaps.Split(',');
+            Dictionary<string, string> lmaps_dictionoary = new Dictionary<string, string>();
+            foreach (string c1 in lightmapComponent)
+            {
+                string[] lightmapRemapComponents = c1.Split(':');
+                if (lightmapRemapComponents.Length != 2)
+                {
+                    Debug.LogError("Invalid lightmap remap component: " + c1);
+                    continue;
+                }
+                string nodeName = lightmapRemapComponents[0].Trim();
+                string lightmapNewName = lightmapRemapComponents[1].Trim();
+                lmaps_dictionoary.Add(nodeName, lightmapNewName);
+                Debug.Log("Lightmap: " + c1);
+            }
+            SL.LoadSOD(modelPath, gameObject, lmaps_dictionoary);
+        }
+        else
+        {
+            SL.LoadSOD(modelPath, gameObject);
+        }
     }
 
     public virtual void Move(Vector3 destination)
@@ -128,7 +152,7 @@ public class StarshipBase : NetworkBehaviour
         Vector3 direction = (destination - transform.position).normalized;
         //targetRotation = Quaternion.LookRotation(direction);
         //transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
-        
+
         if (Vector3.Angle(transform.forward, direction) < 10f)
         {
             //velocity = Vector3.Lerp(velocity, transform.forward * speed, acceleration * Time.deltaTime);
