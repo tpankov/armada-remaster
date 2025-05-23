@@ -210,7 +210,7 @@ public class SODLoader
                     //Debug.LogFormat("Vertex Count: {0} TexCoord Count: {1} groups {2}", vertexCount, texCoordCount, groupCount);
                     Vector3[] vertices = new Vector3[vertexCount];
                     for (int v = 0; v < vertexCount; v++)
-                        vertices[v] = ReadVector3(reader, true);
+                        vertices[v] = ReadVector3(reader, false);
                     //Debug.LogFormat("Vertex: {0} {1} {2}", vertices[vertexCount-1][0], vertices[vertexCount-1][1], vertices[vertexCount-1][2]);
                     Vector2[] uvs = new Vector2[texCoordCount];
                     for (int t = 0; t < texCoordCount; t++)
@@ -249,7 +249,7 @@ public class SODLoader
                                                 // Our hardcoded lightmap material is called "lmap"
                                                 lightingMaterial = "lmap";
                                             }
-                                            lightingGroups.Add(new lightingGroup(numFaces, lightingMaterial, legacyEemissive: true));
+                                            lightingGroups.Add(new lightingGroup(numFaces, lightingMaterial, legacyEemissive: true, lit: lightingMaterial != "lmap" && lightingMaterial != "lmapsolid"));
                                             _added = true;
                                             break;
                                         }
@@ -258,18 +258,18 @@ public class SODLoader
                                 if (!_added)
                                 {
                                     Debug.LogFormat("Skipping Legacy Emissive: {0} {1}", lightingMaterial, lm.baseColor);
-                                    lightingGroups.Add(new lightingGroup(0, "lightmap_skip", legacyEemissive: true));
+                                    lightingGroups.Add(new lightingGroup(0, "lightmap_skip", legacyEemissive: true, lit: lightingMaterial != "lmap" && lightingMaterial != "lmapsolid"));
                                 }
                             }
                             else // non-emissive
                             {
-                                lightingGroups.Add(new lightingGroup(numFaces, lightingMaterial));
+                                lightingGroups.Add(new lightingGroup(numFaces, lightingMaterial, lit: lightingMaterial != "lmap" && lightingMaterial != "lmapsolid"));
                             }
                         }
                         else // hopefully this lightingMaterial is defined elsewhere
                         {
                             Debug.LogWarning("Material not found in SOD, this is unusual: " + lightingMaterial);
-                            lightingGroups.Add(new lightingGroup(numFaces, lightingMaterial));
+                            lightingGroups.Add(new lightingGroup(numFaces, lightingMaterial, lit: lightingMaterial != "lmap" && lightingMaterial != "lmapsolid"));
                         }
 
                         // read the faces
@@ -286,16 +286,15 @@ public class SODLoader
                             //texuvs.Add(dummy6[1]);
                             lightingGroups[g].uvs.Add(dummy6[1]);
 
+                            triangles.Add(dummy6[4]);
+                            lightingGroups[g].triangles.Add(dummy6[4]);
+                            //texuvs.Add(dummy6[5]);
+                            lightingGroups[g].uvs.Add(dummy6[5]);
 
                             triangles.Add(dummy6[2]);
                             lightingGroups[g].triangles.Add(dummy6[2]);
                             //texuvs.Add(dummy6[3]);
                             lightingGroups[g].uvs.Add(dummy6[3]);
-
-                            triangles.Add(dummy6[4]);
-                            lightingGroups[g].triangles.Add(dummy6[4]);
-                            //texuvs.Add(dummy6[5]);
-                            lightingGroups[g].uvs.Add(dummy6[5]);
                         }
                     }
                     ushort cull = (ushort)reader.ReadByte();
@@ -435,7 +434,8 @@ public class SODLoader
                             emissionTex: emissionTexture,
                             useAnimationData: false,
                             effectAnimationData: new EffectAnimationDataArrayBased(),
-                            materialIndex: g);
+                            materialIndex: g,
+                            lit_material:lightingGroups[g].lit);
                         // MaterialManager.Instance.ApplyMaterial(
                         //     materialName: (lightingGroups[g].lightingMaterial == "lmap" || textureMaterial == "alpha") ? "stdhull_alpha" : "stdhull",
                         //     renderer: meshRenderer,
@@ -468,12 +468,10 @@ public class SODLoader
                     // Node name might end with an underscore followed by one or two digits; we want to remove that
                     EffectPoolManager.Instance.SpawnEffect(Regex.Replace(nodeName, "_\\d+$", ""), localTransform.GetPosition(), localTransform.rotation.normalized, go);
                 }
-
-
             }
 
             // Load Texture Offset Animations (Section 5)
-            //LoadTextureAnimations(reader);
+            LoadTextureAnimations(reader);
         }
     }
 
@@ -484,13 +482,15 @@ public class SODLoader
         public List<int> triangles;
         public List<int> uvs;
         public bool legacyEemissive;
-        public lightingGroup(ushort numFaces, string lightingMaterial, bool legacyEemissive = false)
+        public bool lit;
+        public lightingGroup(ushort numFaces, string lightingMaterial, bool legacyEemissive = false, bool lit = true)
         {
             this.numFaces = numFaces;
             this.lightingMaterial = lightingMaterial;
             this.triangles = new List<int>();
             this.uvs = new List<int>();
             this.legacyEemissive = legacyEemissive;
+            this.lit = lit;
         }
     };
 
@@ -585,7 +585,33 @@ public class SODLoader
             MeshRenderer renderer = nodeObject.GetComponent<MeshRenderer>();
             if (renderer == null || renderer.material == null) continue;
 
-            Material mat = renderer.material;
+            Material mat = renderer.sharedMaterial;
+            SpriteAssetManager spriteAssetManager = SpriteAssetManager.Instance;
+            CustomSpriteFormat.AnimationDefinition animDef = SpriteAssetManager.Instance.GetAnimation(animName);
+            EffectAnimationDataArrayBased data = new EffectAnimationDataArrayBased();
+            if (spriteAssetManager == null)
+            {
+                Debug.LogErrorFormat($"SpriteAssetManager instance not found. Cannot create EffectAnimationData.{.AnimationName}");
+                return;
+            }
+            data.tintDuration = animDef.frameCount / animDef.duration;
+            //data.useEmissive = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType == MaterialType.Additive; // Example emissive setting
+            //data.materialType = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType; // Example material type
+            data.emissiveIntensity = 6.0f; // Example emissive intensity
+            data.emissiveColor = Color.white;
+            data.alpha = 1.0f;
+            EffectAnimationDataArrayBased.setDataFromAnim(animDef, null, ref data); // Set data from AnimationDefinition
+            MaterialManager.Instance.ApplySODMaterial(
+                renderer: renderer,
+                baseTex: data.baseTexture,
+                normalTex: data.normalTexture,
+                emissionTex: data.emissionTexture,
+                useAnimationData: true,
+                effectAnimationData: data,
+                materialIndex: 0,
+                lit_material:data.lit_material
+            );
+
             //StartCoroutine(AnimateTextureOffset(mat, playbackOffset));
         }
     }

@@ -291,70 +291,80 @@ public struct EffectAnimationDataArrayBased
         }
         else
         {
-            data.Offsetx = spriteDef.SourceRect.xMin / spriteDef.ReferenceSize;
-            data.Offsety = spriteDef.SourceRect.yMin / spriteDef.ReferenceSize;
-            data.Tilingx = spriteDef.SourceRect.width / spriteDef.ReferenceSize;
-            data.Tilingy = spriteDef.SourceRect.height / spriteDef.ReferenceSize;
+            if (spriteDef == null)
+            {
+                data.Offsetx = 0;
+                data.Offsety = 0;
+                data.Tilingx = 1;
+                data.Tilingy = 1;
+            }
+            else
+            {
+                data.Offsetx = spriteDef.SourceRect.xMin / spriteDef.ReferenceSize;
+                data.Offsety = spriteDef.SourceRect.yMin / spriteDef.ReferenceSize;
+                data.Tilingx = spriteDef.SourceRect.width / spriteDef.ReferenceSize;
+                data.Tilingy = spriteDef.SourceRect.height / spriteDef.ReferenceSize;
+            }
             if (animDef.type == AnimationType.Draw)
-            {
-                data.drawDuration = animDef.duration;
-                data.drawFrameVisibilities = animDef.keyframes.ConvertAll(kf => (float)kf.IntValue); // Convert to visibility
-                data.drawFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
-                //Debug.Log($"Draw: {data.drawDuration}, {data.drawFrameVisibilities.Count} frames.");
-            }
-            else if (animDef.type == AnimationType.Colour)
-            {
-                data.tintDuration = animDef.duration;
-                data.tintFrameColors = animDef.keyframes.ConvertAll(kf => kf.ColorValue); // Convert to Color
-                data.tintFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
-                data.tintInterpolation = (float)animDef.interpolation;
-                //Debug.Log($"Tint: {data.tintDuration}, {data.tintFrameColors.Count} frames.");
-            }
-            else if (animDef.type == AnimationType.Offset)
-            {
-                data.offsetDuration = animDef.duration;
-                data.offsetInterpolation = (float)animDef.interpolation;
+                {
+                    data.drawDuration = animDef.duration;
+                    data.drawFrameVisibilities = animDef.keyframes.ConvertAll(kf => (float)kf.IntValue); // Convert to visibility
+                    data.drawFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
+                                                                                       //Debug.Log($"Draw: {data.drawDuration}, {data.drawFrameVisibilities.Count} frames.");
+                }
+                else if (animDef.type == AnimationType.Colour)
+                {
+                    data.tintDuration = animDef.duration;
+                    data.tintFrameColors = animDef.keyframes.ConvertAll(kf => kf.ColorValue); // Convert to Color
+                    data.tintFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
+                    data.tintInterpolation = (float)animDef.interpolation;
+                    //Debug.Log($"Tint: {data.tintDuration}, {data.tintFrameColors.Count} frames.");
+                }
+                else if (animDef.type == AnimationType.Offset)
+                {
+                    data.offsetDuration = animDef.duration;
+                    data.offsetInterpolation = (float)animDef.interpolation;
 
-                if (animDef.autoKeyframe ==  AutoKeyframeType.Row)
-                {
-                    data.autoRowTotalFrames = animDef.frameCount; 
-                    data.autoRowFPS = animDef.frameCount / animDef.duration;
-                    //data.autoFramesPerRow = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.width);
-                    data.useAutoRow = true; 
-                    //Debug.Log($"AutoRow: {data.autoRowTotalFrames}, {data.autoFramesPerRow}, {data.autoRowFPS}, {data.useAutoRow}.");
+                    if (animDef.autoKeyframe == AutoKeyframeType.Row)
+                    {
+                        data.autoRowTotalFrames = animDef.frameCount;
+                        data.autoRowFPS = animDef.frameCount / animDef.duration;
+                        //data.autoFramesPerRow = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.width);
+                        data.useAutoRow = true;
+                        //Debug.Log($"AutoRow: {data.autoRowTotalFrames}, {data.autoFramesPerRow}, {data.autoRowFPS}, {data.useAutoRow}.");
+                    }
+                    else if (animDef.autoKeyframe == AutoKeyframeType.Column)
+                    {
+                        data.autoColTotalFrames = animDef.frameCount;
+                        data.autoColFPS = animDef.frameCount / animDef.duration;
+                        //data.autoFramesPerCol = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.height);
+                        data.useAutoColumn = true;
+                        //Debug.Log($"AutoColumn: {data.autoColTotalFrames}, {data.autoFramesPerCol}, {data.autoColFPS}, {data.useAutoColumn}.");
+                    }
+                    else if (animDef.autoKeyframe == AutoKeyframeType.Grid)
+                    {
+                        data.autoRowTotalFrames = (int)math.sqrt(animDef.frameCount);
+                        data.autoColTotalFrames = (int)math.sqrt(animDef.frameCount);
+                        //data.autoFramesPerRow = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.width); 
+                        //data.autoFramesPerCol = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.height); 
+                        data.autoRowFPS = animDef.frameCount / animDef.duration;
+                        data.autoColFPS = animDef.frameCount / animDef.duration / data.autoColTotalFrames;
+                        data.useAutoRow = true;
+                        data.useAutoColumn = true;
+                        // Debug.Log($"AutoGrid: {data.autoRowTotalFrames}, {data.autoColTotalFrames}, {data.autoFramesPerRow}, {data.autoFramesPerCol}, {data.autoRowFPS}, {data.autoColFPS}");
+                    }
+                    else
+                    {
+                        data.autoRowFPS = 0.0f;
+                        data.autoColFPS = 0.0f;
+                        data.useAutoRow = false;
+                        data.useAutoColumn = false;
+                        data.offsetFrameData = animDef.keyframes.ConvertAll(kf => (Vector4)kf.value); // Convert to Vector4
+                        data.offsetFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
+                                                                                             //Debug.Log($"Custom Offset: {data.offsetDuration}, {data.offsetFrameData.Count} frames.");
+                    }
+
                 }
-                else if (animDef.autoKeyframe == AutoKeyframeType.Column)
-                {
-                    data.autoColTotalFrames = animDef.frameCount; 
-                    data.autoColFPS = animDef.frameCount / animDef.duration; 
-                    //data.autoFramesPerCol = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.height);
-                    data.useAutoColumn = true; 
-                    //Debug.Log($"AutoColumn: {data.autoColTotalFrames}, {data.autoFramesPerCol}, {data.autoColFPS}, {data.useAutoColumn}.");
-                }
-                else if (animDef.autoKeyframe == AutoKeyframeType.Grid)
-                {
-                    data.autoRowTotalFrames = (int)math.sqrt(animDef.frameCount);
-                    data.autoColTotalFrames = (int)math.sqrt(animDef.frameCount);
-                    //data.autoFramesPerRow = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.width); 
-                    //data.autoFramesPerCol = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.height); 
-                    data.autoRowFPS = animDef.frameCount / animDef.duration;
-                    data.autoColFPS = animDef.frameCount / animDef.duration / data.autoColTotalFrames;
-                    data.useAutoRow = true; 
-                    data.useAutoColumn = true;
-                   // Debug.Log($"AutoGrid: {data.autoRowTotalFrames}, {data.autoColTotalFrames}, {data.autoFramesPerRow}, {data.autoFramesPerCol}, {data.autoRowFPS}, {data.autoColFPS}");
-                }
-                else
-                {
-                    data.autoRowFPS = 0.0f; 
-                    data.autoColFPS = 0.0f; 
-                    data.useAutoRow = false; 
-                    data.useAutoColumn = false; 
-                    data.offsetFrameData = animDef.keyframes.ConvertAll(kf => (Vector4)kf.value); // Convert to Vector4
-                    data.offsetFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
-                    //Debug.Log($"Custom Offset: {data.offsetDuration}, {data.offsetFrameData.Count} frames.");
-                }
-                
-            }
             
         }
     }

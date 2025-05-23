@@ -50,7 +50,8 @@ public class MaterialManager : MonoBehaviour {
     public void ApplySODMaterial(Renderer renderer, Texture2D baseTex, Texture2D normalTex, Texture2D emissionTex,
             bool useAnimationData, EffectAnimationDataArrayBased effectAnimationData,
             // bool isTransparent = false, bool isAdditive = false, bool backfaceCulling = true,
-            int materialIndex = -1)
+            int materialIndex = -1,
+            bool lit_material = true)
             //int numberOfMaterials = 1,
             //bool emissive = false) {
     
@@ -68,30 +69,46 @@ public class MaterialManager : MonoBehaviour {
         {
             // If not using animation data, do a simple mpb here
             if (materialIndex > -1) renderer.GetPropertyBlock(mpb, materialIndex); else renderer.GetPropertyBlock(mpb);
-            if (baseTex != null)
-                mpb.SetTexture("_BaseColorMap", baseTex);
-            else
+            if (lit_material)
             {
-                //mpb.SetTexture("_BaseColorMap", null);
-                mpb.SetColor("_BaseColor", Color.clear);
+
+                if (baseTex != null)
+                        mpb.SetTexture("_BaseColorMap", baseTex);
+                    else
+                    {
+                        //mpb.SetTexture("_BaseColorMap", null);
+                        mpb.SetColor("_BaseColor", Color.clear);
+                    }
+                if (normalTex != null)
+                    mpb.SetTexture("_NormalMap", normalTex);
+                else
+                    mpb.SetTexture("_NormalMap", new Texture2D(2,2));
+                if (emissionTex != null)
+                {
+                    //mpb.SetFloat("_UseEmissive", 1.0f);
+                    //mpb.SetColor("_EmissiveColor", Color.white * 25.0f);
+                    mpb.SetTexture("_EmissiveColorMap", emissionTex);
+                    Debug.Log("Emissive map set to: " + emissionTex.name);
+                }
+                else
+                {
+                    Texture2D _et = new Texture2D(2, 2);
+                    _et.SetPixels(new Color[4] { Color.clear, Color.clear, Color.clear, Color.clear });
+                    _et.Apply();
+                    mpb.SetTexture("_EmissiveColorMap", _et);
+                }
             }
-            if (normalTex != null)
-                mpb.SetTexture("_NormalMap", normalTex);
-            else
-                mpb.SetTexture("_NormalMap", new Texture2D(2,2));
-            if (emissionTex != null)
-            {
-                //mpb.SetFloat("_UseEmissive", 1.0f);
-                //mpb.SetColor("_EmissiveColor", Color.white * 25.0f);
-                mpb.SetTexture("_EmissiveColorMap", emissionTex);
-                Debug.Log("Emissive map set to: " + emissionTex.name);
-            }
             else
             {
-                Texture2D _et = new Texture2D(2, 2);
-                _et.SetPixels(new Color[4] { Color.clear, Color.clear, Color.clear, Color.clear });
-                _et.Apply();
-                mpb.SetTexture("_EmissiveColorMap", _et);
+                if (baseTex != null)
+                {
+                    mpb.SetTexture("_UnlitColorMap", baseTex);
+                    mpb.SetColor("_UnlitColor", Color.grey*0.5f);
+                    mpb.SetTexture("_EmissiveColorMap", baseTex);
+                }
+                else
+                    mpb.SetColor("_UnlitColor", Color.clear);
+                //if (normalTex != null) mpb.SetTexture("_NormalMap", normalTex);
             }
             if (materialIndex > -1) renderer.SetPropertyBlock(mpb, materialIndex); else renderer.SetPropertyBlock(mpb);
             Debug.LogFormat("Applied material properties to {0}.{1} with baseTex: {2},",
