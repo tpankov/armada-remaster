@@ -79,7 +79,7 @@ MonoBehaviour:
     m_Value: 1.0414362
   limitMax:
     m_OverrideState: 1
-    m_Value: 12.974242
+    m_Value: 12.732364
   curveMap:
     m_OverrideState: 0
     m_Value:
@@ -172,7 +172,7 @@ MonoBehaviour:
     m_Value: {fileID: 0}
   histogramPercentages:
     m_OverrideState: 1
-    m_Value: {x: 97.444954, y: 100}
+    m_Value: {x: 98.5, y: 100}
   histogramUseCurveRemapping:
     m_OverrideState: 0
     m_Value: 0
@@ -355,7 +355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ddcec8a8eb2d684d833ac8f5d26aebd, type: 3}
   m_Name: HDShadowSettings
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   interCascadeBorders: 1
   maxShadowDistance:
     m_OverrideState: 0
@@ -430,7 +430,7 @@ MonoBehaviour:
   active: 1
   mode:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 2
   useFullACES:
     m_OverrideState: 0
     m_Value: 0

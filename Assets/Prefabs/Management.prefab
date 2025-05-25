@@ -55,6 +55,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 9c0bdc4d3e016d14ba74e108e1977935, type: 2}
   - {fileID: 2100000, guid: fbe82bf532ec0b545b6973fcb92998eb, type: 2}
   - {fileID: 2100000, guid: 6582f44c8a7284843a68498c6add8f8f, type: 2}
+  - {fileID: 2100000, guid: f49ae180090e1d443a09d8759a577fa0, type: 2}
+  - {fileID: 2100000, guid: f309dd681c4ae7c4086ccafb2f90aba6, type: 2}
 --- !u!114 &6503272500635778805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,7 +69,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: deaf6101503daa441acbdde6982dd16b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  configFileName: ftspecial.txt
+  configFileName: test.spr
 --- !u!114 &1375003945353678214
 MonoBehaviour:
   m_ObjectHideFlags: 0

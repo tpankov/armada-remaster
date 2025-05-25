@@ -3,7 +3,7 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
     Properties
     {
         [Header(Rendering)]
-        _BaseMap("Flipbook Texture", 2D) = "white" {}
+        _BaseColorMap("Flipbook Texture", 2D) = "white" {}
         [Toggle] _UseEmissive("Use Emissive (Additive) Blending", Float) = 0
         _EmissiveColor("Emissive Color", Color) = (1, 1, 1, 1)
         _EmissiveIntensity("Emissive Intensity", Range(0, 10)) = 1.0
@@ -49,13 +49,13 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
         // Draw is always Step
 
         // HDRP specific properties (Keep defaults)
-        [HideInInspector] _RenderQueueType("Render Queue Type", Float) = 5 // Transparent
-        [HideInInspector] [ToggleUI] _AddPrecomputedVelocity("Add Precomputed Velocity", Float) = 0.0
-        [HideInInspector] _SurfaceType("Surface Type", Float) = 1.0 // Transparent
-        [HideInInspector] _BlendMode("Blend Mode", Float) = 0.0 // Alpha
+        _RenderQueueType("Render Queue Type", Float) = 5 // Transparent
+        [ToggleUI] _AddPrecomputedVelocity("Add Precomputed Velocity", Float) = 0.0
+        _SurfaceType("Surface Type", Float) = 1.0 // Transparent
+        _BlendMode("Blend Mode", Float) = 0.0 // Alpha
         _SrcBlend("Source Blend", Float) = 1.0 // One
         _DstBlend("Destination Blend", Float) = 1.0 // Alpha
-        [HideInInspector] _ZWrite("ZWrite", Float) = 0.0 // Off
+        _ZWrite("ZWrite", Float) = 0.0 // Off
 
         [ToggleUI] _EnableInstancing("Enable Instancing", Float) = 1.0 // IMPORTANT
     }
@@ -92,8 +92,8 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
             #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Material.hlsl"
 
             // --- Uniform Variables ---
-            TEXTURE2D(_BaseMap);
-            SAMPLER(sampler_BaseMap);
+            TEXTURE2D(_BaseColorMap);
+            SAMPLER(sampler_BaseColorMap);
 
             // Rendering
             float _Alpha;
@@ -477,10 +477,10 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
                 {
                     // Cross-fade requires two texture samples
                     float2 uv0 = input.baseUV * input.uvData0.zw + input.uvData0.xy;
-                    float4 color0 = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv0);
+                    float4 color0 = SAMPLE_TEXTURE2D(_BaseColorMap, sampler_BaseColorMap, uv0);
 
                     float2 uv1 = input.baseUV * input.uvData1.zw + input.uvData1.xy;
-                    float4 color1 = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv1);
+                    float4 color1 = SAMPLE_TEXTURE2D(_BaseColorMap, sampler_BaseColorMap, uv1);
 
                     texColor = lerp(color0, color1, input.crossfadeLerp);
                 }
@@ -488,7 +488,7 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
                 {
                     // Step or LinearScroll: Only need one sample using uvData0
                     float2 uv = input.baseUV * input.uvData0.zw + input.uvData0.xy;
-                    texColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv);
+                    texColor = SAMPLE_TEXTURE2D(_BaseColorMap, sampler_BaseColorMap, uv);
                 }
 
                 // Apply Colors and Alpha
@@ -510,5 +510,5 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
             ENDHLSL
         }
     }
-    //CustomEditor "UnityEditor.Rendering.HighDefinition.HDLitGUI" // Keep default editor for HDRP
+    CustomEditor "UnityEditor.Rendering.HighDefinition.HDLitGUI" // Keep default editor for HDRP
 }

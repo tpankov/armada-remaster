@@ -64,6 +64,7 @@ public class MaterialManager : MonoBehaviour {
             if (controller == null) controller = renderer.gameObject.AddComponent<AdvancedFlipbookControllerArrays>();
             // TODO: what to do with the normalTex, emissionTex?
             controller.Configure(effectAnimationData);
+            Debug.Log("Animation data applied to renderer: " + renderer.name);
         }
         else
         {
@@ -73,16 +74,16 @@ public class MaterialManager : MonoBehaviour {
             {
 
                 if (baseTex != null)
-                        mpb.SetTexture("_BaseColorMap", baseTex);
-                    else
-                    {
-                        //mpb.SetTexture("_BaseColorMap", null);
-                        mpb.SetColor("_BaseColor", Color.clear);
-                    }
+                    mpb.SetTexture("_BaseColorMap", baseTex);
+                else
+                {
+                    //mpb.SetTexture("_BaseColorMap", null);
+                    mpb.SetColor("_BaseColor", Color.clear);
+                }
                 if (normalTex != null)
                     mpb.SetTexture("_NormalMap", normalTex);
                 else
-                    mpb.SetTexture("_NormalMap", new Texture2D(2,2));
+                    mpb.SetTexture("_NormalMap", new Texture2D(2, 2));
                 if (emissionTex != null)
                 {
                     //mpb.SetFloat("_UseEmissive", 1.0f);
@@ -103,7 +104,7 @@ public class MaterialManager : MonoBehaviour {
                 if (baseTex != null)
                 {
                     mpb.SetTexture("_UnlitColorMap", baseTex);
-                    mpb.SetColor("_UnlitColor", Color.grey*0.5f);
+                    mpb.SetColor("_UnlitColor", Color.grey * 0.5f);
                     mpb.SetTexture("_EmissiveColorMap", baseTex);
                 }
                 else

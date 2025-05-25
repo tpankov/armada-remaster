@@ -156,7 +156,7 @@ public class SpriteAssetManager : MonoBehaviour
             {
                 string[] initialParts = line.Split(new[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries);
                 if (initialParts.Length == 0) continue;
-                string firstWord = initialParts[0].ToLower();
+                string firstWord = initialParts[0];
 
                 if (firstWord.StartsWith("@")) // Directive processing
                 {
@@ -189,7 +189,7 @@ public class SpriteAssetManager : MonoBehaviour
                             else if (equalsIndex != -1) Debug.LogWarning($"Could not parse @reference value '{valuePart}' on line {i + 1}");
                             parsingKeyframes = false; break;
                         case "@tmaterial":
-                            if (equalsIndex != -1) { currentMaterial = valuePart.ToLower() switch { "additive" => MaterialType.Additive, "alpha" => MaterialType.Alpha, _ => MaterialType.Default }; }
+                            if (equalsIndex != -1) { currentMaterial = valuePart switch { "additive" => MaterialType.Additive, "alpha" => MaterialType.Alpha, _ => MaterialType.Default }; }
                             parsingKeyframes = false; break;
                         case "@animation":
                             if (initialParts.Length > 1) {
@@ -236,7 +236,7 @@ public class SpriteAssetManager : MonoBehaviour
                         case "@auto":
                             if (currentAnimation != null && equalsIndex != -1) 
                             { 
-                                currentAnimation.AutoKeyframe = valuePart.ToLower() 
+                                currentAnimation.AutoKeyframe = valuePart 
                                 switch 
                                 {
                                      "row" => AutoKeyframeType.Row, 
@@ -301,16 +301,16 @@ public class SpriteAssetManager : MonoBehaviour
     // Helper for Animation Property Line
     private void ParseAnimationPropertyLineInternal(string[] parts, ParsedAnimation anim, int lineNum) {
          if (parts.Length < 3) return;
-         anim.Type = parts[0].ToLower() switch { "draw" => AnimationType.Draw, "colour" => AnimationType.Colour, "color" => AnimationType.Colour, "offset" => AnimationType.Offset, _ => AnimationType.Unknown };
+         anim.Type = parts[0] switch { "draw" => AnimationType.Draw, "colour" => AnimationType.Colour, "color" => AnimationType.Colour, "offset" => AnimationType.Offset, _ => AnimationType.Unknown };
          if (!int.TryParse(parts[1], out anim.FrameCount)) { if(anim.Type == AnimationType.Offset) int.TryParse(parts[1], out anim.AutoDimension); }
          float.TryParse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture, out anim.Duration);
          if (parts.Length > 3) 
          {
-            if (parts[3].ToLower() == "linear") 
+            if (parts[3] == "linear") 
                 anim.Interpolation = InterpolationMode.Linear; 
-            else if (parts[3].ToLower() == "linearcrossfade" && anim.Type == AnimationType.Offset) 
+            else if (parts[3] == "linearcrossfade" && anim.Type == AnimationType.Offset) 
                 anim.Interpolation = InterpolationMode.LinearCrossfade; 
-            else if (parts[3].ToLower() == "step") 
+            else if (parts[3] == "step") 
                 anim.Interpolation = InterpolationMode.Step; 
          }
          if(anim.Type == AnimationType.Offset && anim.AutoKeyframe != AutoKeyframeType.None && anim.FrameCount == 0) anim.FrameCount = anim.AutoDimension;
@@ -469,7 +469,7 @@ public class SpriteAssetManager : MonoBehaviour
      }
     public SpriteNodeDefinition GetSpriteNodeDefinition(string nodeName) {
         if (!isInitialized && !initializationAttempted) Initialize();
-        if (loadedSpriteNodes.TryGetValue(nodeName.ToLower(), out var nodeDef)) return nodeDef;
+        if (loadedSpriteNodes.TryGetValue(nodeName, out var nodeDef)) return nodeDef;
         if (isInitialized) Debug.LogWarning($"Sprite Node Definition '{nodeName}' not found.");
         return null;
      }

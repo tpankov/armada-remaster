@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System;
 //using UnityEditor;
 //using UnityEngine.Rendering.Universal;
 //using Unity.VisualScripting;
@@ -378,15 +379,21 @@ public class SODLoader
                     {
                         if (version > 1.9101)
                         {
-                            bumpTexture = LoadTexture(textureFolderPath, bumpTexPath + ".tga");
-                        }
-                        else
-                        {
-                            bumpTexture = LoadTexture(textureFolderPath, texture + "_bump.tga");
+                            bumpTexture = LoadTexture(textureFolderPath, bumpTexPath + ".tga", linear: true);
                         }
                     }
+                    else
+                    {
+                        bumpTexture = LoadTexture(textureFolderPath, texture + "_bump.tga", linear: true);
+                    }
+                    if (bumpTexture != null)
+                    {
+                        bumpTexture.wrapMode = TextureWrapMode.Repeat;
+                        
+                    }
+
                     Texture2D emissionTexture = null;
-                    emissionTexture = LoadTexture(textureFolderPath, texture + "_glow.tga");
+                    emissionTexture = LoadTexture(textureFolderPath, texture + "_glow.tga", linear: true);
 
                     // Multi-lighting group means multiple submeshes, each with its own material
                     if (lightingGroups.Count > 1)
@@ -470,6 +477,47 @@ public class SODLoader
                 }
             }
 
+            // Load Transform Animations (Section 4)
+            ushort animCount = reader.ReadUInt16();
+            for (int i = 0; i < animCount; i++)
+            {
+                string nodeName = ReadIdentifier(reader);
+                ushort nkeyFrames = reader.ReadUInt16();
+                float channelPeriod = reader.ReadSingle();
+                ushort unused = reader.ReadUInt16();
+                Matrix4x4[] keyFrames = new Matrix4x4[nkeyFrames];
+                for (int k = 0; k < nkeyFrames; k++)
+                {
+                    keyFrames[k] = ReadMatrix(reader);
+                }
+            
+                if (!nodeObjects.ContainsKey(nodeName))
+                {
+                    Debug.LogWarning("Animation node not found: " + nodeName);
+                    continue;
+                }
+                GameObject nodeObject = nodeObjects[nodeName];
+                Animation anim = nodeObject.AddComponent<Animation>();
+                AnimationClip clip = new AnimationClip();
+                clip.legacy = true;
+                clip.name = nodeName;
+                clip.wrapMode = WrapMode.Loop;
+                clip.frameRate = nkeyFrames / channelPeriod;
+                for (int k = 0; k < nkeyFrames; k++)
+                {
+                    float time = k * channelPeriod;
+                    AnimationCurve curveX = AnimationCurve.Linear(time, keyFrames[k].m03, time + channelPeriod, keyFrames[k].m03);
+                    AnimationCurve curveY = AnimationCurve.Linear(time, keyFrames[k].m13, time + channelPeriod, keyFrames[k].m13);
+                    AnimationCurve curveZ = AnimationCurve.Linear(time, keyFrames[k].m23, time + channelPeriod, keyFrames[k].m23);
+                    clip.SetCurve(nodeName, typeof(Transform), "localPosition.x", curveX);
+                    clip.SetCurve(nodeName, typeof(Transform), "localPosition.y", curveY);
+                    clip.SetCurve(nodeName, typeof(Transform), "localPosition.z", curveZ);
+                }
+                //clip.wrapMode = WrapMode.Loop;
+                anim.AddClip(clip, $"{nodeName}_{channelPeriod}_{nkeyFrames}");
+                anim.Play($"{nodeName}_{channelPeriod}_{nkeyFrames}");
+            }
+
             // Load Texture Offset Animations (Section 5)
             LoadTextureAnimations(reader);
         }
@@ -495,11 +543,11 @@ public class SODLoader
     };
 
 
-    private Texture2D LoadTexture(string textureFolderPath, string textureFile)
+    private Texture2D LoadTexture(string textureFolderPath, string textureFile, bool linear = false)
     {
         // Load texture
         string texturePath = textureFolderPath + textureFile;
-        Texture2D texture = LoadTexture(texturePath);
+        Texture2D texture = LoadTexture(texturePath, linear);
         return texture;
     }
 
@@ -540,7 +588,7 @@ public class SODLoader
     //return null;
 
 
-    private Texture2D LoadTexture(string path)
+    private Texture2D LoadTexture(string path, bool linear = false)
     {
         if (!File.Exists(path))
         {
@@ -550,14 +598,14 @@ public class SODLoader
 
         if (path.EndsWith(".tga"))
         {
-            Texture2D tex = new Texture2D(2, 2);
+            Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, linear);
             TGALoader.LoadTGA(path, out tex);
             return tex;
         }
         else
         {
             byte[] fileData = File.ReadAllBytes(path);
-            Texture2D tex = new Texture2D(2, 2);
+            Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, linear);
             tex.LoadImage(fileData);
             return tex;
         }
@@ -585,15 +633,29 @@ public class SODLoader
             MeshRenderer renderer = nodeObject.GetComponent<MeshRenderer>();
             if (renderer == null || renderer.material == null) continue;
 
-            Material mat = renderer.sharedMaterial;
+            // Get the material from the renderer
+            List<Material> mats = new List<Material>();
+            renderer.GetSharedMaterials(mats);
+
+            // Get sprite manager
             SpriteAssetManager spriteAssetManager = SpriteAssetManager.Instance;
-            CustomSpriteFormat.AnimationDefinition animDef = SpriteAssetManager.Instance.GetAnimation(animName);
-            EffectAnimationDataArrayBased data = new EffectAnimationDataArrayBased();
             if (spriteAssetManager == null)
             {
-                Debug.LogErrorFormat($"SpriteAssetManager instance not found. Cannot create EffectAnimationData.{.AnimationName}");
+                Debug.LogErrorFormat($"SpriteAssetManager instance not found. Cannot create EffectAnimationData.{animName}");
                 return;
             }
+
+            // Get animation definition from the sprite asset manager
+            CustomSpriteFormat.AnimationDefinition animDef = spriteAssetManager.GetAnimation(animName);
+            Debug.LogFormat("Animation Name: {0} {1}", animName, animDef != null ? $"found: {animDef.type}" : "not found");
+            if (animDef == null)
+            {
+                Debug.LogWarningFormat("Animation definition not found for {0}", animName);
+                continue;
+            }
+
+            // Populate animation data for the flipbook shader
+            EffectAnimationDataArrayBased data = new EffectAnimationDataArrayBased();
             data.tintDuration = animDef.frameCount / animDef.duration;
             //data.useEmissive = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType == MaterialType.Additive; // Example emissive setting
             //data.materialType = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType; // Example material type
@@ -601,17 +663,29 @@ public class SODLoader
             data.emissiveColor = Color.white;
             data.alpha = 1.0f;
             EffectAnimationDataArrayBased.setDataFromAnim(animDef, null, ref data); // Set data from AnimationDefinition
-            MaterialManager.Instance.ApplySODMaterial(
-                renderer: renderer,
-                baseTex: data.baseTexture,
-                normalTex: data.normalTexture,
-                emissionTex: data.emissionTexture,
-                useAnimationData: true,
-                effectAnimationData: data,
-                materialIndex: 0,
-                lit_material:data.lit_material
-            );
 
+            // This takes the animation data and applies it to the material
+            for (int j = 0; j < mats.Count; j++)
+            {
+                Material mat = mats[j];
+                //if (mat == null) continue;
+                mats[j] = MaterialManager.Instance.sharedMaterials["flipbook"];
+
+                MaterialManager.Instance.ApplySODMaterial(
+                    renderer: renderer,
+                    baseTex: null,
+                    normalTex: null,
+                    emissionTex: null,
+                    useAnimationData: true, // only these two are used in this call
+                    effectAnimationData: data, //
+                    materialIndex: 0,
+                    lit_material: false
+                );
+
+            }
+
+            renderer.SetSharedMaterials(mats);
+            
             //StartCoroutine(AnimateTextureOffset(mat, playbackOffset));
         }
     }

@@ -80,7 +80,7 @@ public class AdvancedFlipbookControllerArrays : MonoBehaviour
     private static readonly int UseEmissiveID = Shader.PropertyToID("_UseEmissive");
     private static readonly int EmissiveColorID = Shader.PropertyToID("_EmissiveColor");
     private static readonly int EmissiveIntensityID = Shader.PropertyToID("_EmissiveIntensity");
-    private static readonly int TextureID = Shader.PropertyToID("_BaseMap"); // Texture property ID
+    private static readonly int TextureID = Shader.PropertyToID("_BaseColorMap"); // Texture property ID
 
     private static readonly int NormalTextureID = Shader.PropertyToID("_BumpMap");
     private static readonly int EmissiveTextureID = Shader.PropertyToID("_EmissiveMap"); // Emissive texture property ID
@@ -178,9 +178,9 @@ public class AdvancedFlipbookControllerArrays : MonoBehaviour
             _propBlock.SetTexture(TextureID, data.texture); // Set the texture
         }
         else
-        {
-            Debug.LogError("Texture is null. Cannot set texture property.");
-        }
+        // {
+        //     Debug.LogError("Texture is null. Cannot set texture property.");
+        // }
         if (data.normalTexture != null) _propBlock.SetTexture(NormalTextureID, data.normalTexture); // Set the normal texture
         if (data.emissiveTexture != null) _propBlock.SetTexture(EmissiveTextureID, data.emissiveTexture); // Set the emissive texture
 
