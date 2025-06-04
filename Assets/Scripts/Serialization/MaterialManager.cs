@@ -63,8 +63,8 @@ public class MaterialManager : MonoBehaviour {
             AdvancedFlipbookControllerArrays controller = renderer.gameObject.GetComponent<AdvancedFlipbookControllerArrays>();
             if (controller == null) controller = renderer.gameObject.AddComponent<AdvancedFlipbookControllerArrays>();
             // TODO: what to do with the normalTex, emissionTex?
-            controller.Configure(effectAnimationData);
-            Debug.Log("Animation data applied to renderer: " + renderer.name);
+            controller.Configure(effectAnimationData, materialIndex);
+            Debug.Log($"Animation data applied to renderer: {renderer.name} at index {materialIndex}");
         }
         else
         {
@@ -72,12 +72,11 @@ public class MaterialManager : MonoBehaviour {
             if (materialIndex > -1) renderer.GetPropertyBlock(mpb, materialIndex); else renderer.GetPropertyBlock(mpb);
             if (lit_material)
             {
-
                 if (baseTex != null)
                     mpb.SetTexture("_BaseColorMap", baseTex);
                 else
                 {
-                    //mpb.SetTexture("_BaseColorMap", null);
+                    Debug.LogWarning($"Base texture is null for {renderer.name}. Setting to clear color.");
                     mpb.SetColor("_BaseColor", Color.clear);
                 }
                 if (normalTex != null)
@@ -117,67 +116,67 @@ public class MaterialManager : MonoBehaviour {
         }
     }
 
-    public void ApplyMaterial(string materialName, Renderer renderer, Texture2D baseTex, Texture2D normalTex, Texture2D emissionTex,
-            bool useAnimationData, EffectAnimationDataArrayBased effectAnimationData,
-            bool isTransparent = false, bool isAdditive = false, bool backfaceCulling = true,
-            int materialIndex = -1,
-            int numberOfMaterials = 1,
-            bool emissive = false)
-    {
-        if (renderer == null)
-        {
-            Debug.LogError("Renderer is null. Cannot apply material.");
-            return;
-        }
+    // public void ApplyMaterial(string materialName, Renderer renderer, Texture2D baseTex, Texture2D normalTex, Texture2D emissionTex,
+    //         bool useAnimationData, EffectAnimationDataArrayBased effectAnimationData,
+    //         bool isTransparent = false, bool isAdditive = false, bool backfaceCulling = true,
+    //         int materialIndex = -1,
+    //         int numberOfMaterials = 1,
+    //         bool emissive = false)
+    // {
+    //     if (renderer == null)
+    //     {
+    //         Debug.LogError("Renderer is null. Cannot apply material.");
+    //         return;
+    //     }
 
-        // Check if the materials already applied; if not, create and assign them
-        // Material name should not contain the "tag" such as "additive" or "alpha"
-        Material _mat = null;
-        if (renderer.sharedMaterials.Length == 0 && renderer.materials.Length == 0 &&
-            renderer.sharedMaterial == null && renderer.material == null)
-        {
-            _mat = GetOrCreateMaterial(materialName, isTransparent, isAdditive, backfaceCulling, emissive);
-            if (numberOfMaterials > 1)
-            {
-                Debug.LogFormat("Assigning shared material {0} to renderer {1} at index {2}, reqst: {3}", _mat.name, renderer.name, materialIndex, materialName);
-                renderer.sharedMaterial = _mat; // Assign shared material
-            }
-            else
-            {
-                Debug.LogFormat("Assigning material {0} to renderer {1} at index {2}, reqst: {3}", _mat.name, renderer.name, materialIndex, materialName);
-            }
-        }
+    //     // Check if the materials already applied; if not, create and assign them
+    //     // Material name should not contain the "tag" such as "additive" or "alpha"
+    //     Material _mat = null;
+    //     if (renderer.sharedMaterials.Length == 0 && renderer.materials.Length == 0 &&
+    //         renderer.sharedMaterial == null && renderer.material == null)
+    //     {
+    //         _mat = GetOrCreateMaterial(materialName, isTransparent, isAdditive, backfaceCulling, emissive);
+    //         if (numberOfMaterials > 1)
+    //         {
+    //             Debug.LogFormat("Assigning shared material {0} to renderer {1} at index {2}, reqst: {3}", _mat.name, renderer.name, materialIndex, materialName);
+    //             renderer.sharedMaterial = _mat; // Assign shared material
+    //         }
+    //         else
+    //         {
+    //             Debug.LogFormat("Assigning material {0} to renderer {1} at index {2}, reqst: {3}", _mat.name, renderer.name, materialIndex, materialName);
+    //         }
+    //     }
 
-        // Apply the material property block
-        if (useAnimationData)
-        {
-            // Apply animation data to the renderer
-            AdvancedFlipbookControllerArrays controller = renderer.gameObject.GetComponent<AdvancedFlipbookControllerArrays>();
-            if (controller == null) controller = renderer.gameObject.AddComponent<AdvancedFlipbookControllerArrays>();
-            // TODO: what to do with the normalTex, emissionTex?
-            controller.Configure(effectAnimationData);
-        }
-        else
-        {
-            // If not using animation data, do a simple mpb here
-            if (materialIndex > -1) renderer.GetPropertyBlock(mpb, materialIndex); else renderer.GetPropertyBlock(mpb);
-            if (baseTex != null)
-                mpb.SetTexture("_BaseColorMap", baseTex);
-            else
-                mpb.SetColor("_BaseColor", Color.clear);
-            if (normalTex != null) mpb.SetTexture("_NormalMap", normalTex);
-            if (emissionTex != null)
-            {
-                //mpb.SetFloat("_UseEmissive", 1.0f);
-                //mpb.SetColor("_EmissiveColor", Color.white * 25.0f);
-                mpb.SetTexture("_EmissiveColorMap", emissionTex);
-                Debug.Log("Emissive map set to: " + emissionTex.name);
-            }
-            if (materialIndex > -1) renderer.SetPropertyBlock(mpb, materialIndex); else renderer.SetPropertyBlock(mpb);
-            Debug.LogFormat("Applied material properties to {0} / {1} with baseTex: {2},",
-                renderer.name, _mat?.name ?? "n/a", baseTex != null ? baseTex.name : "null");
-        }
-    }
+    //     // Apply the material property block
+    //     if (useAnimationData)
+    //     {
+    //         // Apply animation data to the renderer
+    //         AdvancedFlipbookControllerArrays controller = renderer.gameObject.GetComponent<AdvancedFlipbookControllerArrays>();
+    //         if (controller == null) controller = renderer.gameObject.AddComponent<AdvancedFlipbookControllerArrays>();
+    //         // TODO: what to do with the normalTex, emissionTex?
+    //         controller.Configure(effectAnimationData);
+    //     }
+    //     else
+    //     {
+    //         // If not using animation data, do a simple mpb here
+    //         if (materialIndex > -1) renderer.GetPropertyBlock(mpb, materialIndex); else renderer.GetPropertyBlock(mpb);
+    //         if (baseTex != null)
+    //             mpb.SetTexture("_BaseColorMap", baseTex);
+    //         else
+    //             mpb.SetColor("_BaseColor", Color.clear);
+    //         if (normalTex != null) mpb.SetTexture("_NormalMap", normalTex);
+    //         if (emissionTex != null)
+    //         {
+    //             //mpb.SetFloat("_UseEmissive", 1.0f);
+    //             //mpb.SetColor("_EmissiveColor", Color.white * 25.0f);
+    //             mpb.SetTexture("_EmissiveColorMap", emissionTex);
+    //             Debug.Log("Emissive map set to: " + emissionTex.name);
+    //         }
+    //         if (materialIndex > -1) renderer.SetPropertyBlock(mpb, materialIndex); else renderer.SetPropertyBlock(mpb);
+    //         Debug.LogFormat("Applied material properties to {0} / {1} with baseTex: {2},",
+    //             renderer.name, _mat?.name ?? "n/a", baseTex != null ? baseTex.name : "null");
+    //     }
+    // }
 
 
     public Material GetOrCreateMaterial(string materialName, bool isTransparent, bool isAdditive, bool backfaceCulling, bool emissive)

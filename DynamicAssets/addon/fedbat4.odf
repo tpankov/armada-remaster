@@ -30,4 +30,5 @@ cargo = 100
 maxCargo = 100
 modelPath = DynamicAssets\sod\fedbat4.sod
 legacyLightmaps = fbat4bus:lmapsolid,.*dmg.*:damage,light3:lmapsolid
+//,
 //legacyLightmaps = lmap1:lmap,lmap3:lmap,engglow:stdhull

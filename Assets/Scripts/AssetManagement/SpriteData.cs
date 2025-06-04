@@ -6,6 +6,7 @@ namespace CustomSpriteFormat
     // Enum to represent material types mentioned in the file
     public enum MaterialType
     {
+        Unset,
         Default,
         Additive,
         Alpha

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System;
+using UnityEngine.Rendering.RendererUtils;
 //using UnityEditor;
 //using UnityEngine.Rendering.Universal;
 //using Unity.VisualScripting;
@@ -396,10 +397,11 @@ public class SODLoader
                     emissionTexture = LoadTexture(textureFolderPath, texture + "_glow.tga", linear: true);
 
                     // Multi-lighting group means multiple submeshes, each with its own material
-                    if (lightingGroups.Count > 1)
-                    {
-                        meshRenderer.sharedMaterials = new Material[lightingGroups.Count];
-                    }
+                    //if (lightingGroups.Count > 1)
+                    //{
+                    //    meshRenderer.sharedMaterials = new Material[lightingGroups.Count];
+                    //}
+                    
 
                     // Apply the base texture to each submesh
                     System.Collections.Generic.List<Material> _materials = new System.Collections.Generic.List<Material>();
@@ -408,7 +410,7 @@ public class SODLoader
                         // get the material name, or default to stdhull
 
                         string materialName = lightingGroups[g].lightingMaterial.Length > 0 ? lightingGroups[g].lightingMaterial : "stdhull";
-                        if (emissionTexture != null)
+                        if (emissionTexture != null && materialName == "stdhull")
                         {
                             materialName = materialName + "_glow";
                         }
@@ -473,7 +475,7 @@ public class SODLoader
                 else if (nodeType == 3)
                 {
                     // Node name might end with an underscore followed by one or two digits; we want to remove that
-                    EffectPoolManager.Instance.SpawnEffect(Regex.Replace(nodeName, "_\\d+$", ""), localTransform.GetPosition(), localTransform.rotation.normalized, go);
+                    EffectPoolManager.Instance.SpawnEffect(Regex.Replace(nodeName, "_\\d+$", ""), localTransform.GetPosition(), localTransform.rotation.normalized, parent: parentName.Length > 0 ? nodeObjects[parentName] : null);
                 }
             }
 
@@ -658,17 +660,18 @@ public class SODLoader
             EffectAnimationDataArrayBased data = new EffectAnimationDataArrayBased();
             data.tintDuration = animDef.frameCount / animDef.duration;
             //data.useEmissive = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType == MaterialType.Additive; // Example emissive setting
-            //data.materialType = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType; // Example material type
-            data.emissiveIntensity = 6.0f; // Example emissive intensity
+            //data.materialType = // Example material type
+            data.emissiveIntensity = 8.0f; // Example emissive intensity
             data.emissiveColor = Color.white;
             data.alpha = 1.0f;
             EffectAnimationDataArrayBased.setDataFromAnim(animDef, null, ref data); // Set data from AnimationDefinition
-
+            //Material[] _mats; ;
             // This takes the animation data and applies it to the material
             for (int j = 0; j < mats.Count; j++)
             {
-                Material mat = mats[j];
+                //Material mat = mats[j];
                 //if (mat == null) continue;
+                
                 mats[j] = MaterialManager.Instance.sharedMaterials["flipbook"];
 
                 MaterialManager.Instance.ApplySODMaterial(
@@ -678,7 +681,7 @@ public class SODLoader
                     emissionTex: null,
                     useAnimationData: true, // only these two are used in this call
                     effectAnimationData: data, //
-                    materialIndex: 0,
+                    materialIndex: j,
                     lit_material: false
                 );
 

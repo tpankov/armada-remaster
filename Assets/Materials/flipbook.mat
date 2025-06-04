@@ -37,6 +37,7 @@ Material:
   - _OFFSETINTERPOLATION_LINEARCROSSFADE
   - _SURFACE_TYPE_TRANSPARENT
   - _TINTINTERPOLATION_STEP
+  - _USEEMISSIVE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -59,7 +60,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseColorMap:
-        m_Texture: {fileID: 2800000, guid: e31ffa9d4f178cf439e332248dd273f2, type: 3}
+        m_Texture: {fileID: 2800000, guid: eab6019f2d97ef64881f119a2bc8fe38, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
@@ -169,7 +170,7 @@ Material:
     - _ATDistance: 1
     - _AddPrecomputedVelocity: 0
     - _AlbedoAffectEmissive: 0
-    - _Alpha: 1
+    - _Alpha: 0.994
     - _AlphaCutoff: 0.5
     - _AlphaCutoffEnable: 0
     - _AlphaCutoffPostpass: 0.5
@@ -181,12 +182,12 @@ Material:
     - _AlphaSrcBlend: 1
     - _Anisotropy: 0
     - _AutoColFPS: 1
-    - _AutoColTotalFrames: 2
+    - _AutoColTotalFrames: 4
     - _AutoFlipbookType: 0
     - _AutoFramesPerColumn: 8
     - _AutoFramesPerRow: 4
     - _AutoRowFPS: 4
-    - _AutoRowTotalFrames: 20
+    - _AutoRowTotalFrames: 4
     - _AutoTotalFrames: 8
     - _AutoVisibility: 1
     - _BlendMode: 1
@@ -227,16 +228,16 @@ Material:
     - _DrawDuration: 1
     - _DrawFrameCount: 0
     - _DrawKeyframeCount: 0
-    - _DstBlend: 10
+    - _DstBlend: 5
     - _DstBlend2: 10
     - _EmissiveColorMode: 1
     - _EmissiveExposureWeight: 1
-    - _EmissiveIntensity: 1.04
+    - _EmissiveIntensity: 7.74
     - _EmissiveIntensityUnit: 0
     - _EnableBlendModePreserveSpecularLighting: 1
     - _EnableFogOnTransparent: 0
     - _EnableGeometricSpecularAA: 0
-    - _EnableInstancing: 0
+    - _EnableInstancing: 1
     - _EnergyConservingSpecularColor: 1
     - _FallbackFlipbookType: 2
     - _FallbackFramesPerColumn: 4
@@ -257,7 +258,7 @@ Material:
     - _HeightTessAmplitude: 2
     - _HeightTessCenter: 0.5
     - _IncludeIndirectLighting: 1
-    - _InstanceStartTime: 1
+    - _InstanceStartTime: 0
     - _InvTilingScale: 1
     - _Ior: 1.5
     - _IridescenceMask: 1
@@ -272,7 +273,7 @@ Material:
     - _ObjectSpaceUVMapping: 0
     - _ObjectSpaceUVMappingEmissive: 0
     - _OffsetDuration: 1
-    - _OffsetFrameCount: 8
+    - _OffsetFrameCount: 0
     - _OffsetInterpolation: 2
     - _OffsetKeyframeCount: 0
     - _OpaqueCullMode: 2
@@ -286,14 +287,14 @@ Material:
     - _ReceivesSSR: 1
     - _ReceivesSSRTransparent: 0
     - _RefractionModel: 0
-    - _RenderQueueType: 5
+    - _RenderQueueType: 1
     - _Smoothness: 0.5
     - _SmoothnessRemapMax: 1
     - _SmoothnessRemapMin: 0
     - _SpecularAAScreenSpaceVariance: 0.1
     - _SpecularAAThreshold: 0.2
     - _SpecularOcclusionMode: 1
-    - _SrcBlend: 5
+    - _SrcBlend: 1
     - _StencilRef: 0
     - _StencilRefDepth: 0
     - _StencilRefDistortionVec: 4
@@ -330,25 +331,25 @@ Material:
     - _UVEmissive: 0
     - _UseAutoColumn: 1
     - _UseAutoRow: 1
-    - _UseEmissive: 0
+    - _UseEmissive: 1
     - _UseEmissiveIntensity: 0
     - _UseShadowThreshold: 0
     - _UseVolumetricDensity: 0
-    - _VolumeDensityScale: 4.56
+    - _VolumeDensityScale: 4.28
     - _VolumeMaxDepth: 0.5
     - _ZTestDepthEqualForOpaque: 4
     - _ZTestGBuffer: 4
     - _ZTestModeDistortion: 4
     - _ZTestTransparent: 4
-    - _ZWrite: 1
+    - _ZWrite: 10
     - _billboardMode: 0
-    - _offsetX: 0.29
-    - _offsetY: 0.236
-    - _tileX: 0.225
-    - _tileY: 0.247
+    - _offsetX: 0
+    - _offsetY: 0
+    - _tileX: 0.254
+    - _tileY: 0.125
     m_Colors:
     - _AutoTint: {r: 1, g: 1, b: 1, a: 1}
-    - _BaseColor: {r: 0.53638804, g: 0.53638804, b: 0.53638804, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0.53638804, g: 0.53638804, b: 0.53638804, a: 1}
     - _CustomFrameData: {r: 1, g: 1, b: 1, a: 1}
     - _CustomOffsets: {r: 0, g: 0, b: 1, a: 1}

@@ -27,10 +27,10 @@ softglow	xglow_soft		0	0	64	64
 @tmaterial=additive
 mingore		xore			32	32	32	32
 
-@reference=256
+@reference=1024
 @tmaterial=additive
 
-badge		stabadge		5	5	246	246
+badge		badge		50	46	936	936
 
 
 ## SPRITE NODE DEFINITIONS ##

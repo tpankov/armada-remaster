@@ -140,6 +140,8 @@ public class EffectPoolManager : MonoBehaviour
         }
         objToSpawn.transform.localPosition = position;
         objToSpawn.transform.localRotation = rotation;
+        objToSpawn.transform.localScale = new Vector3(2.54f*controllerData.size.x, 2.54f*controllerData.size.y, 1f); // Set scale based on size
+         // Reset scale to 1,1,1
 
         // 4. Assign Material
         MeshRenderer rend = objToSpawn.GetComponent<MeshRenderer>();

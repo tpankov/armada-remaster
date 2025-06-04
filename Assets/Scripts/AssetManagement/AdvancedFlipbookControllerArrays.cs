@@ -80,13 +80,15 @@ public class AdvancedFlipbookControllerArrays : MonoBehaviour
     private static readonly int UseEmissiveID = Shader.PropertyToID("_UseEmissive");
     private static readonly int EmissiveColorID = Shader.PropertyToID("_EmissiveColor");
     private static readonly int EmissiveIntensityID = Shader.PropertyToID("_EmissiveIntensity");
+    private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
     private static readonly int TextureID = Shader.PropertyToID("_BaseColorMap"); // Texture property ID
 
     private static readonly int NormalTextureID = Shader.PropertyToID("_BumpMap");
     private static readonly int EmissiveTextureID = Shader.PropertyToID("_EmissiveMap"); // Emissive texture property ID
 
-    //private static readonly int SrcBlendID = Shader.PropertyToID("_SrcBlend");
-    //private static readonly int DstBlendID = Shader.PropertyToID("_DstBlend");
+    private static readonly int ZWriteID = Shader.PropertyToID("_ZWrite");
+    private static readonly int SrcBlendID = Shader.PropertyToID("_SrcBlend");
+    private static readonly int DstBlendID = Shader.PropertyToID("_DstBlend");
 
     void Awake()
     {
@@ -95,7 +97,7 @@ public class AdvancedFlipbookControllerArrays : MonoBehaviour
     }
 
     // Call this from your Pool Manager after getting an instance
-    public void Configure(EffectAnimationDataArrayBased data) // Use a new data struct
+    public void Configure(EffectAnimationDataArrayBased data, int index = -1) // Use a new data struct
     {
         instanceStartTime = Time.time; // Set start time for animation sync
 
@@ -123,29 +125,42 @@ public class AdvancedFlipbookControllerArrays : MonoBehaviour
         PrepareArray(_drawVisArray, drawFrameVisibilities);
 
         // Apply properties ONCE via MaterialPropertyBlock
-        _renderer.GetPropertyBlock(_propBlock); // Start fresh or preserve other MPB props
+        if (_propBlock == null) _propBlock = new MaterialPropertyBlock();
+        if (index > -1) // If index is valid, use it to set properties
+        {
+            Debug.Log($"Configuring AdvancedFlipbookControllerArrays for instance at index {index}");
+            _renderer.GetPropertyBlock(_propBlock, index); // Start fresh or preserve other MPB props
+        }
+        else
+        {
+            Debug.Log("Configuring AdvancedFlipbookControllerArrays for instance without index");
+            _renderer.GetPropertyBlock(_propBlock); // Start fresh or preserve other MPB props
+        }
 
         _propBlock.SetFloat(InstanceStartTimeID, instanceStartTime);
 
         _propBlock.SetInteger(OffsetFrameCountID, offsetFrameTimes.Count);
         _propBlock.SetFloat(OffsetDurationID, offsetDuration);
         _propBlock.SetFloat(OffsetInterpolationID, offsetInterpolation);
-        if (offsetFrameTimes.Count > 0) {
-             _propBlock.SetFloatArray(OffsetFrameTimesID, _offsetTimeArray);
-             _propBlock.SetVectorArray(OffsetFrameDataID, _offsetDataArray);
+        if (offsetFrameTimes.Count > 0)
+        {
+            _propBlock.SetFloatArray(OffsetFrameTimesID, _offsetTimeArray);
+            _propBlock.SetVectorArray(OffsetFrameDataID, _offsetDataArray);
         }
         // ... (Set Tint track arrays/properties) ...
         _propBlock.SetInteger(TintFrameCountID, tintFrameTimes.Count);
         _propBlock.SetFloat(TintDurationID, tintDuration);
         _propBlock.SetFloat(TintInterpolationID, tintInterpolation);
-        if (tintFrameTimes.Count > 0) {
+        if (tintFrameTimes.Count > 0)
+        {
             _propBlock.SetFloatArray(TintFrameTimesID, _tintTimeArray);
             _propBlock.SetVectorArray(TintFrameColorsID, _tintColorArray); // Send Vector4 array
         }
-         // ... (Set Draw track arrays/properties) ...
+        // ... (Set Draw track arrays/properties) ...
         _propBlock.SetInteger(DrawFrameCountID, drawFrameTimes.Count);
         _propBlock.SetFloat(DrawDurationID, drawDuration);
-        if (drawFrameTimes.Count > 0) {
+        if (drawFrameTimes.Count > 0)
+        {
             _propBlock.SetFloatArray(DrawFrameTimesID, _drawTimeArray);
             _propBlock.SetFloatArray(DrawFrameVisibilitiesID, _drawVisArray);
         }
@@ -166,11 +181,38 @@ public class AdvancedFlipbookControllerArrays : MonoBehaviour
 
         // Set rendering params (optional overrides per instance)
         _propBlock.SetFloat(AlphaID, data.alpha);
-        _propBlock.SetFloat(UseEmissiveID, data.useEmissive ? 1.0f : 0.0f);
+        //_propBlock.SetFloat(UseEmissiveID, data.useEmissive ? 1.0f : 0.0f);
+        _propBlock.SetColor(BaseColorID, data.baseColor);
         _propBlock.SetColor(EmissiveColorID, data.emissiveColor);
+        //_propBlock.SetFloat(EmissiveIntensityID, data.emissiveIntensity);
+
         _propBlock.SetFloat(EmissiveIntensityID, data.emissiveIntensity);
-        //_propBlock.SetFloat(SrcBlendID, data.materialType == MaterialType.Additive ? (float)UnityEngine.Rendering.BlendMode.One : (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        //_propBlock.SetFloat(DstBlendID, data.materialType == MaterialType.Additive ? (float)UnityEngine.Rendering.BlendMode.One : (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        // Set blend modes based on material type
+        if (data.materialType == MaterialType.Additive)
+        {
+            _propBlock.SetFloat(ZWriteID, 0.0f); // Disable ZWrite for additive
+            _propBlock.SetFloat(UseEmissiveID, 1.0f);
+            _propBlock.SetFloat(SrcBlendID, (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _propBlock.SetFloat(DstBlendID, (float)UnityEngine.Rendering.BlendMode.One);
+        }
+        else if (data.materialType == MaterialType.Default)
+        {
+            _propBlock.SetFloat(ZWriteID, 1.0f); // Disable ZWrite for additive
+            _propBlock.SetFloat(UseEmissiveID, 0.0f);
+            _propBlock.SetFloat(SrcBlendID, (float)UnityEngine.Rendering.BlendMode.One);
+            _propBlock.SetFloat(DstBlendID, (float)UnityEngine.Rendering.BlendMode.Zero);
+        }
+        else if (data.materialType == MaterialType.Alpha)
+        {
+            _propBlock.SetFloat(ZWriteID, 0.0f); // Disable ZWrite for additive
+            _propBlock.SetFloat(UseEmissiveID, 0.0f);
+            _propBlock.SetFloat(SrcBlendID, (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            _propBlock.SetFloat(DstBlendID, (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        }
+        else // MaterialType.Unset
+        {
+            // unset; don't change the material
+        }
         // Essential for HDRP transparency
 
         if (data.texture != null) // Check if texture is not null
@@ -184,8 +226,11 @@ public class AdvancedFlipbookControllerArrays : MonoBehaviour
         if (data.normalTexture != null) _propBlock.SetTexture(NormalTextureID, data.normalTexture); // Set the normal texture
         if (data.emissiveTexture != null) _propBlock.SetTexture(EmissiveTextureID, data.emissiveTexture); // Set the emissive texture
 
-
-        _renderer.SetPropertyBlock(_propBlock);
+        if (index > -1) // If index is valid, set properties for that index
+            _renderer.SetPropertyBlock(_propBlock, index);
+        else
+            _renderer.SetPropertyBlock(_propBlock);
+        Debug.Log("AdvancedFlipbookControllerArrays configured with EffectAnimationDataArrayBased.");
         //_isConfigured = true;
     }
 
@@ -265,6 +310,7 @@ public struct EffectAnimationDataArrayBased
     // Other per-instance overrides
     public float alpha;
     public bool useEmissive;
+    public Color baseColor;
     public Color emissiveColor;
     public float emissiveIntensity;
 
@@ -272,8 +318,9 @@ public struct EffectAnimationDataArrayBased
     public Texture texture; // The actual texture to use
     public Texture normalTexture; // The normal texture to use
     public Texture emissiveTexture; // The emissive texture to use
+    public Vector2 size; // The size of the sprite
 
-    public static void setDataFromAnim(AnimationDefinition animDef, SpriteAssetManager.ParsedSprite spriteDef,  ref EffectAnimationDataArrayBased data)
+    public static void setDataFromAnim(AnimationDefinition animDef, SpriteAssetManager.ParsedSprite spriteDef, ref EffectAnimationDataArrayBased data)
     {
         // Set data from AnimationDefinition to EffectAnimationDataArrayBased
         // Set values from spriteNode or other sources
@@ -281,11 +328,11 @@ public struct EffectAnimationDataArrayBased
         {
             // use values if no animation definition found
             data.autoColFPS = 0.0f;
-            data.autoRowFPS = 0.0f; 
+            data.autoRowFPS = 0.0f;
             data.Offsetx = 0;
             data.Offsety = 0;
             data.Tilingx = 1;
-            data.Tilingy = 1; 
+            data.Tilingy = 1;
             //data.autoFramesPerCol = 1;
             data.alpha = 1.0f; // Example alpha
         }
@@ -306,66 +353,66 @@ public struct EffectAnimationDataArrayBased
                 data.Tilingy = spriteDef.SourceRect.height / spriteDef.ReferenceSize;
             }
             if (animDef.type == AnimationType.Draw)
-                {
-                    data.drawDuration = animDef.duration;
-                    data.drawFrameVisibilities = animDef.keyframes.ConvertAll(kf => (float)kf.IntValue); // Convert to visibility
-                    data.drawFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
-                                                                                       //Debug.Log($"Draw: {data.drawDuration}, {data.drawFrameVisibilities.Count} frames.");
-                }
-                else if (animDef.type == AnimationType.Colour)
-                {
-                    data.tintDuration = animDef.duration;
-                    data.tintFrameColors = animDef.keyframes.ConvertAll(kf => kf.ColorValue); // Convert to Color
-                    data.tintFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
-                    data.tintInterpolation = (float)animDef.interpolation;
-                    //Debug.Log($"Tint: {data.tintDuration}, {data.tintFrameColors.Count} frames.");
-                }
-                else if (animDef.type == AnimationType.Offset)
-                {
-                    data.offsetDuration = animDef.duration;
-                    data.offsetInterpolation = (float)animDef.interpolation;
+            {
+                data.drawDuration = animDef.duration;
+                data.drawFrameVisibilities = animDef.keyframes.ConvertAll(kf => (float)kf.IntValue); // Convert to visibility
+                data.drawFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
+                                                                                   //Debug.Log($"Draw: {data.drawDuration}, {data.drawFrameVisibilities.Count} frames.");
+            }
+            else if (animDef.type == AnimationType.Colour)
+            {
+                data.tintDuration = animDef.duration;
+                data.tintFrameColors = animDef.keyframes.ConvertAll(kf => kf.ColorValue); // Convert to Color
+                data.tintFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
+                data.tintInterpolation = (float)animDef.interpolation;
+                //Debug.Log($"Tint: {data.tintDuration}, {data.tintFrameColors.Count} frames.");
+            }
+            else if (animDef.type == AnimationType.Offset)
+            {
+                data.offsetDuration = animDef.duration;
+                data.offsetInterpolation = (float)animDef.interpolation;
 
-                    if (animDef.autoKeyframe == AutoKeyframeType.Row)
-                    {
-                        data.autoRowTotalFrames = animDef.frameCount;
-                        data.autoRowFPS = animDef.frameCount / animDef.duration;
-                        //data.autoFramesPerRow = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.width);
-                        data.useAutoRow = true;
-                        //Debug.Log($"AutoRow: {data.autoRowTotalFrames}, {data.autoFramesPerRow}, {data.autoRowFPS}, {data.useAutoRow}.");
-                    }
-                    else if (animDef.autoKeyframe == AutoKeyframeType.Column)
-                    {
-                        data.autoColTotalFrames = animDef.frameCount;
-                        data.autoColFPS = animDef.frameCount / animDef.duration;
-                        //data.autoFramesPerCol = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.height);
-                        data.useAutoColumn = true;
-                        //Debug.Log($"AutoColumn: {data.autoColTotalFrames}, {data.autoFramesPerCol}, {data.autoColFPS}, {data.useAutoColumn}.");
-                    }
-                    else if (animDef.autoKeyframe == AutoKeyframeType.Grid)
-                    {
-                        data.autoRowTotalFrames = (int)math.sqrt(animDef.frameCount);
-                        data.autoColTotalFrames = (int)math.sqrt(animDef.frameCount);
-                        //data.autoFramesPerRow = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.width); 
-                        //data.autoFramesPerCol = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.height); 
-                        data.autoRowFPS = animDef.frameCount / animDef.duration;
-                        data.autoColFPS = animDef.frameCount / animDef.duration / data.autoColTotalFrames;
-                        data.useAutoRow = true;
-                        data.useAutoColumn = true;
-                        // Debug.Log($"AutoGrid: {data.autoRowTotalFrames}, {data.autoColTotalFrames}, {data.autoFramesPerRow}, {data.autoFramesPerCol}, {data.autoRowFPS}, {data.autoColFPS}");
-                    }
-                    else
-                    {
-                        data.autoRowFPS = 0.0f;
-                        data.autoColFPS = 0.0f;
-                        data.useAutoRow = false;
-                        data.useAutoColumn = false;
-                        data.offsetFrameData = animDef.keyframes.ConvertAll(kf => (Vector4)kf.value); // Convert to Vector4
-                        data.offsetFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
-                                                                                             //Debug.Log($"Custom Offset: {data.offsetDuration}, {data.offsetFrameData.Count} frames.");
-                    }
-
+                if (animDef.autoKeyframe == AutoKeyframeType.Row)
+                {
+                    data.autoRowTotalFrames = animDef.frameCount;
+                    data.autoRowFPS = animDef.frameCount / animDef.duration;
+                    //data.autoFramesPerRow = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.width);
+                    data.useAutoRow = true;
+                    //Debug.Log($"AutoRow: {data.autoRowTotalFrames}, {data.autoFramesPerRow}, {data.autoRowFPS}, {data.useAutoRow}.");
                 }
-            
+                else if (animDef.autoKeyframe == AutoKeyframeType.Column)
+                {
+                    data.autoColTotalFrames = animDef.frameCount;
+                    data.autoColFPS = animDef.frameCount / animDef.duration;
+                    //data.autoFramesPerCol = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.height);
+                    data.useAutoColumn = true;
+                    //Debug.Log($"AutoColumn: {data.autoColTotalFrames}, {data.autoFramesPerCol}, {data.autoColFPS}, {data.useAutoColumn}.");
+                }
+                else if (animDef.autoKeyframe == AutoKeyframeType.Grid)
+                {
+                    data.autoRowTotalFrames = (int)math.sqrt(animDef.frameCount);
+                    data.autoColTotalFrames = (int)math.sqrt(animDef.frameCount);
+                    //data.autoFramesPerRow = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.width); 
+                    //data.autoFramesPerCol = (int)math.ceil(spriteDef.ReferenceSize / spriteDef.SourceRect.height); 
+                    data.autoRowFPS = animDef.frameCount / animDef.duration;
+                    data.autoColFPS = animDef.frameCount / animDef.duration / data.autoColTotalFrames;
+                    data.useAutoRow = true;
+                    data.useAutoColumn = true;
+                    // Debug.Log($"AutoGrid: {data.autoRowTotalFrames}, {data.autoColTotalFrames}, {data.autoFramesPerRow}, {data.autoFramesPerCol}, {data.autoRowFPS}, {data.autoColFPS}");
+                }
+                else
+                {
+                    data.autoRowFPS = 0.0f;
+                    data.autoColFPS = 0.0f;
+                    data.useAutoRow = false;
+                    data.useAutoColumn = false;
+                    data.offsetFrameData = animDef.keyframes.ConvertAll(kf => (Vector4)kf.value); // Convert to Vector4
+                    data.offsetFrameTimes = animDef.keyframes.ConvertAll(kf => kf.time); // Convert to time
+                                                                                         //Debug.Log($"Custom Offset: {data.offsetDuration}, {data.offsetFrameData.Count} frames.");
+                }
+
+            }
+
         }
     }
     
@@ -405,6 +452,8 @@ public struct EffectAnimationDataArrayBased
         data.materialType = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType; // Example material type
         data.emissiveIntensity = 6.0f; // Example emissive intensity
         data.emissiveColor = spriteNode.Tint; 
+        data.baseColor = spriteNode.Tint;
+        data.size = spriteNode.Size; // Example size
         data.alpha = 1.0f; 
         setDataFromAnim(animDef, spriteDef, ref data); // Set data from AnimationDefinition
         

@@ -15,15 +15,15 @@ public class test : MonoBehaviour
     private int randomIndex = 0;
     void Start()
     {
-        CustomSpriteFormat.SpriteNodeDefinition snd = SpriteAssetManager.Instance.GetSpriteNodeDefinition(SpriteNodeName);
-        EffectAnimationDataArrayBased ad = EffectAnimationDataArrayBased.CreateFromSpriteNode(snd);
-        effect = EffectPoolManager.Instance.SpawnEffect(SpriteNodeName, transform.position, Quaternion.identity);
-        // GameObject shipObject = new GameObject("fedbat4");
-        // string configPath = Path.Combine("DynamicAssets","addon","fedbat4.odf");
-        // StarshipBase ship = shipObject.AddComponent<StarshipBase>();
-        // ship.LoadFromConfig(configPath);
-        // AddressablePrefabSaver.SaveModelAsAddressable(shipObject, "fedbat4");
-        // Debug.Log("Prefab saved as addressable: fedbat2");
+        // CustomSpriteFormat.SpriteNodeDefinition snd = SpriteAssetManager.Instance.GetSpriteNodeDefinition(SpriteNodeName);
+        // EffectAnimationDataArrayBased ad = EffectAnimationDataArrayBased.CreateFromSpriteNode(snd);
+        // effect = EffectPoolManager.Instance.SpawnEffect(SpriteNodeName, transform.position, Quaternion.identity);
+        GameObject shipObject = new GameObject("fedbat4");
+        string configPath = Path.Combine("DynamicAssets","addon","fedbat4.odf");
+        StarshipBase ship = shipObject.AddComponent<StarshipBase>();
+        ship.LoadFromConfig(configPath);
+        AddressablePrefabSaver.SaveModelAsAddressable(shipObject, "fedbat4");
+        Debug.Log("Prefab saved as addressable: fedbat2");
     }
 
     // Update is called once per frame  

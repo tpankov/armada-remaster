@@ -35,7 +35,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseColorMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: dffef66376be4fa480fb02b19edbe903, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
@@ -137,7 +137,7 @@ Material:
     - _ATDistance: 1
     - _AddPrecomputedVelocity: 0
     - _AlbedoAffectEmissive: 0
-    - _Alpha: 1
+    - _Alpha: 0.623
     - _AlphaCutoff: 0.5
     - _AlphaCutoffEnable: 0
     - _AlphaCutoffPostpass: 0.5
@@ -157,8 +157,8 @@ Material:
     - _CullMode: 2
     - _CullModeForward: 2
     - _Cutoff: 0.5
-    - _DepthFadeEndDistance: 1
-    - _DepthFadeStartDistance: 0.1
+    - _DepthFadeEndDistance: 2.46
+    - _DepthFadeStartDistance: 0.8
     - _DepthOffsetEnable: 0
     - _DetailAlbedoScale: 1
     - _DetailNormalScale: 1
@@ -173,11 +173,11 @@ Material:
     - _DoubleSidedNormalMode: 1
     - _DrawDuration: 1
     - _DrawFrameCount: 0
-    - _DstBlend: 1
+    - _DstBlend: 10
     - _DstBlend2: 0
     - _EmissiveColorMode: 1
     - _EmissiveExposureWeight: 1
-    - _EmissiveIntensity: 1
+    - _EmissiveIntensity: 8.34
     - _EmissiveIntensityUnit: 0
     - _EnableBlendModePreserveSpecularLighting: 1
     - _EnableFogOnTransparent: 1
@@ -209,7 +209,7 @@ Material:
     - _ObjectSpaceUVMappingEmissive: 0
     - _OffsetDuration: 1
     - _OffsetFrameCount: 0
-    - _OffsetInterpolation: 0
+    - _OffsetInterpolation: 1
     - _OpaqueCullMode: 2
     - _PPDLodThreshold: 5
     - _PPDMaxSamples: 15
@@ -244,7 +244,7 @@ Material:
     - _TexWorldScaleEmissive: 1
     - _Thickness: 1
     - _TintDuration: 1
-    - _TintFrameCount: 0
+    - _TintFrameCount: 1
     - _TintInterpolation: 0
     - _TransmissionEnable: 1
     - _TransmissionMask: 1
@@ -259,13 +259,13 @@ Material:
     - _UVDetail: 0
     - _UVEmissive: 0
     - _UseAutoColumn: 0
-    - _UseAutoRow: 0
+    - _UseAutoRow: 1
     - _UseEmissive: 0
     - _UseEmissiveIntensity: 0
     - _UseShadowThreshold: 0
-    - _UseVolumetricDensity: 0
-    - _VolumeDensityScale: 1
-    - _VolumeMaxDepth: 10
+    - _UseVolumetricDensity: 1.99
+    - _VolumeDensityScale: 1.06
+    - _VolumeMaxDepth: 4.71
     - _ZTestDepthEqualForOpaque: 3
     - _ZTestGBuffer: 4
     - _ZTestTransparent: 4
@@ -281,7 +281,7 @@ Material:
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissiveColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmissiveColor: {r: 0.6819406, g: 0.6326426, b: 0, a: 1}
     - _EmissiveColorLDR: {r: 0, g: 0, b: 0, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}

@@ -3,6 +3,7 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
     Properties
     {
         [Header(Rendering)]
+        _BaseColor("Base Color", Color) = (1, 1, 1, 1)
         _BaseColorMap("Flipbook Texture", 2D) = "white" {}
         [Toggle] _UseEmissive("Use Emissive (Additive) Blending", Float) = 0
         _EmissiveColor("Emissive Color", Color) = (1, 1, 1, 1)
@@ -83,7 +84,7 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
             #define MAX_FRAMES 32 // Choose a limit (e.g., 32, 64)
 
             // Features for blending (optional but good practice)
-            #pragma shader_feature_local _USEEMISSIVE_ON
+            //#pragma shader_feature_local _USEEMISSIVE_ON
             #pragma multi_compile_instancing
 
             // Includes
@@ -97,6 +98,8 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
 
             // Rendering
             float _Alpha;
+            float4 _BaseColor;
+            float _UseEmissive; // 0 or 1
             float4 _EmissiveColor;
             float _EmissiveIntensity;
 
@@ -494,11 +497,15 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
                 // Apply Colors and Alpha
                 float4 finalColor = texColor;
                 finalColor *= input.instanceColor; // 1. Instance Color
-                finalColor *= input.frameTint;     // 2. Frame Tint
+                finalColor *= _BaseColor;         // 2. Base Color
+                finalColor *= input.frameTint;     // 3. Frame Tint
 
-                #if defined(_USEEMISSIVE_ON)        // 3. Emissive
+                //#if defined(_USEEMISSIVE_ON)        // 4. Emissive
+                if (_UseEmissive > 0.5)
+                {
                     finalColor.rgb *= _EmissiveColor.rgb * _EmissiveIntensity;
-                #endif
+                }
+                //#endif
 
                 // Combine original alpha with depth-based modifier
                 finalColor.a *= _Alpha; // Global alpha from properties
@@ -510,5 +517,5 @@ Shader "Custom/HDRP/FlipbookAnimatorArray"
             ENDHLSL
         }
     }
-    CustomEditor "UnityEditor.Rendering.HighDefinition.HDLitGUI" // Keep default editor for HDRP
+    //CustomEditor "UnityEditor.Rendering.HighDefinition.HDLitGUI" // Keep default editor for HDRP
 }
