@@ -797,6 +797,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestCubes
       objectReference: {fileID: 0}
+    - target: {fileID: 7002785842544276501, guid: ae4251861203ee94a8f8e80044b32023, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7052872426828078095, guid: ae4251861203ee94a8f8e80044b32023, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3
@@ -1807,6 +1811,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1167554123721254602, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362112719740519975, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2213905152602599146, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: clearColorMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2213905152602599146, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: volumeLayerMask.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3639545828906335698, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: sharedProfile
+      value: 
+      objectReference: {fileID: 11400000, guid: b707c66a4434ed24f97e1b678f6d5177, type: 2}
     - target: {fileID: 4323282122701462335, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1850,6 +1874,18 @@ PrefabInstance:
     - target: {fileID: 5512049738611480118, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
       propertyPath: m_Name
       value: Lightnig
+      objectReference: {fileID: 0}
+    - target: {fileID: 8838420185715027117, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8838420185715027117, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8838420185715027117, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -660,10 +660,10 @@ public class SODLoader
             EffectAnimationDataArrayBased data = new EffectAnimationDataArrayBased();
             data.tintDuration = animDef.frameCount / animDef.duration;
             //data.useEmissive = spriteAssetManager.GetParsedSpriteDefinition(spriteNode.BaseSpriteName).MaterialType == MaterialType.Additive; // Example emissive setting
-            //data.materialType = // Example material type
+            data.materialType = CustomSpriteFormat.MaterialType.Unset;
             data.emissiveIntensity = 8.0f; // Example emissive intensity
             data.emissiveColor = Color.white;
-            data.alpha = 1.0f;
+            data.alpha = 1.0f;  
             EffectAnimationDataArrayBased.setDataFromAnim(animDef, null, ref data); // Set data from AnimationDefinition
             //Material[] _mats; ;
             // This takes the animation data and applies it to the material
