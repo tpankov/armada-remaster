@@ -341,7 +341,7 @@ Material:
     - _ZTestGBuffer: 4
     - _ZTestModeDistortion: 4
     - _ZTestTransparent: 4
-    - _ZWrite: 1
+    - _ZWrite: 0
     - _billboardMode: 0
     - _offsetX: 0
     - _offsetY: 0

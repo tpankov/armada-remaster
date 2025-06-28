@@ -1198,7 +1198,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1156530040}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2cd54f95297928345bc506caf88e599d, type: 3}
   m_Name: 
@@ -1811,6 +1811,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 208565354310216926, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: m_Intensity
+      value: 60316.9
+      objectReference: {fileID: 0}
     - target: {fileID: 1167554123721254602, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 4294967295
@@ -1886,6 +1890,14 @@ PrefabInstance:
     - target: {fileID: 8838420185715027117, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
       propertyPath: m_LocalScale.z
       value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 9138920544812141056, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: m_ShadowResolution.m_Level
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9138920544812141056, guid: 15628cf73435a0744b5fcb5c7de1a746, type: 3}
+      propertyPath: m_ShadowResolution.m_UseOverride
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
